@@ -1,37 +1,18 @@
-
-// import './App.css'
-
-// function App() {
-//   return (
-//     <div>
-//       <h1 className="text-3xl font-bold underline">
-//         Hello world!
-//       </h1>
-//     </div>
-//   )
-// }
-
-// export default App
-import { useEffect, useState } from "react";
-import axios from "axios";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // Load from .env
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Dashboard from './pages/Dashboard';
+import LoginPage from './pages/LoginPage';
 
 function App() {
-    const [message, setMessage] = useState("");
-
-    useEffect(() => {
-        axios.get(`${API_BASE_URL}/test-api`)
-            .then(response => setMessage(response.data.message))
-            .catch(error => console.error("Error fetching data:", error));
-    }, []);
-
-    return (
-        <div>
-            <h1>Frontend</h1>
-            <p>Backend says: {message}</p>
-        </div>
-    );
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/" element={<Navigate to="/login" />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
