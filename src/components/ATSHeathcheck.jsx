@@ -1,10 +1,14 @@
-import { format, differenceInDays} from "date-fns";
+import { format, differenceInDays } from "date-fns";
+import { useState } from "react";
 
 
 const days = [
   { id: 1, day: 3 },
-  { id: 2, day: 5 },
-  { id: 3, day: 9 }
+  { id: 2, day: 6 },
+  { id: 3, day: 9 },
+  { id: 4, day: 12 },
+  { id: 5, day: 15 },
+  { id: 6, day: 30 },
 ]
 
 const applicants = [
@@ -17,7 +21,7 @@ const applicants = [
   {
     id: 2,
     name: "user2",
-    updated_at: new Date("2025-01-21"),
+    updated_at: new Date("2025-02-21"),
     position_applied: "GIS Analyst",
   },
   {
@@ -53,13 +57,13 @@ const applicants = [
   {
     id: 8,
     name: "user8",
-    updated_at: new Date("2025-01-27"),
+    updated_at: new Date("2025-02-13"),
     position_applied: "Full-Stack Developer",
   },
   {
     id: 9,
     name: "user9",
-    updated_at: new Date("2025-01-28"),
+    updated_at: new Date("2025-02-15"),
     position_applied: "Project Manager",
   },
   {
@@ -100,35 +104,39 @@ const applicants = [
   },
 ];
 
-console.log(applicants);
-
-function UserCard({ applicant }) {
-  const currentDate = format(new Date(), 'yyyy-MM-dd') 
+function UserCard({ applicant, daySelected }) {
+  const currentDate = format(new Date(), 'yyyy-MM-dd')
   const dateUpdated = new Date(applicant.updated_at)
-  const diffDays = differenceInDays(currentDate, dateUpdated)
+  const daysElapsed = differenceInDays(currentDate, dateUpdated)
 
-  return (
-    <div className="flex justify-between rounded-md border-1 p-2">
-      <div>
-        <p className="text-sm font-semibold">{applicant.name}</p>
-        <p className="text-xs text-gray-500">{applicant.position_applied}</p>
-      </div>
+  if (daysElapsed >= daySelected) {
+    return (
+      <div className="flex justify-between rounded-md border-1 p-2">
+        <div>
+          <p className="text-sm font-semibold">{applicant.name}</p>
+          <p className="text-xs text-gray-500">{applicant.position_applied}</p>
+        </div>
 
-      <div className="flex">
-        <p className="text-xs">Last Updated {diffDays} days ago</p>
-        <button className="text-sm bg-green-700 p-2 text-white rounded-md">Reply</button>
+        <div className="flex">
+          <p className="text-xs">Last Updated {daysElapsed} days ago | </p>
+          <p className="text-xs text-green-700">Reply</p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+  return null;
 }
 
+
 function ATSHealthcheck() {
+  const [daySelected, setDaySelected] = useState(3);
+
   return (
     <div className="h-96 w-full flex flex-col p-4 bg-white rounded-md">
       <div className="flex justify-between">
         <h2 className="text-lg font-semibold">ATS Healthcheck</h2>
         <div>
-          <select className="bg-gray-200 rounded-md px-5">
+          <select className="bg-gray-200 rounded-md px-5" onChange={(e) => setDaySelected(e.target.value)}>
             {days.map((day) => {
               return (
                 <option value={day.day} key={day.id}>{day.day}</option>
@@ -138,9 +146,9 @@ function ATSHealthcheck() {
         </div>
       </div>
 
-      <div className="flex flex-col overflow-y-auto min-h-0  mt-4">
+      <div className="flex flex-col overflow-y-auto min-h-0 space-y-2 mt-4">
         {applicants.map((applicant) => (
-          <UserCard applicant={applicant} key={applicant.id} /> // Fixed prop name & added key
+          <UserCard applicant={applicant} key={applicant.id} daySelected={daySelected} />
         ))}
       </div>
     </div>
