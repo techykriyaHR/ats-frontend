@@ -9,3 +9,8 @@
     scrollbar-width: none;
     /* Hide scrollbar for Firefox */
 }
+
+
+.color-teal {
+    color: rgb(0, 128, 128);
+}

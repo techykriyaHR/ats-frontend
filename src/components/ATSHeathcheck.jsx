@@ -135,7 +135,7 @@ function UserCard({ applicant, daySelected }) {
 
         <div className="flex flex-col items-end">
           <p className="text-md font-semibold">{applicant.status}</p>
-          <p className="text-xs" style={{color: "#008080"}}>Last Updated {daysElapsed} days ago | Reply</p> 
+          <p className="text-xs color-teal">Last Updated {daysElapsed} days ago | Reply</p> 
 
         </div>
       </div>
