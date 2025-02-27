@@ -13,92 +13,56 @@ const ApplicantStatusChart = ({ data }) => {
   const chartData = {
     labels: data.map(d => d.month),
     datasets: [
-      {
-        label: 'Closed Applications',
-        data: data.map(d => d.closed),
-        backgroundColor: '#008080',
-        borderColor: '#008080',
-        borderWidth: 1,
-        borderRadius: 10,
-      },
-      {
-        label: 'Passed Applications',
-        data: data.map(d => d.passed),
-        backgroundColor: '#66b2b2',
-        borderColor: '#66b2b2',
-        borderWidth: 1,
-        borderRadius: 10,
-      },
-      {
-        label: 'On Progress Applications',
-        data: data.map(d => d.onProgress),
-        backgroundColor: '#d9ebeb',
-        borderColor: '#d9ebeb',
-        borderWidth: 1,
-        borderRadius: 10,
-      },
+      { label: 'Closed', data: data.map(d => d.closed), backgroundColor: '#008080' },
+      { label: 'Passed', data: data.map(d => d.passed), backgroundColor: '#66b2b2' },
+      { label: 'In Progress', data: data.map(d => d.onProgress), backgroundColor: '#d9ebeb' },
     ],
   };
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'right',
-      },
-    },
-    scales: {
-      x: {
-        stacked: true,
-      },
-      y: {
-        stacked: true,
-      },
-    },
+    plugins: { legend: { display: true, position: 'right' } },
+    scales: { x: { stacked: true }, y: { stacked: true } },
   };
 
   return (
-    <div className="w-full space-y-4 p-4 h-full">
-      <div className="flex items-center justify-between relative">
-        <h2 className="text-lg font-semibold">Requisition Statistics</h2>
-        <div className="flex gap-2">
-          <div className="relative">
-            <button
-              className="px-4 py-2 rounded-md bg-teal-600 text-white hover:bg-teal-700"
-              onClick={() => setShowExportOptions(!showExportOptions)}
-            >
-              Export Data
-            </button>
-            {showExportOptions && (
-              <ExportOptions data={data} onExportComplete={() => setShowExportOptions(false)} />
-            )}
+    <>
+    
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-md font-semibold">Requisition Stats</h2>
+          <div className="flex gap-2 items-center">
+            <div className="relative">
+              <button
+                className="px-3 py-1 text-sm bg-teal-600 text-white rounded hover:bg-teal-700"
+                onClick={() => setShowExportOptions(!showExportOptions)}
+              >
+                Export
+              </button>
+              {showExportOptions && (
+                <div className="absolute left-0 mt-1 bg-white shadow-lg border rounded w-40 z-10">
+                  <ExportOptions data={data} onExportComplete={() => setShowExportOptions(false)} />
+                </div>
+              )}
+            </div>
+
+            <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)} className="border p-1 text-sm rounded">
+              <option value="all">All Roles</option>
+              <option value="finance">Finance</option>
+              <option value="engineering">Engineering</option>
+            </select>
+            <select value={selectedPeriod} onChange={(e) => setSelectedPeriod(e.target.value)} className="border p-1 text-sm rounded">
+              <option value="month">By Month</option>
+              <option value="year">By Year</option>
+            </select>
           </div>
-          <select
-            value={selectedRole}
-            onChange={(e) => setSelectedRole(e.target.value)}
-            className="border border-gray-300 p-2 rounded-md w-[240px]"
-          >
-            <option value="all">All Roles</option>
-            <option value="finance">Finance Operations Associate</option>
-            <option value="engineering">Software Engineer</option>
-            {/* Add more roles as needed */}
-          </select>
-          <select
-            value={selectedPeriod}
-            onChange={(e) => setSelectedPeriod(e.target.value)}
-            className="border border-gray-300 p-2 rounded-md w-[120px]"
-          >
-            <option value="month">By Month</option>
-            <option value="year">By Year</option>
-          </select>
         </div>
-      </div>
-      <div className="relative w-full h-96">
-        <Bar data={chartData} options={options} />
-      </div>
-    </div>
+        <div className="w-full h-64">
+          <Bar data={chartData} options={options} />
+        </div>
+
+    </>
+
   );
 };
 
