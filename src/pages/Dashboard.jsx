@@ -164,6 +164,7 @@ export default function Dashboard() {
             <Header onSelectView={handleSelectView} />
             <main className="p-4 overflow-auto">
               {selectedView === 'home' && !showAddApplicantForm && (
+
                 <div className="flex space-x-2 mb-4 p-2 border rounded-lg overflow-x-auto">
                   <div className="flex items-center space-x-1">
                     <button
@@ -179,7 +180,7 @@ export default function Dashboard() {
                         <button
                           className={`px-4 py-2 rounded-md truncate ${activeTab === tab.id ? 'bg-teal-600 text-white' : 'bg-gray-200 text-gray-700'}`}
                           onClick={() => setActiveTab(tab.id)}
-                          title={tab.name} // Show full name on hover
+                          title={tab.name} 
                         >
                           {tab.name.length > 10 ? `${tab.name.slice(0, 8)}...` : tab.name}
                         </button>
