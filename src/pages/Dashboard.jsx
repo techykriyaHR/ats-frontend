@@ -4,13 +4,19 @@ import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import ApplicantList from "../components/ApplicantList";
 import StatusCounter from "../components/StatusCounter";
-import ApplicantStatusChart from "../components/AnalysisComponents/RequisitionAnalysisGraph";
+import AnalysisPage from "../components/AnalysisComponents/AnalysisPage";
 import ApplicantDetailsPage from "./ApplicantDetailsPage";
+import AddApplicantForm from "./AddApplicantForm";
+import WarningModal from "../components/Modals/WarningModal";
+
+const MAX_TABS = 10;
 
 export default function Dashboard() {
   const [selectedView, setSelectedView] = useState('home');
   const [tabs, setTabs] = useState([]);
   const [activeTab, setActiveTab] = useState(null);
+  const [showAddApplicantForm, setShowAddApplicantForm] = useState(false);
+  const [showWarningModal, setShowWarningModal] = useState(false);
 
   const data = [
     {
@@ -89,12 +95,15 @@ export default function Dashboard() {
 
   const handleApplicantSelect = (applicant) => {
     setTabs((prevTabs) => {
+      if (prevTabs.length >= MAX_TABS) {
+        setShowWarningModal(true);
+        return prevTabs;
+      }
       if (!prevTabs.some(tab => tab.id === applicant.id)) {
         return [...prevTabs, applicant];
       }
       return prevTabs;
     });
-    setActiveTab(applicant.id);
   };
 
   const handleCloseTab = (id) => {
@@ -115,7 +124,7 @@ export default function Dashboard() {
         return (
           <div className="grid grid-cols-4 gap-4">
             <div className="col-span-3">
-              <ApplicantList onSelectApplicant={handleApplicantSelect} />
+              <ApplicantList onSelectApplicant={handleApplicantSelect} onAddApplicantClick={() => setShowAddApplicantForm(true)} />
             </div>
             <div className="col-span-1">
               <StatusCounter />
@@ -125,7 +134,7 @@ export default function Dashboard() {
       case 'dashboard':
         return (
           <div className="flex flex-col items-center w-full h-full">
-            <ApplicantStatusChart data={data} />
+            <AnalysisPage />
           </div>
         );
       default:
@@ -140,44 +149,65 @@ export default function Dashboard() {
     }
   };
 
+  const handleWarningModalClose = () => {
+    setShowWarningModal(false);
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50 overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <Header onSelectView={handleSelectView} />
-        <main className="flex-1 p-4 overflow-auto">
-          {selectedView === 'home' && (
-            <div className="flex space-x-2 mb-4 p-2 border rounded-lg">
-              <div className="flex items-center space-x-1">
-                <button
-                  className={`px-4 py-2 rounded-md border ${activeTab === null ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border-teal-600'}`}
-                  onClick={() => setActiveTab(null)}
-                >
-                  Applicant List
-                </button>
-              </div>
-              {tabs.map((tab) => (
-                <div key={tab.id} className="flex items-center space-x-1 bg-gray-200 rounded-md text-sm">
-                  <button
-                    className={`px-4 py-2 rounded-md ${activeTab === tab.id ? 'bg-teal-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-                    onClick={() => setActiveTab(tab.id)}
-                  >
-                    {tab.name}
-                  </button>
-                  <button
-                    className="px-2 text-gray-600 hover:text-gray-800"
-                    onClick={() => handleCloseTab(tab.id)}
-                  >
-                    <FaTimes className="h-4 w-4" />
-                    <span className="sr-only">Remove {tab.name}</span>
-                  </button>
+        {showAddApplicantForm ? (
+          <AddApplicantForm onClose={() => setShowAddApplicantForm(false)} />
+        ) : (
+          <>
+            <Header onSelectView={handleSelectView} />
+            <main className="p-4 overflow-auto">
+              {selectedView === 'home' && !showAddApplicantForm && (
+                <div className="flex space-x-2 mb-4 p-2 border rounded-lg overflow-x-auto">
+                  <div className="flex items-center space-x-1">
+                    <button
+                      className={`px-4 py-2 rounded-md border ${activeTab === null ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border-teal-600'}`}
+                      onClick={() => setActiveTab(null)}
+                    >
+                      Applicant List
+                    </button>
+                  </div>
+                  <div className="flex space-x-1 flex-shrink-0">
+                    {tabs.map((tab) => (
+                      <div key={tab.id} className="flex items-center space-x-1 bg-gray-200 rounded-md text-sm flex-shrink-0 min-w-0">
+                        <button
+                          className={`px-4 py-2 rounded-md truncate ${activeTab === tab.id ? 'bg-teal-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                          onClick={() => setActiveTab(tab.id)}
+                          title={tab.name} // Show full name on hover
+                        >
+                          {tab.name.length > 10 ? `${tab.name.slice(0, 8)}...` : tab.name}
+                        </button>
+                        <button
+                          className="px-2 text-gray-600 hover:text-gray-800"
+                          onClick={() => handleCloseTab(tab.id)}
+                        >
+                          <FaTimes className="h-4 w-4" />
+                          <span className="sr-only">Remove {tab.name}</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
-          {renderContent()}
-        </main>
+              )}
+              <div className="flex-1 overflow-auto">
+                {renderContent()}
+              </div>
+            </main>
+          </>
+        )}
       </div>
+      {showWarningModal && (
+        <WarningModal
+          message={`You can only open up to ${MAX_TABS} tabs.`}
+          onClose={handleWarningModalClose}
+        />
+      )}
     </div>
   );
 }
