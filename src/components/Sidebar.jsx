@@ -1,6 +1,10 @@
-export default function Sidebar() {
-    return (
-      <div className="w-64 border-r bg-white p-5">
+import { FaTimes } from 'react-icons/fa';
+
+export default function Sidebar({ isOpen, onToggleSidebar }) {
+  return (
+    <>
+      <div className={`fixed inset-0 z-50 bg-black bg-opacity-50 transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`} onClick={onToggleSidebar}></div>
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white p-5 border-r transform transition-transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 md:sticky md:top-0 h-full`}>
         <div className="mb-8 flex items-center gap-3">
           <div className="h-10 w-10 bg-gray-300 rounded-full"></div>
           <div>
@@ -8,7 +12,7 @@ export default function Sidebar() {
             <p className="text-sm text-gray-500">marvin@fullsuite.ph</p>
           </div>
         </div>
-  
+
         <div className="space-y-6">
           <div>
             <p className="mb-3 text-sm font-medium text-gray-500">MY INFO</p>
@@ -29,6 +33,6 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-    );
-  }
-  
+    </>
+  );
+}

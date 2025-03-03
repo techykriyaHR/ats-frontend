@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaCalendarAlt, FaExclamationTriangle, FaTimes } from 'react-icons/fa';
+import { FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa';
 import ConfirmationModal from '../components/Modals/ConfirmationModal';
 
 const formSchema = {
@@ -71,7 +71,7 @@ function AddApplicantForm({ onClose }) {
         <div className="flex justify-between items-center mb-6 p-4">
           <h1 className="text-xl font-semibold">Add New Applicant</h1>
         </div>
-        <div className="flex gap-8">
+        <div className="flex flex-col lg:flex-row gap-8">
           <div className="flex-1">
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-4">
@@ -290,7 +290,7 @@ function AddApplicantForm({ onClose }) {
             </form>
           </div>
 
-          <div className="w-96 p-6">
+          <div className="w-full lg:w-96 p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-semibold">Possible Duplicates ({duplicates.length})</h2>
             </div>

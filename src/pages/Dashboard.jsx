@@ -9,7 +9,7 @@ import ApplicantDetailsPage from "./ApplicantDetailsPage";
 import AddApplicantForm from "./AddApplicantForm";
 import WarningModal from "../components/Modals/WarningModal";
 
-const MAX_TABS = 10;
+const MAX_TABS = 5;
 
 export default function Dashboard() {
   const [selectedView, setSelectedView] = useState('home');
@@ -17,81 +17,11 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState(null);
   const [showAddApplicantForm, setShowAddApplicantForm] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const data = [
-    {
-      month: "January",
-      closed: 12,
-      passed: 3,
-      onProgress: 0,
-    },
-    {
-      month: "February",
-      closed: 4,
-      passed: 2,
-      onProgress: 0,
-    },
-    {
-      month: "March",
-      closed: 3,
-      passed: 1,
-      onProgress: 0,
-    },
-    {
-      month: "April",
-      closed: 4,
-      passed: 2,
-      onProgress: 0,
-    },
-    {
-      month: "August",
-      closed: 0,
-      passed: 0,
-      onProgress: 11,
-    },
-    {
-      month: "September",
-      closed: 0,
-      passed: 2,
-      onProgress: 0,
-    },
-    {
-      month: "October",
-      closed: 0,
-      passed: 0,
-      onProgress: 21,
-    },
-    {
-      month: "May",
-      closed: 27,
-      passed: 4,
-      onProgress: 0,
-    },
-    {
-      month: "June",
-      closed: 14,
-      passed: 2,
-      onProgress: 0,
-    },
-    {
-      month: "July",
-      closed: 5,
-      passed: 4,
-      onProgress: 0,
-    },
-    {
-      month: "November",
-      closed: 4,
-      passed: 0,
-      onProgress: 4,
-    },
-    {
-      month: "December",
-      closed: 0,
-      passed: 0,
-      onProgress: 1,
-    },
-  ];
+  const handleToggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   const handleApplicantSelect = (applicant) => {
     setTabs((prevTabs) => {
@@ -99,10 +29,16 @@ export default function Dashboard() {
         setShowWarningModal(true);
         return prevTabs;
       }
-      if (!prevTabs.some(tab => tab.id === applicant.id)) {
-        return [...prevTabs, applicant];
+  
+      const existingTab = prevTabs.find(tab => tab.id === applicant.id);
+      if (existingTab) {
+        setActiveTab(applicant.id);
+        return prevTabs;
       }
-      return prevTabs;
+  
+      const newTabs = [...prevTabs, applicant];
+      setActiveTab(applicant.id);
+      return newTabs;
     });
   };
 
@@ -122,11 +58,11 @@ export default function Dashboard() {
     switch (selectedView) {
       case 'home':
         return (
-          <div className="grid grid-cols-4 gap-4">
-            <div className="col-span-3">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+            <div className="lg:col-span-3">
               <ApplicantList onSelectApplicant={handleApplicantSelect} onAddApplicantClick={() => setShowAddApplicantForm(true)} />
             </div>
-            <div className="col-span-1">
+            <div className="lg:col-span-1">
               <StatusCounter />
             </div>
           </div>
@@ -154,19 +90,28 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 overflow-hidden">
-      <Sidebar />
-      <div className="flex-1 flex flex-col">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
+      {/* Fixed sidebar */}
+      <div className={`fixed top-0 bottom-0 left-0 z-30 ${isSidebarOpen ? 'block' : 'hidden md:block'}`}>
+        <Sidebar isOpen={isSidebarOpen} onToggleSidebar={handleToggleSidebar} />
+      </div>
+      
+      {/* Main content area with padding to account for fixed sidebar width */}
+      <div className="flex-1 flex flex-col md:ml-64">
         {showAddApplicantForm ? (
           <AddApplicantForm onClose={() => setShowAddApplicantForm(false)} />
         ) : (
           <>
-            <Header onSelectView={handleSelectView} />
-            <main className="p-4 overflow-auto">
+            {/* Fixed header */}
+            <div className="fixed top-0 right-0 left-0 z-20 md:left-64">
+              <Header onSelectView={handleSelectView} onToggleSidebar={handleToggleSidebar} />
+            </div>
+            
+            {/* Content with padding to account for fixed header height */}
+            <main className="p-4 overflow-auto flex-1 mt-16">
               {selectedView === 'home' && !showAddApplicantForm && (
-
-                <div className="flex space-x-2 mb-4 p-2 border rounded-lg overflow-x-auto">
-                  <div className="flex items-center space-x-1">
+                <div className="flex flex-wrap space-x-2 mb-4 p-2 border rounded-lg overflow-x-auto">
+                  <div className="flex items-center space-x-1 mb-2 md:mb-0">
                     <button
                       className={`px-4 py-2 rounded-md border ${activeTab === null ? 'bg-teal-600 text-white' : 'bg-white text-teal-600 border-teal-600'}`}
                       onClick={() => setActiveTab(null)}
@@ -174,7 +119,7 @@ export default function Dashboard() {
                       Applicant List
                     </button>
                   </div>
-                  <div className="flex space-x-1 flex-shrink-0">
+                  <div className="flex space-x-1 flex-shrink-0 mb-2 md:mb-0 overflow-x-auto">
                     {tabs.map((tab) => (
                       <div key={tab.id} className="flex items-center space-x-1 bg-gray-200 rounded-md text-sm flex-shrink-0 min-w-0">
                         <button

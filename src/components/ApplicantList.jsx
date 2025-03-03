@@ -2,26 +2,24 @@ import { useState } from "react";
 import { FiUpload, FiPlus } from "react-icons/fi";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom";
 
-export default function ApplicantList({ onSelectApplicant }) {
+export default function ApplicantList({ onSelectApplicant, onAddApplicantClick }) {
   const [search, setSearch] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [dateFilterType, setDateFilterType] = useState("month");
   const [sortOrder, setSortOrder] = useState("desc");
-  const navigate = useNavigate();
 
   const applicants = [
-    { id: 1, date: "Jan 05, 2024", name: "Juniper Williams", position: "Software Engineer", status: "Sent Test" },
-    { id: 2, date: "Feb 10, 2024", name: "Macrow Mhaneej", position: "Data Analyst", status: "First Interview Stage" },
-    { id: 3, date: "Mar 15, 2024", name: "Alice Johnson", position: "Product Manager", status: "Final Interview Stage" },
-    { id: 4, date: "Apr 20, 2024", name: "Bob Smith", position: "UX Designer", status: "Job Offer Sent" },
-    { id: 5, date: "May 25, 2024", name: "Carol White", position: "Marketing Specialist", status: "Abandoned" },
-    { id: 6, date: "Jun 30, 2024", name: "David Brown", position: "Sales Manager", status: "Blacklisted" },
-    { id: 7, date: "Jul 05, 2024", name: "Eve Davis", position: "HR Specialist", status: "No Show" },
-    { id: 8, date: "Aug 10, 2024", name: "Frank Green", position: "IT Support", status: "Not Fit" },
-    { id: 9, date: "Sep 15, 2024", name: "Grace Lee", position: "Business Analyst", status: "Sent Test" },
-    { id: 10, date: "Oct 20, 2024", name: "Henry King", position: "Operations Manager", status: "First Interview Stage" },
+    { id: 1, date: "Jan 05, 2024", name: "Juniper Williams", position: "Software Engineer", status: "Sent Test", gender: "Female", birthdate: "February 25, 1998", email: "juniperwilliams123@gmail.com", phone: "(123)566-976-9834", address: "123 Main St", source: "Website", dateApplied: "January 17, 2024", referrer: "LinkedIn" },
+    { id: 2, date: "Feb 10, 2024", name: "Macrow Mhaneej", position: "Data Analyst", status: "First Interview Stage", gender: "Male", birthdate: "March 15, 1990", email: "macrowmhaneej@gmail.com", phone: "(123)566-976-9834", address: "456 Elm St", source: "Referral", dateApplied: "February 12, 2024", referrer: "Employee" },
+    { id: 3, date: "Mar 15, 2024", name: "Alice Johnson", position: "Product Manager", status: "Final Interview Stage", gender: "Female", birthdate: "April 20, 1985", email: "alicejohnson@gmail.com", phone: "(123)566-976-9834", address: "789 Oak St", source: "Job Board", dateApplied: "March 18, 2024", referrer: "Indeed" },
+    { id: 4, date: "Apr 20, 2024", name: "Bob Smith", position: "UX Designer", status: "Job Offer Sent", gender: "Male", birthdate: "May 10, 1988", email: "bobsmith@gmail.com", phone: "(123)566-976-9834", address: "101 Pine St", source: "Website", dateApplied: "April 22, 2024", referrer: "Glassdoor" },
+    { id: 5, date: "May 25, 2024", name: "Carol White", position: "Marketing Specialist", status: "Abandoned", gender: "Female", birthdate: "June 30, 1992", email: "carolwhite@gmail.com", phone: "(123)566-976-9834", address: "202 Maple St", source: "Referral", dateApplied: "May 27, 2024", referrer: "Employee" },
+    { id: 6, date: "Jun 30, 2024", name: "David Brown", position: "Sales Manager", status: "Blacklisted", gender: "Male", birthdate: "July 25, 1980", email: "davidbrown@gmail.com", phone: "(123)566-976-9834", address: "303 Birch St", source: "Job Board", dateApplied: "July 2, 2024", referrer: "Monster" },
+    { id: 7, date: "Jul 05, 2024", name: "Eve Davis", position: "HR Specialist", status: "No Show", gender: "Female", birthdate: "August 15, 1995", email: "evedavis@gmail.com", phone: "(123)566-976-9834", address: "404 Cedar St", source: "Website", dateApplied: "July 7, 2024", referrer: "LinkedIn" },
+    { id: 8, date: "Aug 10, 2024", name: "Frank Green", position: "IT Support", status: "Not Fit", gender: "Male", birthdate: "September 10, 1983", email: "frankgreen@gmail.com", phone: "(123)566-976-9834", address: "505 Walnut St", source: "Referral", dateApplied: "August 12, 2024", referrer: "Employee" },
+    { id: 9, date: "Sep 15, 2024", name: "Grace Lee", position: "Business Analyst", status: "Sent Test", gender: "Female", birthdate: "October 5, 1990", email: "gracelee@gmail.com", phone: "(123)566-976-9834", address: "606 Chestnut St", source: "Job Board", dateApplied: "September 17, 2024", referrer: "Indeed" },
+    { id: 10, date: "Oct 20, 2024", name: "Henry King", position: "Operations Manager", status: "First Interview Stage", gender: "Male", birthdate: "November 20, 1987", email: "henryking@gmail.com", phone: "(123)566-976-9834", address: "707 Spruce St", source: "Website", dateApplied: "October 22, 2024", referrer: "Glassdoor" },
   ];
 
   const statuses = [
@@ -55,11 +53,9 @@ export default function ApplicantList({ onSelectApplicant }) {
     .filter((applicant) => {
       if (!selectedDate) return true;
       const applicantDate = new Date(applicant.date);
-      const selectedMonth = selectedDate.toLocaleString("en-US", { month: "long" });
-
       if (dateFilterType === "month") {
         return (
-          applicantDate.toLocaleString("en-US", { month: "long" }) === selectedMonth &&
+          applicantDate.getMonth() === selectedDate.getMonth() &&
           applicantDate.getFullYear() === selectedDate.getFullYear()
         );
       } else if (dateFilterType === "year") {
@@ -73,29 +69,25 @@ export default function ApplicantList({ onSelectApplicant }) {
       return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
     });
 
-  const handleAddApplicantClick = () => {
-    navigate('/add-applicant');
-  };
-
   return (
     <div className="relative p-6 max-w-[1200px] mx-auto bg-white rounded-3xl shadow-lg">
-      <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-md">
-        <h1 className="text-xl font-semibold">Applicant List</h1>
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-md">
+        <h1 className="text-xl font-semibold mb-4 md:mb-0">Applicant List</h1>
         <div className="flex gap-2">
           <button className="flex items-center bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md">
             <FiUpload className="w-4 h-4 mr-2" /> Upload File
           </button>
           <button
             className="flex items-center bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md"
-            onClick={handleAddApplicantClick}
+            onClick={onAddApplicantClick}
           >
             <FiPlus className="w-4 h-4 mr-2" /> Add New Applicant
           </button>
         </div>
       </div>
 
-      <div className="bg-teal-600/10 p-4 rounded-lg shadow-md mb-6 flex items-center gap-2">
-        <div className="bg-white relative w-1/3">
+      <div className="bg-teal-600/10 p-4 rounded-lg shadow-md mb-6 flex flex-col md:flex-row items-center gap-2">
+        <div className="bg-white relative w-full md:w-1/3 mb-4 md:mb-0">
           <input
             type="text"
             placeholder="Search"
@@ -104,11 +96,11 @@ export default function ApplicantList({ onSelectApplicant }) {
             className="w-full p-2 border border-gray-300 rounded-md"
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col md:flex-row items-center gap-2 w-full md:w-auto">
           <select
             value={dateFilterType}
             onChange={(e) => setDateFilterType(e.target.value)}
-            className="border border-gray-300 p-2 rounded-md"
+            className="border border-gray-300 p-2 rounded-md w-full md:w-auto"
           >
             <option value="month">Month</option>
             <option value="year">Year</option>
@@ -116,13 +108,14 @@ export default function ApplicantList({ onSelectApplicant }) {
           <DatePicker
             selected={selectedDate}
             onChange={(date) => setSelectedDate(date)}
-            showMonthYearPicker
-            dateFormat="MMMM yyyy"  // Now displays full month name
-            className="border border-gray-300 p-2 rounded-md"
-            placeholderText="Select Month"
+            showMonthYearPicker={dateFilterType === "month"}
+            showYearPicker={dateFilterType === "year"}
+            dateFormat={dateFilterType === "month" ? "MM/yyyy" : "yyyy"}
+            className="border border-gray-300 p-2 rounded-md w-full md:w-auto"
+            placeholderText="Select Date"
           />
           <button
-            className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md"
+            className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md w-full md:w-auto"
             onClick={clearFilter}
           >
             Clear Filter
@@ -151,10 +144,12 @@ export default function ApplicantList({ onSelectApplicant }) {
                 <td className="py-4 px-4">{applicant.date}</td>
                 <td className="py-4 px-4">{applicant.name}</td>
                 <td className="py-4 px-4">{applicant.position}</td>
-                <td className="py-4 px-4">
-                  <select className="border border-gray-300 p-2 rounded-md w-52" defaultValue={applicant.status}>
+                <td className="py-4 px-4" onClick={(e) => e.stopPropagation()}>
+                  <select className="border border-gray-300 p-2 rounded-md w-full md:w-52" defaultValue={applicant.status}>
                     {statuses.map((status) => (
-                      <option key={status} value={status}>{status}</option>
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
                     ))}
                   </select>
                 </td>

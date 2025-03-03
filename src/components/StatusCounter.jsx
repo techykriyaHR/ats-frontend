@@ -49,7 +49,7 @@ export default function StatusCounter() {
   };
 
   return (
-    <div className="w-[380px] rounded-3xl bg-white p-4 shadow-lg">
+    <div className="w-full md:w-[380px] rounded-3xl bg-white p-4 shadow-lg">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Status Counter</h2>
         <select className="w-[130px] p-2 border border-gray-300 rounded-md">
