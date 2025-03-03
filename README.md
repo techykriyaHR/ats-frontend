@@ -12,3 +12,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
             .catch(error => console.error("Error fetching data:", error));
     }, []);
 ```
+
+### installing npm
+npm install jspdf jspdf-autotable --legacy-peer-deps
