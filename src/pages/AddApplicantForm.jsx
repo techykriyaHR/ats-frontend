@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa';
 import ConfirmationModal from '../components/Modals/ConfirmationModal';
+import axios from 'axios';
 
 const formSchema = {
   firstName: '',
@@ -15,6 +16,7 @@ const formSchema = {
   source: '',
   referrer: '',
   testResult: '',
+  dateApplied: '',
 };
 
 const duplicates = [
@@ -45,11 +47,38 @@ function AddApplicantForm({ onClose }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    // Close the form after submission
-    onClose();
+    const payload = {
+        applicant: JSON.stringify({
+            first_name: formData.firstName,
+            middle_name: formData.middleName,
+            last_name: formData.lastName,
+            birth_date: formData.birthdate,
+            gender: formData.gender,
+            email_1: formData.email,
+            mobile_number_1: formData.phone,
+            cv_link: formData.cvLink,
+            discovered_at: formData.source,
+            referrer_id: formData.referrer,
+            created_by: 'user_id', // Replace with the actual logged-in user ID
+            updated_by: 'user_id',
+            company_id: 'company_id', // Set dynamically if needed
+            position_id: formData.position,
+            test_result: formData.testResult,
+            date_applied: formData.dateApplied,
+        })
+    };
+
+    console.log('PAYLOAD:', payload);
+
+    try {
+        const response = await axios.post('http://localhost:3000/applicants/add', payload);
+        console.log('Applicant added:', response.data);
+        onClose();
+    } catch (error) {
+        console.error('Error adding applicant:', error);
+    }
   };
 
   const handleCancel = () => {
@@ -239,25 +268,29 @@ function AddApplicantForm({ onClose }) {
                     className="w-full p-2 border border-gray-300 rounded-md"
                   >
                     <option value="">Select Option</option>
-                    <option value="linkedin">LinkedIn</option>
-                    <option value="indeed">Indeed</option>
-                    <option value="referral">Referral</option>
+                    <option value="Referral">Referral</option>
+                    <option value="Website">Website</option>
+                    <option value="Social Media">Social Media</option>
+                    <option value="Podcast">Podcast</option>
+                    <option value="Career Fair (Startup Caravan, University Visit)">Career Fair (Startup Caravan, University Visit)</option>
                   </select>
                 </div>
 
-                <div>
-                  <label>Referrer</label>
-                  <select
-                    name="referrer"
-                    value={formData.referrer}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  >
-                    <option value="">Select Option</option>
-                    <option value="john">John Doe</option>
-                    <option value="jane">Jane Smith</option>
-                  </select>
-                </div>
+                {formData.source === 'Referral' && (
+                  <div>
+                    <label>Referrer</label>
+                    <select
+                      name="referrer"
+                      value={formData.referrer}
+                      onChange={handleChange}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="">Select Option</option>
+                      <option value="john">John Doe</option>
+                      <option value="jane">Jane Smith</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
               <div>
