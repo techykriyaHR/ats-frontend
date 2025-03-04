@@ -10,7 +10,7 @@ export default function Sidebar({ isOpen, onToggleSidebar }) {
         onClick={onToggleSidebar}
       ></div>
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white p-5 border-r transform transition-transform ${
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white p-5  transform transition-transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-0 md:sticky md:top-0 h-full`}
       >
