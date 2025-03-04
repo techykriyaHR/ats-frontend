@@ -10,12 +10,9 @@ export default function Header({ onSelectView, onToggleSidebar }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-background">
+    <header className="sticky top-0 z-50 flex items-center justify-between px-30 py-4">
       <div className="flex items-center gap-4">
-        <button
-          onClick={onToggleSidebar}
-          className="md:hidden text-gray-500 focus:outline-none"
-        >
+        <button onClick={onToggleSidebar} className="md:hidden text-gray-dark focus:outline-none">
           <FaBars size={24} />
         </button>
         <p className="display block sm:hidden">ATS</p>

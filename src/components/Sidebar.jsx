@@ -4,15 +4,13 @@ export default function Sidebar({ isOpen, onToggleSidebar }) {
   return (
     <>
       <div
-        className={`fixed inset-0 z-50 bg-black/50 transition-opacity ${
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-50 bg-black/50 transition-opacity ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
         onClick={onToggleSidebar}
       ></div>
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white p-5  transform transition-transform ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:relative md:translate-x-0 md:sticky md:top-0 h-full`}
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-white p-5 transform transition-transform ${isOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 md:top-0 h-full`}
       >
         <div className="mb-8 flex items-center gap-3">
           <div className="h-10 w-10 bg-gray-300 rounded-full"></div>

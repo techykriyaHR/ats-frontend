@@ -98,24 +98,23 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
+    <div className="flex flex-col md:flex-row min-h-screen bg-background">
       {/* Fixed sidebar */}
       <div
-        className={`fixed top-0 bottom-0 left-0 z-30 ${
-          isSidebarOpen ? "block" : "hidden md:block"
-        }`}
+        className={`fixed top-0 bottom-0 left-0 z-30 ${isSidebarOpen ? "block" : "hidden md:block"
+          }`}
       >
         <Sidebar isOpen={isSidebarOpen} onToggleSidebar={handleToggleSidebar} />
       </div>
 
       {/* Main content area with padding to account for fixed sidebar width */}
-      <div className="flex-1 flex flex-col md:ml-64">
+      <div className="flex-1 flex flex-col md:ml-72">
         {showAddApplicantForm ? (
           <AddApplicantForm onClose={() => setShowAddApplicantForm(false)} />
         ) : (
           <>
             {/* Fixed header */}
-            <div className="fixed top-0 right-0 left-0 z-20 md:left-64">
+            <div className="top-0 right-0 left-0 z-20 md:left-72">
               <Header
                 onSelectView={handleSelectView}
                 onToggleSidebar={handleToggleSidebar}
@@ -123,45 +122,28 @@ export default function Dashboard() {
             </div>
 
             {/* Content with padding to account for fixed header height */}
-            <main className="p-4 overflow-auto flex-1 mt-16">
+            <main className="px-30 overflow-auto flex-1 hidden md:block">
               {selectedView === "listings" && !showAddApplicantForm && (
-                <div className="flex flex-wrap space-x-2 mb-4 p-2 border rounded-lg overflow-x-auto">
+                <div className="flex flex-wrap space-x-2 mb-4 p-2 border border-gray-light rounded-lg overflow-x-auto bg-white">
                   <div className="flex items-center space-x-1 mb-2 md:mb-0">
-                    <button
-                      className={`px-4 py-2 rounded-md border ${
-                        activeTab === null
-                          ? "bg-teal-600 text-white"
-                          : "bg-white text-teal-600 border-teal-600"
-                      }`}
-                      onClick={() => setActiveTab(null)}
-                    >
+                    <button className={`px-2 py-1 rounded-md border body-bold ${activeTab === null
+                      ? "bg-teal-soft text-teal border-teal"
+                      : "bg-white text-teal border-teal"
+                      }`} onClick={() => setActiveTab(null)}>
                       Applicant List
                     </button>
                   </div>
                   <div className="flex space-x-1 flex-shrink-0 mb-2 md:mb-0 overflow-x-auto">
                     {tabs.map((tab) => (
-                      <div
-                        key={tab.id}
-                        className="flex items-center space-x-1 bg-gray-200 rounded-md text-sm flex-shrink-0 min-w-0"
-                      >
-                        <button
-                          className={`px-4 py-2 rounded-md truncate ${
-                            activeTab === tab.id
-                              ? "bg-teal-600 text-white"
-                              : "bg-gray-200 text-gray-700"
-                          }`}
-                          onClick={() => setActiveTab(tab.id)}
-                          title={tab.name}
-                        >
-                          {tab.name.length > 10
-                            ? `${tab.name.slice(0, 8)}...`
-                            : tab.name}
+                      <div key={tab.id} className={`flex items-center space-x-1 rounded-md text-sm flex-shrink-0 min-w-0 ${activeTab === tab.id
+                        ? "bg-teal-soft"
+                        : "bg-gray-light"
+                        }`} >
+                        <button className={`px-2 py-0.5 body-regular rounded-md truncate text-gray-dark`} onClick={() => setActiveTab(tab.id)} title={tab.name}>
+                          {tab.name.length > 10 ? `${tab.name.slice(0, 8)}...` : tab.name}
                         </button>
-                        <button
-                          className="px-2 text-gray-600 hover:text-gray-800"
-                          onClick={() => handleCloseTab(tab.id)}
-                        >
-                          <FaTimes className="h-4 w-4" />
+                        <button className={`px-2 text-gray-dark`} onClick={() => handleCloseTab(tab.id)}>
+                          <FaTimes className="h-3 w-3" />
                           <span className="sr-only">Remove {tab.name}</span>
                         </button>
                       </div>

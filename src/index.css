@@ -21,33 +21,29 @@
   font-family: var(--font-sans);
   font-size: var(--text-size-20);
   font-weight: 600;
-  color: var(--color-gray-dark);
+  /* color: var(--color-gray-dark); */
 }
-
 .headline {
   font-family: var(--font-sans);
   font-size: var(--text-size-16);
   font-weight: 600;
-  color: var(--color-gray-dark);
+  /* color: var(--color-gray-dark); */
 }
-
 .body-bold {
   font-family: var(--font-sans);
   font-size: var(--text-size-12);
   font-weight: 600;
-  color: var(--color-gray-dark);
+  /* color: var(--color-gray-dark); */
 }
-
 .body-regular {
   font-family: var(--font-sans);
   font-size: var(--text-size-12);
   font-weight: 400;
-  color: var(--color-gray-dark);
+  /* color: var(--color-gray-dark); */
 }
-
 .body-tiny {
   font-family: var(--font-sans);
   font-size: var(--text-size-12);
   font-weight: 200;
-  color: var(--color-gray-dark);
+  /* color: var(--color-gray-dark); */
 }
