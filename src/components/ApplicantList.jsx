@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { FiUpload, FiPlus } from "react-icons/fi";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { FaFileExport } from "react-icons/fa";
+import AddApplicantDropdown from "./AddApplicantDropdown";
 
 export default function ApplicantList({
   onSelectApplicant,
@@ -213,37 +214,44 @@ export default function ApplicantList({
     });
 
   return (
-    <div className="relative p-6 max-w-[1200px] mx-auto bg-white rounded-3xl shadow-lg">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-md">
-        <h1 className="text-xl font-semibold mb-4 md:mb-0">Applicant List</h1>
-        <div className="flex flex-col md:flex-row center gap-2">
-          <button className="flex items-center bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md">
-            <FiUpload className="w-4 h-4 mr-2" /> Upload File
-          </button>
-          <button
-            className="flex items-center bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md"
+    <div className="relative mx-auto max-w-[1200px] rounded-3xl bg-white p-6 shadow-lg">
+      <div className="mb-6 flex flex-col items-center justify-between rounded-lg md:flex-row">
+        <h1 className="mb-4 headline font-semibold md:mb-0">Applicant List</h1>
+        <div className="center flex flex-col gap-2 md:flex-row">
+
+          {/* <button className="flex items-center rounded-md bg-teal-600 px-4 py-2 text-sm text-white hover:bg-teal-700 cursor-pointer">
+            <FaFileExport className="mr-2 h-4 w-4 " /> Export
+          </button> */}
+
+          {/* dropdown button for adding a new applicant (add manually or upload a file)*/}
+          <AddApplicantDropdown onAddManually={onAddApplicantClick} />
+
+          {/* <button
+            className="flex items-center rounded-md bg-teal-600 px-4 py-2 text-sm text-white hover:bg-teal-700"
             onClick={onAddApplicantClick}
           >
-            <FiPlus className="w-4 h-4 mr-2" /> Add New Applicant
-          </button>
+            <FiPlus className="mr-2 h-4 w-4" /> Add Applicant
+          </button> */}
+
+
         </div>
       </div>
 
-      <div className="bg-teal-600/10 p-4 rounded-lg shadow-md mb-6 flex flex-col md:flex-row items-center gap-2">
-        <div className="bg-white relative w-full md:w-1/3 mb-4 md:mb-0">
+      <div className="mb-6 flex flex-col items-center gap-2 rounded-lg bg-teal-600/10 p-4 shadow-md md:flex-row">
+        <div className="relative mb-4 w-full bg-white md:mb-0 md:w-1/3">
           <input
             type="text"
             placeholder="Search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-md"
+            className="w-full rounded-md border border-gray-300 p-2"
           />
         </div>
-        <div className="flex flex-col md:flex-row items-center gap-2 w-full md:w-auto">
+        <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
           <select
             value={dateFilterType}
             onChange={(e) => setDateFilterType(e.target.value)}
-            className="border border-gray-300 p-2 rounded-md w-full md:w-auto"
+            className="w-full rounded-md border border-gray-300 p-2 md:w-auto"
           >
             <option value="month">Month</option>
             <option value="year">Year</option>
@@ -254,11 +262,11 @@ export default function ApplicantList({
             showMonthYearPicker={dateFilterType === "month"}
             showYearPicker={dateFilterType === "year"}
             dateFormat={dateFilterType === "month" ? "MM/yyyy" : "yyyy"}
-            className="border border-gray-300 p-2 rounded-md w-full md:w-auto"
+            className="w-full rounded-md border border-gray-300 p-2 md:w-auto"
             placeholderText="Select Date"
           />
           <button
-            className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md w-full md:w-auto"
+            className="w-full rounded-md bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 md:w-auto"
             onClick={clearFilter}
           >
             Clear Filter
@@ -267,13 +275,13 @@ export default function ApplicantList({
       </div>
 
       <div
-        className="bg-white p-4 rounded-lg shadow-md"
+        className="rounded-lg bg-white p-4 shadow-md"
         style={{ height: "600px", overflowY: "auto" }}
       >
         <table className="w-full">
           <thead>
             <tr className="border-b">
-              <th className="text-left py-2 px-4 text-gray-600 font-normal">
+              <th className="px-4 py-2 text-left font-normal text-gray-600">
                 Date Applied
                 <button
                   onClick={toggleSortOrder}
@@ -282,13 +290,13 @@ export default function ApplicantList({
                   {sortOrder === "asc" ? "▲" : "▼"}
                 </button>
               </th>
-              <th className="text-left py-2 px-4 text-gray-600 font-normal">
+              <th className="px-4 py-2 text-left font-normal text-gray-600">
                 Applicant Name
               </th>
-              <th className="text-left py-2 px-4 text-gray-600 font-normal">
+              <th className="px-4 py-2 text-left font-normal text-gray-600">
                 Position Applied
               </th>
-              <th className="text-left py-2 px-4 text-gray-600 font-normal">
+              <th className="px-4 py-2 text-left font-normal text-gray-600">
                 Application Status
               </th>
             </tr>
@@ -297,15 +305,15 @@ export default function ApplicantList({
             {filteredApplicants.map((applicant) => (
               <tr
                 key={applicant.id}
-                className="border-b cursor-pointer hover:bg-gray-50"
+                className="cursor-pointer border-b hover:bg-gray-50"
                 onClick={() => handleRowClick(applicant.id)}
               >
-                <td className="py-4 px-4">{applicant.date}</td>
-                <td className="py-4 px-4">{applicant.name}</td>
-                <td className="py-4 px-4">{applicant.position}</td>
-                <td className="py-4 px-4" onClick={(e) => e.stopPropagation()}>
+                <td className="px-4 py-4">{applicant.date}</td>
+                <td className="px-4 py-4">{applicant.name}</td>
+                <td className="px-4 py-4">{applicant.position}</td>
+                <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
                   <select
-                    className="border border-gray-300 p-2 rounded-md w-full md:w-52"
+                    className="w-full rounded-md p-2 border border-gray-300 md:w-52"
                     defaultValue={applicant.status}
                   >
                     {statuses.map((status) => (

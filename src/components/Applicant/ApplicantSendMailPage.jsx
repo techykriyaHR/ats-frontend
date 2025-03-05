@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { FaPlus } from 'react-icons/fa';
+import React, { useState } from "react";
+import { FaPlus } from "react-icons/fa";
 
 function ApplicantSendMailPage() {
-  const [subject, setSubject] = useState("Welcome to FullSuite – Preparing for Your Interviews and Assessment");
+  const [subject, setSubject] = useState(
+    "Welcome to FullSuite – Preparing for Your Interviews and Assessment",
+  );
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [attachment, setAttachment] = useState(null);
   const [emailContent, setEmailContent] = useState(`
@@ -47,23 +49,27 @@ Ivan Percival Viniegas
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 p-4 bg-gray-50 min-h-screen">
+    <div className="flex min-h-screen flex-col gap-6 bg-gray-50 p-4 md:flex-row">
       {/* Left sidebar - Template selection */}
-      <div className="w-full md:w-80 bg-white p-6 rounded-lg shadow-sm">
-        <h2 className="text-sm font-medium text-teal-700 mb-4">Choose an email template:</h2>
+      <div className="w-full rounded-lg bg-white p-6 shadow-sm md:w-80">
+        <h2 className="mb-4 text-sm font-medium text-teal-700">
+          Choose an email template:
+        </h2>
         <div className="space-y-3">
           {templates.map((template, index) => (
             <button
               key={index}
-              className={`w-full justify-start h-12 font-normal text-left border ${
-                selectedTemplate === index ? "border-teal-600" : "border-gray-200"
+              className={`h-12 w-full justify-start border text-left font-normal ${
+                selectedTemplate === index
+                  ? "border-teal-600"
+                  : "border-gray-200"
               }`}
               onClick={() => handleTemplateSelect(index)}
             >
               {template}
             </button>
           ))}
-          <button className="w-full justify-center h-12 border-dashed border-gray-300">
+          <button className="h-12 w-full justify-center border-dashed border-gray-300">
             <FaPlus className="h-4 w-4 text-teal-600" />
           </button>
         </div>
@@ -71,10 +77,10 @@ Ivan Percival Viniegas
 
       {/* Right side - Email composition */}
       <div className="flex-1">
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="overflow-hidden rounded-lg bg-white shadow-sm">
           {/* Subject line */}
           <div className="flex border-b">
-            <div className="bg-teal-600 text-white px-4 py-2 flex items-center">
+            <div className="flex items-center bg-teal-600 px-4 py-2 text-white">
               <span>Subject</span>
             </div>
             <input
@@ -89,24 +95,33 @@ Ivan Percival Viniegas
           <div className="p-6">
             <div
               contentEditable
-              className="w-full min-h-[500px] border-none focus-visible:ring-0 resize-none whitespace-pre-line"
+              className="min-h-[500px] w-full resize-none border-none whitespace-pre-line focus-visible:ring-0"
               onInput={handleEmailContentChange}
               dangerouslySetInnerHTML={{ __html: emailContent }}
             />
           </div>
 
           {/* Attachment and send buttons */}
-          <div className="flex justify-between p-4 border-t">
+          <div className="flex justify-between border-t p-4">
             <div className="flex">
               <label htmlFor="file-upload" className="cursor-pointer">
-                <div className="bg-teal-600 text-white px-4 py-2 rounded-md">Attachment</div>
-                <input id="file-upload" type="file" className="hidden" onChange={handleFileChange} />
+                <div className="rounded-md bg-teal-600 px-4 py-2 text-white">
+                  Attachment
+                </div>
+                <input
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
               </label>
               <div className="ml-4 flex items-center text-gray-500">
                 {attachment ? attachment.name : "No file chosen"}
               </div>
             </div>
-            <button className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md">Send</button>
+            <button className="rounded-md bg-teal-600 px-4 py-2 text-white hover:bg-teal-700">
+              Send
+            </button>
           </div>
         </div>
       </div>

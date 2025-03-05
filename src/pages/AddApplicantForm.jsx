@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa';
-import ConfirmationModal from '../components/Modals/ConfirmationModal';
-import axios from 'axios';
+import React, { useState } from "react";
+import { FaCalendarAlt, FaExclamationTriangle } from "react-icons/fa";
+import ConfirmationModal from "../components/Modals/ConfirmationModal";
+import axios from "axios";
 
 const formSchema = {
-  firstName: '',
-  middleName: '',
-  lastName: '',
-  birthdate: '',
-  gender: '',
-  email: '',
-  phone: '',
-  cvLink: '',
-  position: '',
-  source: '',
-  referrer: '',
-  testResult: '',
-  dateApplied: '',
+  firstName: "",
+  middleName: "",
+  lastName: "",
+  birthdate: "",
+  gender: "",
+  email: "",
+  phone: "",
+  cvLink: "",
+  position: "",
+  source: "",
+  referrer: "",
+  testResult: "",
+  dateApplied: "",
 };
 
 const duplicates = [
@@ -50,34 +50,37 @@ function AddApplicantForm({ onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = {
-        applicant: JSON.stringify({
-            first_name: formData.firstName,
-            middle_name: formData.middleName,
-            last_name: formData.lastName,
-            birth_date: formData.birthdate,
-            gender: formData.gender,
-            email_1: formData.email,
-            mobile_number_1: formData.phone,
-            cv_link: formData.cvLink,
-            discovered_at: formData.source,
-            referrer_id: formData.referrer,
-            created_by: 'user_id', // Replace with the actual logged-in user ID
-            updated_by: 'user_id',
-            company_id: 'company_id', // Set dynamically if needed
-            position_id: formData.position,
-            test_result: formData.testResult,
-            date_applied: formData.dateApplied,
-        })
+      applicant: JSON.stringify({
+        first_name: formData.firstName,
+        middle_name: formData.middleName,
+        last_name: formData.lastName,
+        birth_date: formData.birthdate,
+        gender: formData.gender,
+        email_1: formData.email,
+        mobile_number_1: formData.phone,
+        cv_link: formData.cvLink,
+        discovered_at: formData.source,
+        referrer_id: formData.referrer,
+        created_by: "user_id", // Replace with the actual logged-in user ID
+        updated_by: "user_id",
+        company_id: "company_id", // Set dynamically if needed
+        position_id: formData.position,
+        test_result: formData.testResult,
+        date_applied: formData.dateApplied,
+      }),
     };
 
-    console.log('PAYLOAD:', payload);
+    console.log("PAYLOAD:", payload);
 
     try {
-        const response = await axios.post('http://localhost:3000/applicants/add', payload);
-        console.log('Applicant added:', response.data);
-        onClose();
+      const response = await axios.post(
+        "http://localhost:3000/applicants/add",
+        payload,
+      );
+      console.log("Applicant added:", response.data);
+      onClose();
     } catch (error) {
-        console.error('Error adding applicant:', error);
+      console.error("Error adding applicant:", error);
     }
   };
 
@@ -95,12 +98,12 @@ function AddApplicantForm({ onClose }) {
   };
 
   return (
-    <div className="flex-1 p-6 overflow-auto">
+    <div className="flex-1 overflow-auto p-6">
       <div className="p-6">
-        <div className="flex justify-between items-center mb-6 p-4">
+        <div className="mb-6 flex items-center justify-between p-4">
           <h1 className="text-xl font-semibold">Add New Applicant</h1>
         </div>
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col gap-8 lg:flex-row">
           <div className="flex-1">
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-4">
@@ -113,7 +116,7 @@ function AddApplicantForm({ onClose }) {
                       placeholder="Last Name"
                       value={formData.lastName}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md"
+                      className="w-full rounded-md border border-gray-300 p-2"
                     />
                   </div>
                   <div>
@@ -123,7 +126,7 @@ function AddApplicantForm({ onClose }) {
                       placeholder="First Name"
                       value={formData.firstName}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md"
+                      className="w-full rounded-md border border-gray-300 p-2"
                     />
                   </div>
                   <div>
@@ -133,7 +136,7 @@ function AddApplicantForm({ onClose }) {
                       placeholder="Middle Name"
                       value={formData.middleName}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md"
+                      className="w-full rounded-md border border-gray-300 p-2"
                     />
                   </div>
                 </div>
@@ -148,9 +151,9 @@ function AddApplicantForm({ onClose }) {
                       name="birthdate"
                       value={formData.birthdate}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md"
+                      className="w-full rounded-md border border-gray-300 p-2"
                     />
-                    <FaCalendarAlt className="absolute right-2 top-2 h-4 w-4 text-gray-400" />
+                    <FaCalendarAlt className="absolute top-2 right-2 h-4 w-4 text-gray-400" />
                   </div>
                 </div>
 
@@ -162,7 +165,7 @@ function AddApplicantForm({ onClose }) {
                         type="radio"
                         name="gender"
                         value="male"
-                        checked={formData.gender === 'male'}
+                        checked={formData.gender === "male"}
                         onChange={handleChange}
                       />
                       <span>Male</span>
@@ -172,7 +175,7 @@ function AddApplicantForm({ onClose }) {
                         type="radio"
                         name="gender"
                         value="female"
-                        checked={formData.gender === 'female'}
+                        checked={formData.gender === "female"}
                         onChange={handleChange}
                       />
                       <span>Female</span>
@@ -182,7 +185,7 @@ function AddApplicantForm({ onClose }) {
                         type="radio"
                         name="gender"
                         value="other"
-                        checked={formData.gender === 'other'}
+                        checked={formData.gender === "other"}
                         onChange={handleChange}
                       />
                       <span>Other</span>
@@ -198,9 +201,9 @@ function AddApplicantForm({ onClose }) {
                       name="dateApplied"
                       value={formData.dateApplied}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md"
+                      className="w-full rounded-md border border-gray-300 p-2"
                     />
-                    <FaCalendarAlt className="absolute right-2 top-2 h-4 w-4 text-gray-400" />
+                    <FaCalendarAlt className="absolute top-2 right-2 h-4 w-4 text-gray-400" />
                   </div>
                 </div>
               </div>
@@ -215,7 +218,7 @@ function AddApplicantForm({ onClose }) {
                       placeholder="Email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md"
+                      className="w-full rounded-md border border-gray-300 p-2"
                     />
                   </div>
                   <div>
@@ -225,7 +228,7 @@ function AddApplicantForm({ onClose }) {
                       placeholder="(XXX) XXX-XXXX"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md"
+                      className="w-full rounded-md border border-gray-300 p-2"
                     />
                   </div>
                 </div>
@@ -239,7 +242,7 @@ function AddApplicantForm({ onClose }) {
                   placeholder="cv.link@drive.com"
                   value={formData.cvLink}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full rounded-md border border-gray-300 p-2"
                 />
               </div>
 
@@ -249,7 +252,7 @@ function AddApplicantForm({ onClose }) {
                   name="position"
                   value={formData.position}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full rounded-md border border-gray-300 p-2"
                 >
                   <option value="">Select Option</option>
                   <option value="engineer">Software Engineer</option>
@@ -265,25 +268,27 @@ function AddApplicantForm({ onClose }) {
                     name="source"
                     value={formData.source}
                     onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
+                    className="w-full rounded-md border border-gray-300 p-2"
                   >
                     <option value="">Select Option</option>
                     <option value="Referral">Referral</option>
                     <option value="Website">Website</option>
                     <option value="Social Media">Social Media</option>
                     <option value="Podcast">Podcast</option>
-                    <option value="Career Fair (Startup Caravan, University Visit)">Career Fair (Startup Caravan, University Visit)</option>
+                    <option value="Career Fair (Startup Caravan, University Visit)">
+                      Career Fair (Startup Caravan, University Visit)
+                    </option>
                   </select>
                 </div>
 
-                {formData.source === 'Referral' && (
+                {formData.source === "Referral" && (
                   <div>
                     <label>Referrer</label>
                     <select
                       name="referrer"
                       value={formData.referrer}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-md"
+                      className="w-full rounded-md border border-gray-300 p-2"
                     >
                       <option value="">Select Option</option>
                       <option value="john">John Doe</option>
@@ -301,21 +306,21 @@ function AddApplicantForm({ onClose }) {
                   placeholder="https://testresults.com"
                   value={formData.testResult}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full rounded-md border border-gray-300 p-2"
                 />
               </div>
 
               <div className="flex justify-end gap-4">
                 <button
                   type="button"
-                  className="px-4 py-2 rounded-md bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700"
+                  className="rounded-md bg-teal-600/10 px-4 py-2 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700"
                   onClick={handleCancel}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-md bg-[#008080] text-white hover:bg-teal-700"
+                  className="rounded-md bg-[#008080] px-4 py-2 text-white hover:bg-teal-700"
                 >
                   Add
                 </button>
@@ -323,15 +328,17 @@ function AddApplicantForm({ onClose }) {
             </form>
           </div>
 
-          <div className="w-full lg:w-96 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold">Possible Duplicates ({duplicates.length})</h2>
+          <div className="w-full p-6 lg:w-96">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-lg font-semibold">
+                Possible Duplicates ({duplicates.length})
+              </h2>
             </div>
             <div className="space-y-4">
               {duplicates.map((duplicate, index) => (
-                <div key={index} className="border p-4 space-y-2">
+                <div key={index} className="space-y-2 border p-4">
                   <h3 className="font-medium">{duplicate.name}</h3>
-                  <div className="space-y-1 text-sm text-muted-foreground">
+                  <div className="text-muted-foreground space-y-1 text-sm">
                     <p>Date Applied: {duplicate.dateApplied}</p>
                     <p>Position Applied: {duplicate.positionApplied}</p>
                     <p>Application Status: {duplicate.applicationStatus}</p>
@@ -339,7 +346,10 @@ function AddApplicantForm({ onClose }) {
                   </div>
                   <div className="space-y-1 pt-2">
                     {duplicate.similarities.map((similarity, index) => (
-                      <div key={index} className="flex items-center gap-2 text-sm text-yellow-600">
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 text-sm text-yellow-600"
+                      >
                         <FaExclamationTriangle className="h-4 w-4" />
                         <span>Similarity in {similarity}</span>
                       </div>

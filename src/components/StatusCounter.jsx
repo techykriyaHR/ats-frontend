@@ -41,22 +41,22 @@ const stages = [
 
 export default function StatusCounter() {
   const [expandedStages, setExpandedStages] = useState(
-    stages.map((stage) => stage.name)
+    stages.map((stage) => stage.name),
   );
 
   const toggleStage = (stageName) => {
     setExpandedStages((prev) =>
       prev.includes(stageName)
         ? prev.filter((name) => name !== stageName)
-        : [...prev, stageName]
+        : [...prev, stageName],
     );
   };
 
   return (
     <div className="w-full rounded-3xl bg-white p-4 shadow-lg">
-      <div className="mb-4 flex items-center justify-between">
+      {/* <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Status Counter</h2>
-        <select className="w-[130px] p-2 border border-gray-300 rounded-md">
+        <select className="w-[130px] rounded-md border border-gray-300 p-2">
           <option value="all">All Positions</option>
           <option value="engineer">Engineer</option>
           <option value="designer">Designer</option>
@@ -71,12 +71,12 @@ export default function StatusCounter() {
               className="flex cursor-pointer items-center justify-between"
               onClick={() => toggleStage(stage.name)}
             >
-              <div className="flex items-center justify-between flex-1">
-                <span className="font-medium text-sm">{stage.name}</span>
+              <div className="flex flex-1 items-center justify-between">
+                <span className="text-sm font-medium">{stage.name}</span>
                 <div className="flex items-center gap-2">
-                  <span className="font-medium text-sm">{stage.count}</span>
+                  <span className="text-sm font-medium">{stage.count}</span>
                   <button
-                    className="h-5 w-5 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200"
+                    className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200"
                     onClick={(e) => {
                       e.stopPropagation();
                       // Add info tooltip functionality here
@@ -90,7 +90,7 @@ export default function StatusCounter() {
             <div
               className={`grid transition-all ${
                 expandedStages.includes(stage.name)
-                  ? "grid-rows-[1fr] mt-2"
+                  ? "mt-2 grid-rows-[1fr]"
                   : "grid-rows-[0fr]"
               }`}
             >
@@ -114,7 +114,7 @@ export default function StatusCounter() {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -1,7 +1,7 @@
-import React from 'react';
-import { saveAs } from 'file-saver';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import React from "react";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const ExportOptions = ({ data, onExportComplete }) => {
   const headers = [
@@ -49,7 +49,9 @@ const ExportOptions = ({ data, onExportComplete }) => {
     const doc = new jsPDF("l", "mm", "a3"); // landscape orientation for better fit
 
     // Define the table structure
-    const tableData = data.map((row) => headers.map((header) => row[header] || ""));
+    const tableData = data.map((row) =>
+      headers.map((header) => row[header] || ""),
+    );
 
     // Add title
     doc.setFontSize(16);
@@ -95,15 +97,15 @@ const ExportOptions = ({ data, onExportComplete }) => {
   };
 
   return (
-    <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md z-10">
+    <div className="absolute right-0 z-10 mt-2 w-48 rounded-md bg-white shadow-md">
       <button
-        className="w-full px-4 py-2 text-left rounded-t-md text-teal-600 hover:bg-teal-600/10"
+        className="w-full rounded-t-md px-4 py-2 text-left text-teal-600 hover:bg-teal-600/10"
         onClick={handleExportCSV}
       >
         Export as CSV
       </button>
       <button
-        className="w-full px-4 py-2 text-left rounded-b-md text-teal-600 hover:bg-teal-600/10 border-t border-gray-100"
+        className="w-full rounded-b-md border-t border-gray-100 px-4 py-2 text-left text-teal-600 hover:bg-teal-600/10"
         onClick={handleExportPDF}
       >
         Export as PDF

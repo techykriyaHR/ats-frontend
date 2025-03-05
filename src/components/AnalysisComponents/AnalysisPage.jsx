@@ -1,33 +1,33 @@
-import TopJobPositions from "./TopJobPositions"
-import InternalVsExternalHires from "./InternalVsExternalHires"
-import CandidateDropOffRate from "./CandidateDropOffRate"
-import ApplicationReceived from "./ApplicationReceived"
-import ApplicantStatusChart from "./RequisitionAnalysisGraph"
-import SourceOfApplication from "./SourceOfApplication"
+import TopJobPositions from "./TopJobPositions";
+import InternalVsExternalHires from "./InternalVsExternalHires";
+import CandidateDropOffRate from "./CandidateDropOffRate";
+import ApplicationReceived from "./ApplicationReceived";
+import ApplicantStatusChart from "./RequisitionAnalysisGraph";
+import SourceOfApplication from "./SourceOfApplication";
 
 const AnalysisPage = () => {
   const jobPositions = [
     { title: "Software Engineer", percentage: 25 },
     { title: "Product Manager", percentage: 20 },
     { title: "Data Analyst", percentage: 15 },
-  ]
+  ];
 
-  const internalHires = 30
-  const externalHires = 70
+  const internalHires = 30;
+  const externalHires = 70;
 
-  const overallRate = 10
+  const overallRate = 10;
   const monthlyRates = {
     January: 5,
     February: 10,
     March: 15,
-  }
+  };
 
-  const totalApplications = 100
+  const totalApplications = 100;
   const months = [
     { name: "January", count: 30 },
     { name: "February", count: 40 },
     { name: "March", count: 30 },
-  ]
+  ];
 
   const requisitionData = [
     { month: "January", closed: 12, passed: 3, onProgress: 0 },
@@ -42,48 +42,56 @@ const AnalysisPage = () => {
     { month: "October", closed: 0, passed: 0, onProgress: 21 },
     { month: "November", closed: 4, passed: 0, onProgress: 4 },
     { month: "December", closed: 0, passed: 0, onProgress: 1 },
-  ]
+  ];
 
   const sourceData = [
     { name: "Referral", value: 50 },
     { name: "Website", value: 30 },
     { name: "Caravan", value: 20 },
-  ]
+  ];
 
   return (
     <div className="space-y-8 md:space-y-10">
       {/* Top row with 4 equal cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-        <div className="bg-white rounded-xl shadow-xl p-6 md:p-8 h-60">
-          <ApplicationReceived totalApplications={totalApplications} months={months} />
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+        <div className="h-60 rounded-xl bg-white p-6 shadow-xl md:p-8">
+          <ApplicationReceived
+            totalApplications={totalApplications}
+            months={months}
+          />
         </div>
-        <div className="bg-white rounded-xl shadow-xl p-6 md:p-8 h-60">
+        <div className="h-60 rounded-xl bg-white p-6 shadow-xl md:p-8">
           <TopJobPositions jobPositions={jobPositions} />
         </div>
-        <div className="bg-white rounded-xl shadow-xl p-6 md:p-8 h-60">
-          <InternalVsExternalHires internalHires={internalHires} externalHires={externalHires} />
+        <div className="h-60 rounded-xl bg-white p-6 shadow-xl md:p-8">
+          <InternalVsExternalHires
+            internalHires={internalHires}
+            externalHires={externalHires}
+          />
         </div>
-        <div className="bg-white rounded-xl shadow-xl p-6 md:p-8 h-60">
-          <CandidateDropOffRate overallRate={overallRate} monthlyRates={monthlyRates} />
+        <div className="h-60 rounded-xl bg-white p-6 shadow-xl md:p-8">
+          <CandidateDropOffRate
+            overallRate={overallRate}
+            monthlyRates={monthlyRates}
+          />
         </div>
       </div>
 
       {/* Bottom row with 2 cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-        <div className="bg-white rounded-xl shadow-xl p-6 md:p-8 lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 md:gap-8 lg:grid-cols-3">
+        <div className="rounded-xl bg-white p-6 shadow-xl md:p-8 lg:col-span-2">
           <div className="h-96">
             <ApplicantStatusChart data={requisitionData} />
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-xl p-6 md:p-8">
+        <div className="rounded-xl bg-white p-6 shadow-xl md:p-8">
           <div className="h-96">
             <SourceOfApplication data={sourceData} />
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AnalysisPage
-
+export default AnalysisPage;

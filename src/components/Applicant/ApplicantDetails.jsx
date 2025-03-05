@@ -1,9 +1,9 @@
-import React from 'react';
-import { FaEnvelope, FaMapMarkerAlt, FaPhone, FaUser } from 'react-icons/fa';
+import React from "react";
+import { FaEnvelope, FaMapMarkerAlt, FaPhone, FaUser } from "react-icons/fa";
 
 function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   return (
-    <div className="max-w-6xl border rounded-lg shadow-lg mx-auto my-8">
+    <div className="mx-auto my-8 max-w-6xl rounded-lg border shadow-lg">
       <div className="grid gap-6 p-6 sm:grid-cols-2">
         {/* Left Column - Applicant Details */}
         <div className="space-y-4">
@@ -13,7 +13,9 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
               <FaUser className="mr-2 h-4 w-4" />
               {applicant.gender}
             </div>
-            <div className="mt-1 text-base text-gray-500">{applicant.birthdate}</div>
+            <div className="mt-1 text-base text-gray-500">
+              {applicant.birthdate}
+            </div>
           </div>
 
           <div className="space-y-3">
@@ -31,7 +33,7 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
             </div>
           </div>
 
-          <button className="text-[#008080] hover:underline text-base">
+          <button className="text-base text-[#008080] hover:underline">
             Applicant's Resume
           </button>
         </div>
@@ -57,7 +59,10 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
             </div>
           </div>
 
-          <select className="border border-gray-300 p-2 rounded-md w-full text-base" defaultValue={applicant.status}>
+          <select
+            className="w-full rounded-md border border-gray-300 p-2 text-base"
+            defaultValue={applicant.status}
+          >
             <option value="first-interview">First Interview Stage</option>
             <option value="second-interview">Second Interview</option>
             <option value="final-interview">Final Interview</option>
@@ -67,14 +72,14 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
 
       <div className="flex justify-end gap-4 border-t p-4">
         <button
-          className={`px-4 py-2 rounded-md ${activeTab === 'discussion' ? 'bg-[#008080] text-white' : 'bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700'}`}
-          onClick={() => onTabChange('discussion')}
+          className={`rounded-md px-4 py-2 ${activeTab === "discussion" ? "bg-[#008080] text-white" : "bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700"}`}
+          onClick={() => onTabChange("discussion")}
         >
           Discussion
         </button>
         <button
-          className={`px-4 py-2 rounded-md ${activeTab === 'sendMail' ? 'bg-[#008080] text-white' : 'bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700'}`}
-          onClick={() => onTabChange('sendMail')}
+          className={`rounded-md px-4 py-2 ${activeTab === "sendMail" ? "bg-[#008080] text-white" : "bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700"}`}
+          onClick={() => onTabChange("sendMail")}
         >
           Send Email
         </button>

@@ -10,40 +10,41 @@ export default function Header({ onSelectView, onToggleSidebar }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 flex items-center justify-between px-30 py-4">
+    <header className="top-0 flex items-center justify-between py-4">
       <div className="flex items-center gap-4">
-        <button onClick={onToggleSidebar} className="md:hidden text-gray-dark focus:outline-none">
+        <button
+          onClick={onToggleSidebar}
+          className="text-gray-dark focus:outline-none md:hidden"
+        >
           <FaBars size={24} />
         </button>
-        <p className="display block sm:hidden">ATS</p>
-        <p className="display hidden sm:block">Application Tracking System</p>
+        <p className="display block md:hidden">ATS</p>
+        <p className="display hidden md:block">Application Tracking System</p>
       </div>
       <div className="flex items-center gap-4">
-        <div className="flex gap-2 bg-teal-600/10 p-2 rounded-md justify-center">
+        <div className="flex justify-center gap-2 rounded-md bg-teal-600/10 p-2">
           <button
-            className={`p-2 rounded-md ${
-              currentView === "listings"
-                ? "bg-[#008080] text-white"
-                : "bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700"
-            }`}
+            className={`rounded-md p-2 ${currentView === "listings"
+              ? "bg-[#008080] text-white"
+              : "bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700"
+              }`}
             onClick={() => handleSelectView("listings")}
           >
             <span className="hidden md:inline">Listings</span>
-            <FaList className="h-6 w-6 md:hidden" />
+            <FaList className="h-4 w-4 md:hidden" />
           </button>
           <button
-            className={`p-2 rounded-md ${
-              currentView === "analytics"
-                ? "bg-[#008080] text-white"
-                : "bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700"
-            }`}
+            className={`rounded-md p-2 ${currentView === "analytics"
+              ? "bg-[#008080] text-white"
+              : "bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700"
+              }`}
             onClick={() => handleSelectView("analytics")}
           >
             <span className="hidden md:inline">Analytics</span>
-            <FaChartBar className="h-6 w-6 md:hidden" />
+            <FaChartBar className="h-4 w-4 md:hidden" />
           </button>
         </div>
-        <button className="p-2 text-teal-600 hover:bg-teal-600/10 hover:text-teal-700 rounded-full">
+        <button className="rounded-full p-2 text-teal-600 hover:bg-teal-600/10 hover:text-teal-700">
           <FaHeartbeat className="h-6 w-6 md:h-10 md:w-10" />
         </button>
       </div>
