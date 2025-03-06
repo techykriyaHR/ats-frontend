@@ -226,14 +226,6 @@ export default function ApplicantList({
           {/* dropdown button for adding a new applicant (add manually or upload a file)*/}
           <AddApplicantDropdown onAddManually={onAddApplicantClick} />
 
-          {/* <button
-            className="flex items-center rounded-md bg-teal-600 px-4 py-2 text-sm text-white hover:bg-teal-700"
-            onClick={onAddApplicantClick}
-          >
-            <FiPlus className="mr-2 h-4 w-4" /> Add Applicant
-          </button> */}
-
-
         </div>
       </div>
 
