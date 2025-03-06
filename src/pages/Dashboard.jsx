@@ -101,7 +101,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col md:ml-72 w-full ml:px-20">
+      <div className="flex flex-col md:ml-72 w-full lg:px-20">
         {showAddApplicantForm ? (
           <AddApplicantForm onClose={() => setShowAddApplicantForm(false)} />
         ) : (

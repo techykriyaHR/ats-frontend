@@ -215,7 +215,7 @@ export default function ApplicantList({
 
   return (
     <div className="relative mx-auto max-w-[1200px] rounded-3xl bg-white p-6 shadow-lg">
-      <div className="mb-4 flex flex-col items-center justify-between rounded-lg md:flex-row">
+      <div className="mb-6 flex flex-col items-center justify-between rounded-lg md:flex-row">
         <h1 className="mb-4 headline font-semibold md:mb-0">Applicant List</h1>
         <div className="center flex flex-col gap-2 md:flex-row">
 
@@ -229,21 +229,21 @@ export default function ApplicantList({
         </div>
       </div>
 
-      <div className="mb-4 flex flex-col items-center gap-2 rounded-lg bg-teal-600/10 p-2 md:flex-row">
-        <div className="flex-initial w-full bg-white md:mb-0 md:w-1/3">
+      <div className="mb-6 flex flex-col items-center gap-2 rounded-lg bg-teal-600/10 p-4 shadow-md md:flex-row">
+        <div className="relative mb-4 w-full bg-white md:mb-0 md:w-1/3">
           <input
             type="text"
             placeholder="Search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full body-regular rounded-md border border-gray-300 p-2"
+            className="w-full rounded-md border border-gray-300 p-2"
           />
         </div>
-        <div className="flex w-full items-center gap-2 md:w-auto md:flex-row">
+        <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
           <select
             value={dateFilterType}
             onChange={(e) => setDateFilterType(e.target.value)}
-            className="flex-auto body-regular rounded-md border border-gray-300 p-2 md:w-auto"
+            className="w-full rounded-md border border-gray-300 p-2 md:w-auto"
           >
             <option value="month">Month</option>
             <option value="year">Year</option>
@@ -254,17 +254,16 @@ export default function ApplicantList({
             showMonthYearPicker={dateFilterType === "month"}
             showYearPicker={dateFilterType === "year"}
             dateFormat={dateFilterType === "month" ? "MM/yyyy" : "yyyy"}
-            className="flex-auto body-regular rounded-md border border-gray-300 p-2 md:w-auto"
+            className="w-full rounded-md border border-gray-300 p-2 md:w-auto"
             placeholderText="Select Date"
           />
-
+          <button
+            className="w-full rounded-md bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 md:w-auto"
+            onClick={clearFilter}
+          >
+            Clear Filter
+          </button>
         </div>
-        <button
-          className="flex w-full body-regular rounded-md bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 md:w-auto"
-          onClick={clearFilter}
-        >
-          Clear
-        </button>
       </div>
 
       <div
