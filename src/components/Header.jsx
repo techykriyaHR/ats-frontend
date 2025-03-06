@@ -24,7 +24,7 @@ export default function Header({ onSelectView, onToggleSidebar }) {
       <div className="flex items-center gap-4">
         <div className="flex justify-center gap-2 rounded-md bg-teal-600/10 p-2">
           <button
-            className={`rounded-md p-2 ${currentView === "listings"
+            className={`rounded-md text-sm p-2 ${currentView === "listings"
               ? "bg-[#008080] text-white"
               : "bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700"
               }`}
@@ -34,7 +34,7 @@ export default function Header({ onSelectView, onToggleSidebar }) {
             <FaList className="h-4 w-4 md:hidden" />
           </button>
           <button
-            className={`rounded-md p-2 ${currentView === "analytics"
+            className={`rounded-md text-sm p-2 ${currentView === "analytics"
               ? "bg-[#008080] text-white"
               : "bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700"
               }`}
