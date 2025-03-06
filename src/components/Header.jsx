@@ -18,8 +18,8 @@ export default function Header({ onSelectView, onToggleSidebar }) {
         >
           <FaBars size={24} />
         </button>
-        <p className="display block md:hidden">ATS</p>
-        <p className="display hidden md:block">Application Tracking System</p>
+        <p className="display text-gray-dark block md:hidden">ATS</p>
+        <p className="display text-gray-dark hidden md:block">Application Tracking System</p>
       </div>
       <div className="flex items-center gap-4">
         <div className="flex justify-center gap-2 rounded-md bg-teal-600/10 p-2">

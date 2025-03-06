@@ -214,36 +214,37 @@ export default function ApplicantList({
     });
 
   return (
-    <div className="relative mx-auto max-w-[1200px] rounded-3xl bg-white p-6 shadow-lg">
-      <div className="mb-6 flex flex-col items-center justify-between rounded-lg md:flex-row">
-        <h1 className="mb-4 headline font-semibold md:mb-0">Applicant List</h1>
-        <div className="center flex flex-col gap-2 md:flex-row">
+    <div className="relative mx-auto max-w-[1200px] rounded-3xl bg-white p-6 border border-gray-light">
+      <div className="mb-4 flex items-center justify-between rounded-lg ">
+        <h1 className="headline text-gray-dark font-semibold md:mb-0">Applicant List</h1>
+        <div className="center flex gap-2">
 
-          {/* <button className="flex items-center rounded-md bg-teal-600 px-4 py-2 text-sm text-white hover:bg-teal-700 cursor-pointer">
+          {/* partial button for export */}
+          <button className="flex items-center rounded-md bg-white border border-teal px-2 py-1 text-sm text-teal hover:bg-teal-700 cursor-pointer">
             <FaFileExport className="mr-2 h-4 w-4 " /> Export
-          </button> */}
+          </button>
 
           {/* dropdown button for adding a new applicant (add manually or upload a file)*/}
-          <AddApplicantDropdown onAddManually={onAddApplicantClick} />
+          <AddApplicantDropdown className="" onAddManually={onAddApplicantClick} />
 
         </div>
       </div>
 
-      <div className="mb-6 flex flex-col items-center gap-2 rounded-lg bg-teal-600/10 p-4 shadow-md md:flex-row">
-        <div className="relative mb-4 w-full bg-white md:mb-0 md:w-1/3">
+      <div className="mb-4 flex flex-col items-center gap-2 rounded-lg bg-teal-600/10 p-2 md:flex-row">
+        <div className="flex-initial w-full bg-white md:mb-0 md:w-1/3">
           <input
             type="text"
             placeholder="Search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-md border border-gray-300 p-2"
+            className="w-full body-regular rounded-md border border-gray-300 p-2"
           />
         </div>
-        <div className="flex w-full flex-col items-center gap-2 md:w-auto md:flex-row">
+        <div className="flex w-full items-center gap-2 md:w-auto md:flex-row justify-end">
           <select
             value={dateFilterType}
             onChange={(e) => setDateFilterType(e.target.value)}
-            className="w-full rounded-md border border-gray-300 p-2 md:w-auto"
+            className="flex body-regular rounded-md border border-gray-300 p-2 w-auto"
           >
             <option value="month">Month</option>
             <option value="year">Year</option>
@@ -254,16 +255,18 @@ export default function ApplicantList({
             showMonthYearPicker={dateFilterType === "month"}
             showYearPicker={dateFilterType === "year"}
             dateFormat={dateFilterType === "month" ? "MM/yyyy" : "yyyy"}
-            className="w-full rounded-md border border-gray-300 p-2 md:w-auto"
-            placeholderText="Select Date"
+            className="flex-auto body-regular rounded-md border border-gray-300 p-2 w-20"
+            placeholderText={`${dateFilterType === "month" ? "MM/yyyy" : "yyyy"
+              }`}
           />
           <button
-            className="w-full rounded-md bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 md:w-auto"
+            className="flex w-auto body-regular rounded-md bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"
             onClick={clearFilter}
           >
-            Clear Filter
+            Clear
           </button>
         </div>
+
       </div>
 
       <div

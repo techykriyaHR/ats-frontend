@@ -101,7 +101,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col md:ml-72 w-full lg:px-20">
+      <div className="flex flex-col md:ml-72 w-full lg:px-10 xl:px-20">
         {showAddApplicantForm ? (
           <AddApplicantForm onClose={() => setShowAddApplicantForm(false)} />
         ) : (
@@ -109,21 +109,21 @@ export default function Dashboard() {
             <Header onSelectView={selectView} onToggleSidebar={toggleSidebar} />
             {/* Tabs Section */}
             {selectedView === "listings" && !showAddApplicantForm && (
-              <div className="mb-4 flex overflow-x-auto rounded-lg border border-gray-light bg-white p-1 scrollbar-hide">
+              <div className="mb-4 flex rounded-lg border border-gray-light bg-white p-1 pb-0">
                 {/* Scrollable Tabs Container */}
-                <div className="flex flex-nowrap lg:flex-wrap space-x-2 whitespace-nowrap">
+                <div className="flex flex-wrap space-x-2 whitespace-nowrap items-center">
                   {/* Applicant List Tab */}
-                  <button className={`px-3 py-1 rounded-md border body-bold transition-colors cursor-pointer
+                  <button className={`px-3 py-1 mb-1 rounded-md border body-bold transition-colors cursor-pointer
                       ${activeTab === null ? "bg-teal-soft text-teal border-teal-soft" : "bg-white text-teal border-teal hover:bg-gray-light"}`}
                     onClick={() => setActiveTab(null)}>
                     Applicant List
                   </button>
                   {/* Dynamic Tabs */}
                   {tabs.map((tab) => (
-                    <div key={tab.id} className={`flex items-center px-2 py-1 rounded-md body-regular transition-colors 
+                    <div key={tab.id} className={`flex items-center px-2 py-1 mb-1 rounded-md body-regular transition-colors h-6 
                       ${activeTab === tab.id ? "bg-teal-soft text-teal" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
                     >
-                      <button className="truncate max-w-[100px] sm:max-w-[120px] lg:max-w-none cursor-pointer" onClick={() => setActiveTab(tab.id)} title={tab.name}>
+                      <button className="truncate max-w-[100px] lg:max-w-none cursor-pointer" onClick={() => setActiveTab(tab.id)} title={tab.name}>
                         {tab.name.length > 10 ? `${tab.name.slice(0, 10)}...` : tab.name}
                       </button>
                       <button className="ml-1 text-gray-600 hover:text-gray-800" onClick={() => closeTab(tab.id)}>
