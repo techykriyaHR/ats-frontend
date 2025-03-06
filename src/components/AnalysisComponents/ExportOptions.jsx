@@ -1,7 +1,7 @@
 import React from "react";
 import { saveAs } from "file-saver";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
+// import jsPDF from "jspdf";
+// import "jspdf-autotable";
 
 const ExportOptions = ({ data, onExportComplete }) => {
   const headers = [
