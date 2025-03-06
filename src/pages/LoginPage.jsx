@@ -6,11 +6,11 @@ function LoginPage() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    navigate("/dashboard");
+    navigate("/hr_ats");
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-super-light-gray">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-96">
         <h2 className="text-2xl font-bold text-center text-teal-700">Login</h2>
         <form className="mt-4" onSubmit={handleLogin}>
@@ -30,7 +30,10 @@ function LoginPage() {
               placeholder="Enter your password"
             />
           </div>
-          <button type="submit" className="w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition">
+          <button
+            type="submit"
+            className="w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition"
+          >
             Login
           </button>
         </form>

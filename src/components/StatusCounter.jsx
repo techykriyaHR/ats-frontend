@@ -40,11 +40,15 @@ const stages = [
 ];
 
 export default function StatusCounter() {
-  const [expandedStages, setExpandedStages] = useState(stages.map((stage) => stage.name));
+  const [expandedStages, setExpandedStages] = useState(
+    stages.map((stage) => stage.name)
+  );
 
   const toggleStage = (stageName) => {
     setExpandedStages((prev) =>
-      prev.includes(stageName) ? prev.filter((name) => name !== stageName) : [...prev, stageName]
+      prev.includes(stageName)
+        ? prev.filter((name) => name !== stageName)
+        : [...prev, stageName]
     );
   };
 
@@ -63,7 +67,10 @@ export default function StatusCounter() {
       <div className="space-y-4">
         {stages.map((stage) => (
           <div key={stage.name} className="rounded-lg">
-            <div className="flex cursor-pointer items-center justify-between" onClick={() => toggleStage(stage.name)}>
+            <div
+              className="flex cursor-pointer items-center justify-between"
+              onClick={() => toggleStage(stage.name)}
+            >
               <div className="flex items-center justify-between flex-1">
                 <span className="font-medium text-sm">{stage.name}</span>
                 <div className="flex items-center gap-2">
@@ -82,15 +89,24 @@ export default function StatusCounter() {
             </div>
             <div
               className={`grid transition-all ${
-                expandedStages.includes(stage.name) ? "grid-rows-[1fr] mt-2" : "grid-rows-[0fr]"
+                expandedStages.includes(stage.name)
+                  ? "grid-rows-[1fr] mt-2"
+                  : "grid-rows-[0fr]"
               }`}
             >
               <div className="overflow-hidden">
                 <div className="space-y-2">
                   {stage.statuses.map((status) => (
-                    <div key={status.name} className="flex justify-between rounded-lg bg-gray-50 px-4 py-2.5">
-                      <span className="text-sm text-gray-600">{status.name}</span>
-                      <span className="text-sm font-medium">{status.count}</span>
+                    <div
+                      key={status.name}
+                      className="flex justify-between rounded-lg bg-gray-50 px-4 py-2.5"
+                    >
+                      <span className="text-sm text-gray-600">
+                        {status.name}
+                      </span>
+                      <span className="text-sm font-medium">
+                        {status.count}
+                      </span>
                     </div>
                   ))}
                 </div>
