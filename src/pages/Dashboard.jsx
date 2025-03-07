@@ -128,9 +128,8 @@ export default function Dashboard() {
         className={`fixed top-0 bottom-0 left-0 z-30 ${
           isSidebarOpen ? "block" : "hidden md:block"
         }`}
-        onClick={handleToggleSidebar}
       >
-        <Sidebar isOpen={isSidebarOpen} onToggleSidebar={handleToggleSidebar} />
+        <Sidebar isOpen={isSidebarOpen} onToggleSidebar={handleToggleSidebar} onSelectView={handleSelectView} />
       </div>
 
       {/* Main content area with padding to account for fixed sidebar width */}
@@ -142,7 +141,6 @@ export default function Dashboard() {
             {/* Fixed header */}
             <div className="top-0 right-0 left-0 z-20 md:left-72">
               <Header
-                onSelectView={handleSelectView}
                 onToggleSidebar={handleToggleSidebar}
               />
             </div>

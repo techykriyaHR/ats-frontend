@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ApplicantDetails from '../components/Applicant/ApplicantDetails';
 import ApplicantDiscussionPage from '../components/Applicant/ApplicantDiscussionPage';
 import ApplicantSendMailPage from '../components/Applicant/ApplicantSendMailPage';
