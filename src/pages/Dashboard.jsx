@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
@@ -8,6 +8,9 @@ import AnalysisPage from "../components/AnalysisComponents/AnalysisPage";
 import ApplicantDetailsPage from "./ApplicantDetailsPage";
 import AddApplicantForm from "./AddApplicantForm";
 import WarningModal from "../components/Modals/WarningModal";
+import useUserStore from "../store/userStore";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const MAX_TABS = 5;
 
@@ -18,6 +21,29 @@ export default function Dashboard() {
   const [showAddApplicantForm, setShowAddApplicantForm] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  const setUser = useUserStore((state) => state.setUser);
+  const user = useUserStore((state) => state.user);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = Cookies.get("token");
+        const response = await axios.get("http://localhost:3000/user/getuserinfo", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("User data fetched:", response.data); // Debugging log
+        setUser(response.data);
+        console.log("User data set in Zustand:", response.data); // Debugging log
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, [setUser]);
 
   const handleToggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -33,11 +59,13 @@ export default function Dashboard() {
       const existingTab = prevTabs.find(tab => tab.applicant_id === applicant.applicant_id);
       if (existingTab) {
         setActiveTab(applicant.applicant_id);
+        console.log("Active tab set to existing applicant:", applicant.applicant_id); // Debugging log
         return prevTabs;
       }
 
       const newTabs = [...prevTabs, applicant];
       setActiveTab(applicant.applicant_id);
+      console.log("Active tab set to new applicant:", applicant.applicant_id); // Debugging log
       return newTabs;
     });
   };
@@ -50,8 +78,9 @@ export default function Dashboard() {
   };
 
   const renderContent = () => {
-    if (activeTab !== null && selectedView === 'home') {
+    if (activeTab !== null) {
       const activeApplicant = tabs.find(tab => tab.applicant_id === activeTab);
+      console.log("Rendering content for active applicant:", activeApplicant); // Debugging log
       return <ApplicantDetailsPage applicant={activeApplicant} />;
     }
 
@@ -99,18 +128,19 @@ export default function Dashboard() {
         className={`fixed top-0 bottom-0 left-0 z-30 ${
           isSidebarOpen ? "block" : "hidden md:block"
         }`}
+        onClick={handleToggleSidebar}
       >
         <Sidebar isOpen={isSidebarOpen} onToggleSidebar={handleToggleSidebar} />
       </div>
 
       {/* Main content area with padding to account for fixed sidebar width */}
-      <div className="flex-1 flex flex-col md:ml-64">
+      <div className="flex-1 flex flex-col md:ml-72">
         {showAddApplicantForm ? (
           <AddApplicantForm onClose={() => setShowAddApplicantForm(false)} />
         ) : (
           <>
             {/* Fixed header */}
-            <div className="fixed top-0 right-0 left-0 z-20 md:left-64">
+            <div className="top-0 right-0 left-0 z-20 md:left-72">
               <Header
                 onSelectView={handleSelectView}
                 onToggleSidebar={handleToggleSidebar}
