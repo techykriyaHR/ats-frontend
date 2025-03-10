@@ -38,14 +38,23 @@ export default function Sidebar({ isOpen, onToggleSidebar, onSelectView }) {
           <div className="mb-8 flex items-center gap-3 p-4 bg-gray-100 rounded-lg shadow-sm">
             <FaUserCircle className="h-12 w-12 text-gray-300" />
             <div>
-              <h3 className="font-medium text-lg">{user ? `${user.first_name} ${user.last_name}` : "Loading..."}</h3>
-              <p className="text-sm text-gray-500">{user ? user.user_email : "Loading..."}</p>
+              {user ? (
+                <>
+                  <h3 className="font-medium text-lg">{`${user.first_name} ${user.last_name}`}</h3>
+                  <p className="text-sm text-gray-500">{user.user_email}</p>
+                </>
+              ) : (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-teal-600"></div>
+                </div>
+              )}
             </div>
           </div>
 
           <div className="space-y-6">
             <div>
               <nav className="space-y-1">
+               
                 <div
                   onClick={() => handleSelectView("listings")}
                   className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium cursor-pointer ${

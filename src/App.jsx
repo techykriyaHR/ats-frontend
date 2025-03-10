@@ -11,7 +11,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<PublicRoute element={<LoginPage />} />} />
+      <Route path="/login" element={<PublicRoute element={<LoginPage />} />} />
         <Route path="/hr_ats" element={<PrivateRoute element={<Dashboard />} />} />
         <Route path="/add-applicant" element={<PrivateRoute element={<AddApplicantForm />} />} />
         <Route path="/applicant/:id" element={<PrivateRoute element={<ApplicantDetailsPage />} />} />

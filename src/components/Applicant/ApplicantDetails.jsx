@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaEnvelope, FaMapMarkerAlt, FaPhone, FaUser } from 'react-icons/fa';
+import useUserStore from '../../store/userStore'; // Import the userStore
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; 
 
 const statuses = [
@@ -19,6 +20,7 @@ const statuses = [
 
 function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   const [applicantInfo, setApplicantInfo] = useState({});
+  const {user} = useUserStore(); // Use the userStore
 
   useEffect(() => {
     if (applicant && applicant.applicant_id) {
@@ -96,18 +98,22 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
       </div>
 
       <div className="flex justify-end gap-4 border-t p-4">
-        <button
-          className={`px-4 py-2 rounded-md ${activeTab === 'discussion' ? 'bg-[#008080] text-white' : 'bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700'}`}
-          onClick={() => onTabChange('discussion')}
-        >
-          Discussion
-        </button>
-        <button
-          className={`px-4 py-2 rounded-md ${activeTab === 'sendMail' ? 'bg-[#008080] text-white' : 'bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700'}`}
-          onClick={() => onTabChange('sendMail')}
-        >
-          Send Email
-        </button>
+        {user.feature_names["60c8341f-fa4b-11ef-a725-0af0d960a833"] === "Interview Notes" && (
+          <button
+            className={`px-4 py-2 rounded-md ${activeTab === 'discussion' ? 'bg-[#008080] text-white' : 'bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700'}`}
+            onClick={() => onTabChange('discussion')}
+          >
+            Discussion
+          </button>
+        )}
+        {user.feature_names["60c834d5-fa4b-11ef-a725-0af0d960a833"] === "Send Email" && (
+          <button
+            className={`px-4 py-2 rounded-md ${activeTab === 'sendMail' ? 'bg-[#008080] text-white' : 'bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700'}`}
+            onClick={() => onTabChange('sendMail')}
+          >
+            Send Email
+          </button>
+        )}
       </div>
     </div>
   );

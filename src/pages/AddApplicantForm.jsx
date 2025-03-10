@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa';
 import ConfirmationModal from '../components/Modals/ConfirmationModal';
 import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const formSchema = {
   firstName: '',
@@ -40,7 +42,21 @@ const duplicates = [
 
 function AddApplicantForm({ onClose }) {
   const [formData, setFormData] = useState(formSchema);
+  const [positions, setPositions] = useState([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+
+  useEffect(() => {
+    const fetchPositions = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/company/positions`);
+        setPositions(response.data.positions);
+      } catch (error) {
+        console.error('Error fetching positions:', error);
+      }
+    };
+
+    fetchPositions();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,7 +89,7 @@ function AddApplicantForm({ onClose }) {
     console.log('PAYLOAD:', payload);
 
     try {
-        const response = await axios.post('http://localhost:3000/applicants/add', payload);
+        const response = await axios.post(`${API_BASE_URL}/applicants/add`, payload);
         console.log('Applicant added:', response.data);
         onClose();
     } catch (error) {
@@ -252,9 +268,11 @@ function AddApplicantForm({ onClose }) {
                   className="w-full p-2 border border-gray-300 rounded-md"
                 >
                   <option value="">Select Option</option>
-                  <option value="engineer">Software Engineer</option>
-                  <option value="designer">UI Designer</option>
-                  <option value="manager">Product Manager</option>
+                  {positions.map((position) => (
+                    <option key={position.job_id} value={position.job_id}>
+                      {position.title}
+                    </option>
+                  ))}
                 </select>
               </div>
 
