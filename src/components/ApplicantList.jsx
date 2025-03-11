@@ -3,6 +3,7 @@ import { FiUpload, FiPlus } from "react-icons/fi";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
+import Upload from "./Upload"; // Import the Upload component
 
 export default function ApplicantList({
   onSelectApplicant,
@@ -79,9 +80,7 @@ export default function ApplicantList({
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-md">
         <h1 className="text-xl font-semibold mb-4 md:mb-0">Applicant List</h1>
         <div className="flex flex-col md:flex-row center gap-2">
-          <button className="flex items-center bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md">
-            <FiUpload className="w-4 h-4 mr-2" /> Upload File
-          </button>
+          <Upload /> {/* Add the Upload component here */}
           <button
             className="flex items-center bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md"
             onClick={onAddApplicantClick}
