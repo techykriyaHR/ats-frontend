@@ -1,23 +1,27 @@
 import DataTable from 'react-data-table-component';
 import { useState, useEffect } from 'react';
 import moment from 'moment';
+
 import axios from 'axios';
+
 
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import api from '../api/axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 
 const ApplicantTable = () => {
+
     // State to track applicant data
     let [applicantData, setApplicantData] = useState([]);
 
     useEffect(() => {
-        axios.get(`${API_BASE_URL}/applicants`)
+        api.get(`/applicants`)
             .then(response => {
-                console.log(response.data);
+                console.log("Applicant Fetched Successfully.",);
                 setApplicantData(response.data);
             })
             .catch(error => console.error("Error fetching data:", error));
@@ -27,9 +31,11 @@ const ApplicantTable = () => {
     let [statuses, setStatuses] = useState([]);
 
     useEffect(() => {
-        axios.get(`${API_BASE_URL}/status`)
+        console.log(API_BASE_URL);
+
+        api.get(`/status`)
             .then(response => {
-                console.log(response.data);
+                console.log("Status Fetched Successfully.",);
                 setStatuses(response.data);
             })
             .catch(error => console.error("Error fetching data:", error));
@@ -93,8 +99,13 @@ const ApplicantTable = () => {
     ];
 
     const LoadingComponent = () => (
-        // <Skeleton count={10} />
-        <h1>Wait lang...</h1>
+        <div className="flex flex-col space-y-2">
+            <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
+            <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
+            <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
+            <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
+            <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
+        </div>
     );
 
     return (
@@ -110,8 +121,8 @@ const ApplicantTable = () => {
             component:striped={true}
             onRowClicked={handleApplicantRowClick}
             pagination
-            // progressPending={!applicantData.length || !statuses.length}
-            progressPending={true}
+            progressPending={!applicantData.length || !statuses.length}
+            // progressPending={true}
             progressComponent={<LoadingComponent />}
         />
     );

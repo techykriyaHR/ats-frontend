@@ -197,17 +197,6 @@ export default function ApplicantList({
     },
   ];
 
-  const statuses = [
-    "Sent Test",
-    "First Interview Stage",
-    "Final Interview Stage",
-    "Job Offer Sent",
-    "Abandoned",
-    "Blacklisted",
-    "No Show",
-    "Not Fit",
-  ];
-
   const handleRowClick = (id) => {
     const applicant = applicants.find((applicant) => applicant.applicant_id === id);
     onSelectApplicant(applicant.applicant_id);
@@ -368,6 +357,8 @@ export default function ApplicantList({
           </tbody>
         </table> */}
       </div>
+
+
     </div>
   );
 }

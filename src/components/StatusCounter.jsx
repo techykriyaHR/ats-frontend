@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaInfoCircle } from "react-icons/fa";
+import axios from 'axios';
+import api from "../api/axios";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const stages = [
   {
@@ -52,15 +55,29 @@ export default function StatusCounter() {
     );
   };
 
+  const [positions, setPositions] = useState([]);
+
+  useEffect(() => {
+    api.get(`/company/positions`)
+      .then(response => {
+        console.log(response.data.positions);
+        setPositions(response.data.positions);
+      })
+      .catch(error => console.error("Error fetching data:", error));
+  }, []);
+
+
   return (
-    <div className="w-full rounded-3xl bg-white p-4 shadow-lg">
-      {/* <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Status Counter</h2>
-        <select className="w-[130px] rounded-md border border-gray-300 p-2">
+    <div className="w-full mx-auto rounded-3xl bg-white p-6 border border-gray-light">
+      <div className="mb-4 flex items-center justify-between rounded-lg ">
+        <h2 className="headline text-gray-dark font-semibold md:mb-0">Status Counter</h2>
+        <select className="border border-gray-light max-w-[50px] sm:max-w-[120px] lg:max-w-[50px] xl:max-w-[120px] p-1 rounded-md text-sm">
           <option value="all">All Positions</option>
-          <option value="engineer">Engineer</option>
-          <option value="designer">Designer</option>
-          <option value="manager">Manager</option>
+          {positions.map((position) => (
+            <option key={position.job_id} value={position.job_id}>
+              {position.title}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -88,11 +105,10 @@ export default function StatusCounter() {
               </div>
             </div>
             <div
-              className={`grid transition-all ${
-                expandedStages.includes(stage.name)
-                  ? "mt-2 grid-rows-[1fr]"
-                  : "grid-rows-[0fr]"
-              }`}
+              className={`grid transition-all ${expandedStages.includes(stage.name)
+                ? "mt-2 grid-rows-[1fr]"
+                : "grid-rows-[0fr]"
+                }`}
             >
               <div className="overflow-hidden">
                 <div className="space-y-2">
@@ -114,7 +130,7 @@ export default function StatusCounter() {
             </div>
           </div>
         ))}
-      </div> */}
+      </div>
     </div>
   );
 }
