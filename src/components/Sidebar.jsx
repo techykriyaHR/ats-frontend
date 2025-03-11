@@ -10,18 +10,16 @@ export default function Sidebar({ isOpen, onToggleSidebar }) {
     <>
       {/* Overlay (closes sidebar when clicked) */}
       <div
-        className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 ${
-          isOpen ? "opacity-100" : "pointer-events-none opacity-0"
-        } md:hidden`}
+        className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 ${isOpen ? "opacity-100" : "pointer-events-none opacity-0"
+          } md:hidden`}
         onClick={onToggleSidebar}
         aria-hidden="true"
       ></div>
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 flex h-full w-72 flex-col justify-between bg-white p-6 shadow-lg transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:relative md:translate-x-0 md:shadow-none`}
+        className={`fixed inset-y-0 left-0 z-50 flex h-full w-72 flex-col justify-between bg-white p-6 shadow-lg transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
+          } md:relative md:translate-x-0 md:shadow-none`}
       >
         {/* Close Button (only for mobile) */}
         <button

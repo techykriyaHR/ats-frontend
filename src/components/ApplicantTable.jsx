@@ -2,21 +2,11 @@ import DataTable from 'react-data-table-component';
 import { useState, useEffect } from 'react';
 import moment from 'moment';
 import axios from 'axios';
+
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
-
-
-const statuses = [
-    "None",
-    "Sent Test",
-    "First Interview Stage",
-    "Final Interview Stage",
-    "Job Offer Sent",
-    "Abandoned",
-    "Blacklisted",
-    "No Show",
-    "Not Fit",
-];
 
 
 
@@ -29,6 +19,18 @@ const ApplicantTable = () => {
             .then(response => {
                 console.log(response.data);
                 setApplicantData(response.data);
+            })
+            .catch(error => console.error("Error fetching data:", error));
+    }, []);
+
+    // All possible statuses
+    let [statuses, setStatuses] = useState([]);
+
+    useEffect(() => {
+        axios.get(`${API_BASE_URL}/status`)
+            .then(response => {
+                console.log(response.data);
+                setStatuses(response.data);
             })
             .catch(error => console.error("Error fetching data:", error));
     }, []);
@@ -81,14 +83,19 @@ const ApplicantTable = () => {
                 >
                     {statuses.map(status => (
                         <option key={status} value={status}>
-                            {status}
+                            {status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}
                         </option>
-                    ))}
-                </select>
+                    ))
+                    }
+                </select >
             ),
-            sortable: true,
         },
     ];
+
+    const LoadingComponent = () => (
+        // <Skeleton count={10} />
+        <h1>Wait lang...</h1>
+    );
 
     return (
         <DataTable
@@ -102,6 +109,10 @@ const ApplicantTable = () => {
             data={applicantData}
             component:striped={true}
             onRowClicked={handleApplicantRowClick}
+            pagination
+            // progressPending={!applicantData.length || !statuses.length}
+            progressPending={true}
+            progressComponent={<LoadingComponent />}
         />
     );
 };
