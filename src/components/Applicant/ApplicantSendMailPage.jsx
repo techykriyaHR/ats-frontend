@@ -1,10 +1,30 @@
-import React, { useState } from 'react';
-import { FaPlus } from 'react-icons/fa';
+import React, { useState } from "react";
+import { FaPlus } from "react-icons/fa";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import {
+  BoldIcon,
+  ItalicIcon,
+  UnderlineIcon,
+  ListBulletIcon,
+  NumberedListIcon,
+} from "@heroicons/react/24/outline";
 
 function ApplicantSendMailPage() {
-  const [subject, setSubject] = useState("Welcome to FullSuite – Preparing for Your Interviews and Assessment");
+  const [subject, setSubject] = useState(
+    "Welcome to FullSuite – Preparing for Your Interviews and Assessment"
+  );
   const [attachment, setAttachment] = useState(null);
-  const [emailContent, setEmailContent] = useState("lorem");
+  const [emailContent, setEmailContent] = useState("<p>lorem</p>");
+
+  const editor = useEditor({
+    extensions: [StarterKit, Underline],
+    content: emailContent,
+    onUpdate: ({ editor }) => {
+      setEmailContent(editor.getHTML());
+    },
+  });
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -12,9 +32,9 @@ function ApplicantSendMailPage() {
     }
   };
 
-  const handleEmailContentChange = (e) => {
-    setEmailContent(e.target.innerHTML);
-  };
+  if (!editor) {
+    return null;
+  }
 
   return (
     <div className="p-4 bg-gray-50 min-h-screen">
@@ -28,14 +48,31 @@ function ApplicantSendMailPage() {
         />
       </div>
 
-      {/* Email body */}
+      {/* Email body with TipTap editor */}
       <div className="p-6 bg-white rounded-lg border border-gray-100 mb-5">
-        <div
-          contentEditable
-          className="w-full min-h-[500px] focus-visible:ring-0 resize-none whitespace-pre-line"
-          onInput={handleEmailContentChange}
-          dangerouslySetInnerHTML={{ __html: emailContent }}
-        />
+        <div className="flex gap-3 mb-2">
+          <BoldIcon
+            className="size-5 cursor-pointer"
+            onClick={() => editor.chain().focus().toggleBold().run()}
+          />
+          <ItalicIcon
+            className="size-5 cursor-pointer"
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+          />
+          <UnderlineIcon
+            className="size-5 cursor-pointer"
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+          />
+          <ListBulletIcon
+            className="size-6 cursor-pointer"
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+          />
+          <NumberedListIcon
+            className="size-5 cursor-pointer"
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          />
+        </div>
+        <EditorContent editor={editor} className="border p-2 rounded bg-white min-h-[500px]" />
       </div>
 
       <div className="flex border border-gray-100 bg-white mb-5">
@@ -46,7 +83,7 @@ function ApplicantSendMailPage() {
         <span className="text-gray-500">{attachment ? attachment.name : "No file chosen"}</span>
       </div>
 
-      <div className='flex justify-between'>
+      <div className="flex justify-between">
         <div>
           <input
             list="templates"
@@ -60,7 +97,6 @@ function ApplicantSendMailPage() {
           </datalist>
         </div>
 
-
         <div>
           <button className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-2 rounded-md">Send</button>
         </div>
@@ -70,4 +106,3 @@ function ApplicantSendMailPage() {
 }
 
 export default ApplicantSendMailPage;
-
