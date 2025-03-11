@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import { FiUpload } from "react-icons/fi";
@@ -12,6 +12,21 @@ function Upload() {
   const [flaggedApplicants, setFlaggedApplicants] = useState([]);
   const [reviewing, setReviewing] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (!reviewing) {
+      setIsUploading(false);
+    }
+  }, [reviewing]);
+
+  const resetStates = () => {
+    setIsUploading(false);
+    setMessage(null);
+    setApplicants([]);
+    setFlaggedApplicants([]);
+    setReviewing(false);
+    setCurrentIndex(0);
+  };
 
   const excelDateToJSDate = (serial) => {
     const utc_days = Math.floor(serial - 25569);
@@ -58,14 +73,14 @@ function Upload() {
   const forwardToBackend = async (applicants) => {
     setIsUploading(true);
     setMessage({ type: "info", text: "Uploading applicants..." });
-    
+
     try {
       const formattedApplicants = JSON.stringify(applicants);
       const formData = new FormData();
       formData.append("applicants", formattedApplicants);
-      
+
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"}/applicants/add/upload`, 
+        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"}/applicants/add/upload`,
         formData,
         {
           headers: {
@@ -73,9 +88,9 @@ function Upload() {
           },
         }
       );
-      
+
       console.log("Backend response:", response.data);
-      
+
       if (response.data.flagged && response.data.flagged.length > 0) {
         setFlaggedApplicants(response.data.flagged);
         setReviewing(true);
@@ -85,9 +100,9 @@ function Upload() {
     } catch (error) {
       console.error("Upload error:", error);
       console.error("Error details:", error.response?.data);
-      setMessage({ 
-        type: "error", 
-        text: error.response?.data?.message || "Error uploading applicants" 
+      setMessage({
+        type: "error",
+        text: error.response?.data?.message || "Error uploading applicants"
       });
     } finally {
       setIsUploading(false);
@@ -97,18 +112,18 @@ function Upload() {
   const handleFile = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     try {
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data);
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
-      
+
       if (jsonData.length === 0) {
         setMessage({ type: "error", text: "No data found in the Excel file" });
         return;
       }
-      
+
       const mappedApplicants = jsonData.map(mapExcelDataToApplicant);
       setApplicants(mappedApplicants);
       await forwardToBackend(mappedApplicants);
@@ -122,7 +137,7 @@ function Upload() {
     try {
       setIsUploading(true);
       const acceptedApplicant = flaggedApplicants[index].applicant;
-  
+
       // Create payload similar to AddApplicantForm.jsx
       const payload = {
         applicant: JSON.stringify({
@@ -144,9 +159,9 @@ function Upload() {
           date_applied: acceptedApplicant.date_applied,
         }),
       };
-  
+
       console.log("Accepted applicant payload:", payload);
-  
+
       // Use the applicant/add endpoint
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"}/applicants/add`,
@@ -157,12 +172,12 @@ function Upload() {
           },
         }
       );
-  
+
       if (response.status === 201) {
         setMessage({ type: "success", text: "Applicant accepted and saved successfully" });
         // Remove the accepted applicant from the flagged list
         setFlaggedApplicants(flaggedApplicants.filter((_, i) => i !== index));
-  
+
         // Adjust current index if needed
         if (index >= flaggedApplicants.length - 1) {
           setCurrentIndex(0);
@@ -205,45 +220,44 @@ function Upload() {
           <label className="flex items-center bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md cursor-pointer">
             <FiUpload className="w-4 h-4 mr-2" />
             <span>{isUploading ? "Uploading..." : "Upload Applicants"}</span>
-            <input 
-              type="file" 
-              accept=".xlsx,.xls" 
-              onChange={handleFile} 
-              className="hidden" 
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleFile}
+              className="hidden"
               disabled={isUploading}
             />
           </label>
-          
+
           {message && (
-            <div className={`mt-2 p-2 text-sm rounded-md ${
-              message.type === "success" ? "bg-green-100 text-green-800" : 
-              message.type === "error" ? "bg-red-100 text-red-800" : 
-              message.type === "warning" ? "bg-yellow-100 text-yellow-800" : 
-              "bg-blue-100 text-blue-800"
-            }`}>
+            <div className={`mt-2 p-2 text-sm rounded-md ${message.type === "success" ? "bg-green-100 text-green-800" :
+                message.type === "error" ? "bg-red-100 text-red-800" :
+                  message.type === "warning" ? "bg-yellow-100 text-yellow-800" :
+                    "bg-blue-100 text-blue-800"
+              }`}>
               {message.text}
             </div>
           )}
         </>
       ) : (
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-30 p-4 z-50">
-       
-            <div className="absolute top-4 right-4">
-              <button onClick={() => setReviewing(false)} className="text-gray-600 hover:text-gray-900">
-                <AiOutlineClose size={24} />
-              </button>
-            </div>
-            <ReviewApplicants 
-              applicants={flaggedApplicants} 
-              currentIndex={currentIndex}
-              onNext={handleNext}
-              onPrevious={handlePrevious}
-              onAccept={handleAccept} 
-              onReject={handleReject} 
-              onClose={() => setReviewing(false)} 
-            />
+
+          <div className="absolute top-4 right-4">
+            <button onClick={resetStates} className="text-gray-600 hover:text-gray-900">
+              <AiOutlineClose size={24} />
+            </button>
           </div>
-     
+          <ReviewApplicants
+            applicants={flaggedApplicants}
+            currentIndex={currentIndex}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            onAccept={handleAccept}
+            onReject={handleReject}
+            onClose={resetStates}
+          />
+        </div>
+
       )}
     </div>
   );
