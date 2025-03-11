@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
-import ApplicantList from "../components/ApplicantList";
-import StatusCounter from "../components/StatusCounter";
+import Sidebar from "../layouts/Sidebar";
+import Header from "../layouts/Header";
+import ApplicantList from "../layouts/ApplicantList";
+import StatusCounter from "../layouts/StatusCounter";
 import AnalysisPage from "../components/AnalysisComponents/AnalysisPage";
 import ApplicantDetailsPage from "./ApplicantDetailsPage";
 import AddApplicantForm from "./AddApplicantForm";

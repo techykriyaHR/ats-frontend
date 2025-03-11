@@ -2,8 +2,8 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaFileExport } from "react-icons/fa";
-import AddApplicantDropdown from "./AddApplicantDropdown";
-import ApplicantTable from "./ApplicantTable";
+import AddApplicantDropdown from "../components/AddApplicantDropdown";
+import ApplicantTable from "../components/ApplicantTable";
 
 export default function ApplicantList({
   onSelectApplicant,
