@@ -37,14 +37,27 @@ const ApplicantTable = () => {
 
     // Function to handle status change
     const handleStatusChange = (id, newStatus) => {
-        setApplicantData(prevData =>
-            prevData.map(applicant =>
-                applicant.applicant_id === id
-                    ? { ...applicant, status: newStatus }
-                    : applicant
-            )
-        );
+        
     };
+
+    const updateStatus = async (id, progress_id, status) => {
+        let data = {
+            "progress_id": progress_id,
+            "status": status
+        }
+        try {
+            await axios.put(`${API_BASE_URL}/applicant/update/status`, data);
+            setApplicantData(prevData =>
+                prevData.map(applicant =>
+                    applicant.applicant_id === id
+                        ? { ...applicant, status: status }
+                        : applicant
+                )
+            );
+        } catch (error) {
+            console.error("Update Status Failed: " + error);
+        }
+    }
 
     // Function to handle row click
     const handleApplicantRowClick = (row) => {
@@ -78,7 +91,7 @@ const ApplicantTable = () => {
                 <select
                     className='border border-gray-light max-w-[100px]'
                     value={row.status}
-                    onChange={(e) => handleStatusChange(row.applicant_id, e.target.value)}
+                    onChange={(e) => updateStatus(row.applicant_id, row.progress_id, e.target.value)}
                     style={{ padding: '5px', borderRadius: '5px' }}
                 >
                     {statuses.map(status => (
@@ -110,8 +123,8 @@ const ApplicantTable = () => {
             component:striped={true}
             onRowClicked={handleApplicantRowClick}
             pagination
-            // progressPending={!applicantData.length || !statuses.length}
-            progressPending={true}
+            progressPending={!applicantData.length || !statuses.length}
+            // progressPending={true}
             progressComponent={<LoadingComponent />}
         />
     );
