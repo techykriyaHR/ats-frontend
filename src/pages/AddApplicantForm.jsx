@@ -1,46 +1,102 @@
-import React, { useState } from "react";
-import { FaCalendarAlt, FaExclamationTriangle } from "react-icons/fa";
-import ConfirmationModal from "../components/Modals/ConfirmationModal";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa';
+import ConfirmationModal from '../components/Modals/ConfirmationModal';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import useUserStore from '../context/userStore.jsx';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const formSchema = {
-  firstName: "",
-  middleName: "",
-  lastName: "",
-  birthdate: "",
-  gender: "",
-  email: "",
-  phone: "",
-  cvLink: "",
-  position: "",
-  source: "",
-  referrer: "",
-  testResult: "",
-  dateApplied: "",
+  firstName: '',
+  middleName: '',
+  lastName: '',
+  birthdate: '',
+  gender: '',
+  email: '',
+  phone: '',
+  cvLink: '',
+  position: '',
+  source: '',
+  referrer: '',
+  testResult: '',
+  dateApplied: '',
 };
-
-const duplicates = [
-  {
-    name: "Juniper Wright Williams",
-    dateApplied: "October 24, 2024",
-    positionApplied: "Business Operations Associate",
-    applicationStatus: "Business Operations Associate",
-    emailAddress: "junkyblue@gmail.com",
-    similarities: ["First Name", "Last Name", "Email Address"],
-  },
-  {
-    name: "Saturnino Paterno",
-    dateApplied: "October 24, 2023",
-    positionApplied: "Software Engineer",
-    applicationStatus: "Business Operations Associate",
-    emailAddress: "satkyblue@gmail.com",
-    similarities: ["Email Address"],
-  },
-];
 
 function AddApplicantForm({ onClose }) {
   const [formData, setFormData] = useState(formSchema);
+  const [positions, setPositions] = useState([]);
+  const [users, setUsers] = useState([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [duplicates, setDuplicates] = useState([]);
+  const user = useUserStore((state) => state.user);
+
+  useEffect(() => {
+    const fetchPositions = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/company/positions`);
+        setPositions(response.data.positions);
+      } catch (error) {
+        console.error('Error fetching positions:', error);
+      }
+    };
+
+    const fetchUsers = async () => {
+      try {
+        const token = Cookies.get('token');
+        const response = await axios.get(`${API_BASE_URL}/user/user-accounts`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUsers(response.data.userAccounts);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchPositions();
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    const checkForDuplicates = async () => {
+      const payload = {
+        applicant: JSON.stringify({
+          first_name: formData.firstName,
+          middle_name: formData.middleName,
+          last_name: formData.lastName,
+          birth_date: formData.birthdate,
+          gender: formData.gender,
+          email_1: formData.email,
+          mobile_number_1: formData.phone,
+          cv_link: formData.cvLink,
+          discovered_at: formData.source,
+          referrer_id: formData.referrer,
+          created_by: user.user_id,
+          updated_by: user.user_id,
+          company_id: 'company_id',
+          position_id: formData.position,
+          test_result: formData.testResult,
+          date_applied: formData.dateApplied,
+        }),
+      };
+  
+      try {
+        const duplicateCheckResponse = await axios.post(`${API_BASE_URL}/applicants/add/check-duplicates`, payload);
+        if (duplicateCheckResponse.data.isDuplicate) {
+          setDuplicates(duplicateCheckResponse.data.possibleDuplicates);
+        } else {
+          setDuplicates([]);
+        }
+      } catch (error) {
+        console.error('Error checking for duplicates:', error);
+      }
+    };
+    
+    console.log("duplicates: "+JSON.stringify(duplicates));
+    checkForDuplicates();
+  }, [formData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -61,26 +117,22 @@ function AddApplicantForm({ onClose }) {
         cv_link: formData.cvLink,
         discovered_at: formData.source,
         referrer_id: formData.referrer,
-        created_by: "user_id", // Replace with the actual logged-in user ID
-        updated_by: "user_id",
-        company_id: "company_id", // Set dynamically if needed
+        created_by: user.user_id,
+        updated_by: user.user_id,
+        company_id: 'company_id',
         position_id: formData.position,
         test_result: formData.testResult,
         date_applied: formData.dateApplied,
       }),
     };
 
-    console.log("PAYLOAD:", payload);
-
     try {
-      const response = await axios.post(
-        "http://localhost:3000/applicants/add",
-        payload,
-      );
-      console.log("Applicant added:", response.data);
+      // Proceed with adding the applicant if no duplicates are found
+      const response = await axios.post(`${API_BASE_URL}/applicants/add`, payload);
+      console.log('Applicant added:', response.data);
       onClose();
     } catch (error) {
-      console.error("Error adding applicant:", error);
+      console.error('Error adding applicant:', error);
     }
   };
 
@@ -97,13 +149,25 @@ function AddApplicantForm({ onClose }) {
     setShowConfirmationModal(false);
   };
 
+  const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const populateRandomData = () => {
+     
+  };
+
   return (
-    <div className="flex-1 overflow-auto p-6">
+    <div className="flex-1 p-6 overflow-auto">
       <div className="p-6">
-        <div className="mb-6 flex items-center justify-between p-4">
+        <div className="flex justify-between items-center mb-6 p-4">
           <h1 className="text-xl font-semibold">Add New Applicant</h1>
+          <button
+            type="button"
+            className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+            onClick={populateRandomData}
+          >
+            Populate Random Data
+          </button>
         </div>
-        <div className="flex flex-col gap-8 lg:flex-row">
+        <div className="flex flex-col lg:flex-row gap-8">
           <div className="flex-1">
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-4">
@@ -116,7 +180,7 @@ function AddApplicantForm({ onClose }) {
                       placeholder="Last Name"
                       value={formData.lastName}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 p-2"
+                      className="w-full p-2 border border-gray-300 rounded-md"
                     />
                   </div>
                   <div>
@@ -126,7 +190,7 @@ function AddApplicantForm({ onClose }) {
                       placeholder="First Name"
                       value={formData.firstName}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 p-2"
+                      className="w-full p-2 border border-gray-300 rounded-md"
                     />
                   </div>
                   <div>
@@ -136,7 +200,7 @@ function AddApplicantForm({ onClose }) {
                       placeholder="Middle Name"
                       value={formData.middleName}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 p-2"
+                      className="w-full p-2 border border-gray-300 rounded-md"
                     />
                   </div>
                 </div>
@@ -151,9 +215,9 @@ function AddApplicantForm({ onClose }) {
                       name="birthdate"
                       value={formData.birthdate}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 p-2"
+                      className="w-full p-2 border border-gray-300 rounded-md"
                     />
-                    <FaCalendarAlt className="absolute top-2 right-2 h-4 w-4 text-gray-400" />
+                    <FaCalendarAlt className="absolute right-2 top-2 h-4 w-4 text-gray-400" />
                   </div>
                 </div>
 
@@ -165,7 +229,7 @@ function AddApplicantForm({ onClose }) {
                         type="radio"
                         name="gender"
                         value="male"
-                        checked={formData.gender === "male"}
+                        checked={formData.gender === 'male'}
                         onChange={handleChange}
                       />
                       <span>Male</span>
@@ -175,7 +239,7 @@ function AddApplicantForm({ onClose }) {
                         type="radio"
                         name="gender"
                         value="female"
-                        checked={formData.gender === "female"}
+                        checked={formData.gender === 'female'}
                         onChange={handleChange}
                       />
                       <span>Female</span>
@@ -185,7 +249,7 @@ function AddApplicantForm({ onClose }) {
                         type="radio"
                         name="gender"
                         value="other"
-                        checked={formData.gender === "other"}
+                        checked={formData.gender === 'other'}
                         onChange={handleChange}
                       />
                       <span>Other</span>
@@ -201,9 +265,9 @@ function AddApplicantForm({ onClose }) {
                       name="dateApplied"
                       value={formData.dateApplied}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 p-2"
+                      className="w-full p-2 border border-gray-300 rounded-md"
                     />
-                    <FaCalendarAlt className="absolute top-2 right-2 h-4 w-4 text-gray-400" />
+                    <FaCalendarAlt className="absolute right-2 top-2 h-4 w-4 text-gray-400" />
                   </div>
                 </div>
               </div>
@@ -218,7 +282,7 @@ function AddApplicantForm({ onClose }) {
                       placeholder="Email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 p-2"
+                      className="w-full p-2 border border-gray-300 rounded-md"
                     />
                   </div>
                   <div>
@@ -228,7 +292,7 @@ function AddApplicantForm({ onClose }) {
                       placeholder="(XXX) XXX-XXXX"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 p-2"
+                      className="w-full p-2 border border-gray-300 rounded-md"
                     />
                   </div>
                 </div>
@@ -242,7 +306,7 @@ function AddApplicantForm({ onClose }) {
                   placeholder="cv.link@drive.com"
                   value={formData.cvLink}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-gray-300 p-2"
+                  className="w-full p-2 border border-gray-300 rounded-md"
                 />
               </div>
 
@@ -252,12 +316,14 @@ function AddApplicantForm({ onClose }) {
                   name="position"
                   value={formData.position}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-gray-300 p-2"
+                  className="w-full p-2 border border-gray-300 rounded-md"
                 >
                   <option value="">Select Option</option>
-                  <option value="engineer">Software Engineer</option>
-                  <option value="designer">UI Designer</option>
-                  <option value="manager">Product Manager</option>
+                  {positions.map((position) => (
+                    <option key={position.job_id} value={position.job_id}>
+                      {position.title}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -268,31 +334,32 @@ function AddApplicantForm({ onClose }) {
                     name="source"
                     value={formData.source}
                     onChange={handleChange}
-                    className="w-full rounded-md border border-gray-300 p-2"
+                    className="w-full p-2 border border-gray-300 rounded-md"
                   >
                     <option value="">Select Option</option>
                     <option value="Referral">Referral</option>
                     <option value="Website">Website</option>
                     <option value="Social Media">Social Media</option>
                     <option value="Podcast">Podcast</option>
-                    <option value="Career Fair (Startup Caravan, University Visit)">
-                      Career Fair (Startup Caravan, University Visit)
-                    </option>
+                    <option value="Career Fair (Startup Caravan, University Visit)">Career Fair (Startup Caravan, University Visit)</option>
                   </select>
                 </div>
 
-                {formData.source === "Referral" && (
+                {formData.source === 'Referral' && (
                   <div>
                     <label>Referrer</label>
                     <select
                       name="referrer"
                       value={formData.referrer}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 p-2"
+                      className="w-full p-2 border border-gray-300 rounded-md"
                     >
                       <option value="">Select Option</option>
-                      <option value="john">John Doe</option>
-                      <option value="jane">Jane Smith</option>
+                      {users.map((user) => (
+                        <option key={user.user_id} value={user.user_id}>
+                          {`${user.first_name} ${user.middle_name} ${user.last_name}`}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 )}
@@ -306,21 +373,21 @@ function AddApplicantForm({ onClose }) {
                   placeholder="https://testresults.com"
                   value={formData.testResult}
                   onChange={handleChange}
-                  className="w-full rounded-md border border-gray-300 p-2"
+                  className="w-full p-2 border border-gray-300 rounded-md"
                 />
               </div>
 
               <div className="flex justify-end gap-4">
                 <button
                   type="button"
-                  className="rounded-md bg-teal-600/10 px-4 py-2 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700"
+                  className="px-4 py-2 rounded-md bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700"
                   onClick={handleCancel}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-md bg-[#008080] px-4 py-2 text-white hover:bg-teal-700"
+                  className="px-4 py-2 rounded-md bg-[#008080] text-white hover:bg-teal-700"
                 >
                   Add
                 </button>
@@ -328,33 +395,31 @@ function AddApplicantForm({ onClose }) {
             </form>
           </div>
 
-          <div className="w-full p-6 lg:w-96">
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">
-                Possible Duplicates ({duplicates.length})
-              </h2>
+          <div className="w-full lg:w-96 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-semibold">Possible Duplicates ({duplicates.length})</h2>
             </div>
             <div className="space-y-4">
               {duplicates.map((duplicate, index) => (
-                <div key={index} className="space-y-2 border p-4">
-                  <h3 className="font-medium">{duplicate.name}</h3>
-                  <div className="text-muted-foreground space-y-1 text-sm">
-                    <p>Date Applied: {duplicate.dateApplied}</p>
-                    <p>Position Applied: {duplicate.positionApplied}</p>
-                    <p>Application Status: {duplicate.applicationStatus}</p>
-                    <p>Email Address: {duplicate.emailAddress}</p>
-                  </div>
-                  <div className="space-y-1 pt-2">
-                    {duplicate.similarities.map((similarity, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 text-sm text-yellow-600"
-                      >
-                        <FaExclamationTriangle className="h-4 w-4" />
-                        <span>Similarity in {similarity}</span>
+                <div key={index} className="border p-4 space-y-2">
+                  {duplicate.applicantFromDb && (
+                    <> 
+                      <h3 className="font-medium">{duplicate.applicantFromDb.first_name} {duplicate.applicantFromDb.last_name}</h3>
+                      <div className="space-y-1 text-sm text-muted-foreground">
+                        <p>Date Applied: {duplicate.applicantFromDb.data_created}</p>
+          
+                        <p>Email Address: {duplicate.applicantFromDb.email_1}</p>
                       </div>
-                    ))}
-                  </div>
+                      <div className="space-y-1 pt-2">
+                        {duplicate.similarity.map((similarity, index) => (
+                          <div key={index} className="flex items-center gap-2 text-sm text-yellow-600">
+                            <FaExclamationTriangle className="h-4 w-4" />
+                            <span>Similarity in {similarity}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
