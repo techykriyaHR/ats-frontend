@@ -16,7 +16,8 @@ const getFilteredApplicants = async (dateFilter, dateFilterValue, position, stat
     }
 
     const result = await api.get(`/applicants/filter?${params.toString()}`);
-
+    console.log("result in get", result);
+    
     return result.data;
 };
 
