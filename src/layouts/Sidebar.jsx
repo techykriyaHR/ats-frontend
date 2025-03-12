@@ -4,7 +4,7 @@ import {
   FaChartBar,
   FaListAlt,
 } from "react-icons/fa";
-import useUserStore from "../Context/userStore";
+import useUserStore from "../context/userStore";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
