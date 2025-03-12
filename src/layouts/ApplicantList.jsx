@@ -21,7 +21,7 @@ export default function ApplicantList({
 
   const dropdownRef = useRef(null);
 
-    const applicants = [
+  const applicants = [
     {
       "applicant_id": "A21",
       "first_name": "Rachel",
@@ -204,8 +204,6 @@ export default function ApplicantList({
     },
   ];
 
-
-
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
@@ -267,7 +265,7 @@ export default function ApplicantList({
                 <button
                   className="block text-center text-sm px-2 py-2 text-gray-dark hover:bg-gray-100"
                   onClick={() => {
-                    exportToExcel(dateFilterType,selectedDate, "sample", ["status 1", "status 2"] );
+                    exportToExcel(dateFilterType, selectedDate, 'Business Operations Associate', ["NONE", "TEST_SENT"]);
                   }}
                 >
                   Excel
