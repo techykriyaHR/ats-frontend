@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
 import Sidebar from "../layouts/Sidebar";
 import Header from "../layouts/Header";
@@ -8,6 +8,9 @@ import AnalysisPage from "../components/AnalysisComponents/AnalysisPage";
 import ApplicantDetailsPage from "./ApplicantDetailsPage";
 import AddApplicantForm from "./AddApplicantForm";
 import WarningModal from "../components/Modals/WarningModal";
+import useUserStore from "../Context/userStore";
+import api from "../api/axios";
+import Cookies from "js-cookie";
 
 const MAX_TABS = 10;
 
@@ -18,6 +21,29 @@ export default function Dashboard() {
   const [showAddApplicantForm, setShowAddApplicantForm] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const setUser = useUserStore((state) => state.setUser);
+  const user = useUserStore((state) => state.user);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = Cookies.get("token");
+        const response = await api.get("/user/getuserinfo", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("User data fetched:", response.data); // Debugging log
+        setUser(response.data);
+        console.log("User data set in Zustand:", response.data); // Debugging log
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, [setUser]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeWarningModal = () => setShowWarningModal(false);
@@ -97,7 +123,7 @@ export default function Dashboard() {
       <div
         className={`fixed top-0 bottom-0 left-0 z-50 transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
-        <Sidebar isOpen={isSidebarOpen} onToggleSidebar={toggleSidebar} />
+        <Sidebar isOpen={isSidebarOpen} onToggleSidebar={toggleSidebar} onSelectView={selectView} />
       </div>
 
       {/* Main Content */}
@@ -106,7 +132,7 @@ export default function Dashboard() {
           <AddApplicantForm onClose={() => setShowAddApplicantForm(false)} />
         ) : (
           <>
-            <Header onSelectView={selectView} onToggleSidebar={toggleSidebar} />
+            <Header onToggleSidebar={toggleSidebar} />
             {/* Tabs Section */}
             {selectedView === "listings" && !showAddApplicantForm && (
               <div className="mb-4 flex rounded-lg border border-gray-light bg-white p-1 pb-0">
@@ -146,9 +172,9 @@ export default function Dashboard() {
       </div>
 
       {/* Warning Modal */}
-      {/* {showWarningModal && (
+      {showWarningModal && (
         <WarningModal message={`You can only open up to ${MAX_TABS} tabs.`} onClose={closeWarningModal} />
-      )} */}
+      )}
     </div >
   );
 }
