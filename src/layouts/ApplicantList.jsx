@@ -5,6 +5,10 @@ import { FaFileExport } from "react-icons/fa";
 import AddApplicantDropdown from "../components/AddApplicantDropdown";
 import ApplicantTable from "../components/ApplicantTable";
 
+import exportToExcel from "../utils/exportToExcel";
+import exportToPdf from "../utils/exportToPdf";
+import moment from "moment";
+
 export default function ApplicantList({
   onSelectApplicant,
   onAddApplicantClick,
@@ -17,20 +21,7 @@ export default function ApplicantList({
 
   const dropdownRef = useRef(null);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-
-
-  const applicants = [
+    const applicants = [
     {
       "applicant_id": "A21",
       "first_name": "Rachel",
@@ -213,6 +204,19 @@ export default function ApplicantList({
     },
   ];
 
+
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleRowClick = (id) => {
     const applicant = applicants.find((applicant) => applicant.applicant_id === id);
     onSelectApplicant(applicant.applicant_id);
@@ -262,9 +266,13 @@ export default function ApplicantList({
               <div className="absolute w-20 sm:w-full mt-1 bg-white border border-gray-200 rounded-lg z-10">
                 <button
                   className="block text-center text-sm px-2 py-2 text-gray-dark hover:bg-gray-100"
+                  onClick={() => {
+                    exportToExcel(dateFilterType,selectedDate, "sample", ["status 1", "status 2"] );
+                  }}
                 >
                   Excel
                 </button>
+
                 <button
                   className="block text-center text-sm px-2 py-2 text-gray-dark hover:bg-gray-100"
                 >
