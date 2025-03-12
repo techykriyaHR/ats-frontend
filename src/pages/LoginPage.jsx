@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiMail, FiLock, FiEye, FiEyeOff, FiUser, FiCopy } from "react-icons/fi";
 import api from "../api/axios";
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [showTestCredentials, setShowTestCredentials] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -41,6 +42,39 @@ export default function LoginPage() {
     setEmail(userEmail);
     setPassword(userPassword);
   };
+
+  useEffect(() => {
+    const konamiCode = [
+      "ArrowUp",
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowDown",
+      "ArrowLeft",
+      "ArrowRight",
+      "ArrowLeft",
+      "ArrowRight",
+      "b",
+      "a",
+    ];
+    let konamiCodePosition = 0;
+
+    const handleKeyDown = (e) => {
+      if (e.key === konamiCode[konamiCodePosition]) {
+        konamiCodePosition++;
+        if (konamiCodePosition === konamiCode.length) {
+          setShowTestCredentials(true);
+          konamiCodePosition = 0;
+        }
+      } else {
+        konamiCodePosition = 0;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-cyan-100 p-4">
@@ -104,6 +138,8 @@ export default function LoginPage() {
                 </div>
               </div>
 
+         
+
               {error && (
                 <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm flex items-center">
                   <span>{error}</span>
@@ -150,33 +186,35 @@ export default function LoginPage() {
         </div>
 
         {/* Debug Credentials */}
-        <div className="mt-6 bg-white rounded-xl shadow-lg p-5">
-          <p className="text-gray-600 text-center font-medium mb-3">Test Credentials</p>
-          <div className="space-y-4">
-            {[
-              { email: "testuser@example.com", password: "password", label: "Test User" },
-              { email: "ats_hr@example.com", password: "password", label: "HR User" },
-              { email: "ats_interviewer@example.com", password: "password", label: "Interviewer" },
-            ].map((cred, index) => (
-              <div key={index} className="bg-gray-50 rounded-lg p-3">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">{cred.label}</p>
-                    <p className="text-xs text-gray-500">{cred.email}</p>
-                    <p className="text-xs text-gray-500">Password: {cred.password}</p>
+        {showTestCredentials && (
+          <div className="mt-6 bg-white rounded-xl shadow-lg p-5">
+            <p className="text-gray-600 text-center font-medium mb-3">Test Credentials</p>
+            <div className="space-y-4">
+              {[
+                { email: "testuser@example.com", password: "password", label: "Test User" },
+                { email: "ats_hr@example.com", password: "password", label: "HR User" },
+                { email: "ats_interviewer@example.com", password: "password", label: "Interviewer" },
+              ].map((cred, index) => (
+                <div key={index} className="bg-gray-50 rounded-lg p-3">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">{cred.label}</p>
+                      <p className="text-xs text-gray-500">{cred.email}</p>
+                      <p className="text-xs text-gray-500">Password: {cred.password}</p>
+                    </div>
+                    <button
+                      onClick={() => handleCopyCredentials(cred.email, cred.password)}
+                      className="flex items-center space-x-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm transition"
+                    >
+                      <FiCopy size={14} />
+                      <span>Use</span>
+                    </button>
                   </div>
-                  <button
-                    onClick={() => handleCopyCredentials(cred.email, cred.password)}
-                    className="flex items-center space-x-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm transition"
-                  >
-                    <FiCopy size={14} />
-                    <span>Use</span>
-                  </button>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
