@@ -9,7 +9,7 @@ import ApplicantDetailsPage from "./ApplicantDetailsPage";
 import AddApplicantForm from "./AddApplicantForm";
 import WarningModal from "../components/Modals/WarningModal";
 import useUserStore from "../Context/userStore";
-import axios from "axios";
+import api from "../api/axios";
 import Cookies from "js-cookie";
 
 const MAX_TABS = 10;
@@ -29,7 +29,7 @@ export default function Dashboard() {
     const fetchUserInfo = async () => {
       try {
         const token = Cookies.get("token");
-        const response = await axios.get("http://localhost:3000/user/getuserinfo", {
+        const response = await api.get("/user/getuserinfo", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
