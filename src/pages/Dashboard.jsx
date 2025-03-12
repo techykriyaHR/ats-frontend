@@ -64,7 +64,7 @@ export default function Dashboard() {
     switch (selectedView) {
       case "listings":
         return (
-          <div className="mb-5 grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="mb-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="lg:col-span-2">
               <ApplicantList
                 onSelectApplicant={selectApplicant}
@@ -101,7 +101,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col md:ml-72 w-full lg:px-10 xl:px-20">
+      <div className="flex flex-col md:ml-72 w-full lg:px-5">
         {showAddApplicantForm ? (
           <AddApplicantForm onClose={() => setShowAddApplicantForm(false)} />
         ) : (
