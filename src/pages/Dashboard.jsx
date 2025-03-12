@@ -8,7 +8,7 @@ import AnalysisPage from "../components/AnalysisComponents/AnalysisPage";
 import ApplicantDetailsPage from "./ApplicantDetailsPage";
 import AddApplicantForm from "./AddApplicantForm";
 import WarningModal from "../components/Modals/WarningModal";
-import useUserStore from "../store/userStore";
+import useUserStore from "../Context/userStore";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -123,7 +123,7 @@ export default function Dashboard() {
       <div
         className={`fixed top-0 bottom-0 left-0 z-50 transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
-        <Sidebar isOpen={isSidebarOpen} onToggleSidebar={toggleSidebar} />
+        <Sidebar isOpen={isSidebarOpen} onToggleSidebar={toggleSidebar} onSelectView={selectView} />
       </div>
 
       {/* Main Content */}
@@ -132,7 +132,7 @@ export default function Dashboard() {
           <AddApplicantForm onClose={() => setShowAddApplicantForm(false)} />
         ) : (
           <>
-            <Header onSelectView={selectView} onToggleSidebar={toggleSidebar} />
+            <Header onToggleSidebar={toggleSidebar} />
             {/* Tabs Section */}
             {selectedView === "listings" && !showAddApplicantForm && (
               <div className="mb-4 flex rounded-lg border border-gray-light bg-white p-1 pb-0">

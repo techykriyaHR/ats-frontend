@@ -4,12 +4,12 @@ import {
   FaChartBar,
   FaListAlt,
 } from "react-icons/fa";
-import useUserStore from "../store/userStore";
+import useUserStore from "../Context/userStore";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-export default function Sidebar({ isOpen, onToggleSidebar }) {
+export default function Sidebar({ isOpen, onToggleSidebar, onSelectView }) {
   const user = useUserStore((state) => state.user);
   const setUser = useUserStore((state) => state.setUser);
   const navigate = useNavigate();
@@ -17,6 +17,7 @@ export default function Sidebar({ isOpen, onToggleSidebar }) {
 
   const handleSelectView = (view) => {
     setCurrentView(view);
+    onSelectView(view);
     onToggleSidebar();
   };
 
