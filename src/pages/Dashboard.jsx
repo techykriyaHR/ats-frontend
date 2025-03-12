@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
 import Sidebar from "../layouts/Sidebar";
 import Header from "../layouts/Header";
@@ -8,6 +8,9 @@ import AnalysisPage from "../components/AnalysisComponents/AnalysisPage";
 import ApplicantDetailsPage from "./ApplicantDetailsPage";
 import AddApplicantForm from "./AddApplicantForm";
 import WarningModal from "../components/Modals/WarningModal";
+import useUserStore from "../store/userStore";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const MAX_TABS = 10;
 
@@ -18,6 +21,29 @@ export default function Dashboard() {
   const [showAddApplicantForm, setShowAddApplicantForm] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const setUser = useUserStore((state) => state.setUser);
+  const user = useUserStore((state) => state.user);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = Cookies.get("token");
+        const response = await axios.get("http://localhost:3000/user/getuserinfo", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("User data fetched:", response.data); // Debugging log
+        setUser(response.data);
+        console.log("User data set in Zustand:", response.data); // Debugging log
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, [setUser]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeWarningModal = () => setShowWarningModal(false);
@@ -146,9 +172,9 @@ export default function Dashboard() {
       </div>
 
       {/* Warning Modal */}
-      {/* {showWarningModal && (
+      {showWarningModal && (
         <WarningModal message={`You can only open up to ${MAX_TABS} tabs.`} onClose={closeWarningModal} />
-      )} */}
+      )}
     </div >
   );
 }
