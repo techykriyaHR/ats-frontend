@@ -1,33 +1,37 @@
-import React from "react";
-import { FaExclamationTriangle } from "react-icons/fa";
+import React, { useEffect } from "react";
+import { FaExclamationTriangle, FaTimes } from "react-icons/fa";
 
 function ReviewApplicants({ applicants, currentIndex, onNext, onPrevious, onAccept, onReject, onClose }) {
+  const close = () => {
+    onClose();
+  };
+
+  useEffect(() => {
+    if (!applicants || applicants.length === 0) {
+      onClose();
+    }
+  }, [applicants, onClose]);
+
   if (!applicants || applicants.length === 0) {
-    return (
-      <div className="min-h-screen p-4 flex items-center justify-center">
-        <div className="bg-white rounded-lg w-full max-w-4xl p-6 shadow-lg">
-          <h2 className="text-xl font-bold mb-6">No Applicants to Review</h2>
-          <button
-            type="button"
-            className="px-4 py-2 rounded-md bg-gray-600 text-white hover:bg-gray-700"
-            onClick={onClose}
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   const { applicant, possibleDuplicates } = applicants[currentIndex];
 
   return (
-    <div className="min-h-screen p-4 flex items-center justify-center">
-      <div className="bg-white rounded-lg w-full max-w-4xl p-6 shadow-lg">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+      <div className="bg-white rounded-lg w-full max-w-4xl p-6 shadow-lg overflow-auto max-h-screen relative">
+        <button
+          type="button"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+          onClick={close}
+        >
+          <FaTimes size={24} />
+        </button>
         <h2 className="text-xl font-bold mb-6">Review Applicant ({currentIndex + 1} of {applicants.length})</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+          <div className="bg-gray-50 rounded-lg p-5 border border-gray-200 overflow-auto">
             <h3 className="text-xl font-bold mb-4">
               {applicant.first_name} {applicant.last_name}
             </h3>
@@ -83,7 +87,7 @@ function ReviewApplicants({ applicants, currentIndex, onNext, onPrevious, onAcce
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+          <div className="bg-gray-50 rounded-lg p-5 border border-gray-200 overflow-auto max-h-96">
             <h3 className="text-xl font-bold mb-4">Possible Duplicates</h3>
             {possibleDuplicates.length > 0 ? (
               possibleDuplicates.map((duplicate, index) => (

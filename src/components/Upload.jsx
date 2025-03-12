@@ -243,9 +243,7 @@ function Upload() {
         <div className="fixed inset-0 flex items-center justify-center bg-opacity-30 p-4 z-50">
 
           <div className="absolute top-4 right-4">
-            <button onClick={resetStates} className="text-gray-600 hover:text-gray-900">
-              <AiOutlineClose size={24} />
-            </button>
+          
           </div>
           <ReviewApplicants
             applicants={flaggedApplicants}
