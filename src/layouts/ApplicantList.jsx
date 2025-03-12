@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaFileExport } from "react-icons/fa";
@@ -13,6 +13,22 @@ export default function ApplicantList({
   const [selectedDate, setSelectedDate] = useState(null);
   const [dateFilterType, setDateFilterType] = useState("month");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+
 
   const applicants = [
     {
@@ -202,16 +218,6 @@ export default function ApplicantList({
     onSelectApplicant(applicant.applicant_id);
   };
 
-  // const handleRowClick = () => {
-  //   console.log("Row clicked:");
-  //   const applicant = applicants.find((applicant) => applicant.id === row.applicant_id);
-  //   if (applicant) {
-  //     onSelectApplicant(applicant);
-  //     alert("Applicant selected: " + applicant.name);
-  //   }
-  // };
-
-
   const clearFilter = () => {
     setSelectedDate(null);
     setDateFilterType("month");
@@ -246,15 +252,30 @@ export default function ApplicantList({
       <div className="mb-4 flex items-center justify-between rounded-lg ">
         <h1 className="headline text-gray-dark font-semibold md:mb-0">Applicant List</h1>
         <div className="center flex gap-2">
+          <div className="relative inline-block text-left" ref={dropdownRef}>
+            <button className="flex items-center rounded-md bg-white border border-teal px-2 py-1 text-sm text-teal hover:bg-teal-700 cursor-pointer"
+              onClick={() => setIsOpen(!isOpen)}>
+              <FaFileExport className="mr-2 h-4 w-4 " /> Export
+            </button>
 
-          {/* partial button for export */}
-          <button className="flex items-center rounded-md bg-white border border-teal px-2 py-1 text-sm text-teal hover:bg-teal-700 cursor-pointer">
-            <FaFileExport className="mr-2 h-4 w-4 " /> Export
-          </button>
+            {isOpen && (
+              <div className="absolute w-20 sm:w-full mt-1 bg-white border border-gray-200 rounded-lg z-10">
+                <button
+                  className="block text-center text-sm px-2 py-2 text-gray-dark hover:bg-gray-100"
+                >
+                  Excel
+                </button>
+                <button
+                  className="block text-center text-sm px-2 py-2 text-gray-dark hover:bg-gray-100"
+                >
+                  PDF
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* dropdown button for adding a new applicant (add manually or upload a file)*/}
           <AddApplicantDropdown className="" onAddManually={onAddApplicantClick} />
-
         </div>
       </div>
 
@@ -307,55 +328,6 @@ export default function ApplicantList({
         // sortOrder={sortOrder}
         // toggleSortOrder={toggleSortOrder}
         />
-        {/* <table className="w-full">
-          <thead>
-            <tr className="border-b">
-              <th className="px-4 py-2 text-left font-normal text-gray-600">
-                Date Applied
-                <button
-                  onClick={toggleSortOrder}
-                  className="ml-2 text-sm text-gray-600"
-                >
-                  {sortOrder === "asc" ? "▲" : "▼"}
-                </button>
-              </th>
-              <th className="px-4 py-2 text-left font-normal text-gray-600">
-                Applicant Name
-              </th>
-              <th className="px-4 py-2 text-left font-normal text-gray-600">
-                Position Applied
-              </th>
-              <th className="px-4 py-2 text-left font-normal text-gray-600">
-                Application Status
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredApplicants.map((applicant) => (
-              <tr
-                key={applicant.id}
-                className="cursor-pointer border-b hover:bg-gray-50"
-                onClick={() => handleRowClick(applicant.id)}
-              >
-                <td className="px-4 py-4">{applicant.date}</td>
-                <td className="px-4 py-4">{applicant.name}</td>
-                <td className="px-4 py-4">{applicant.position}</td>
-                <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
-                  <select
-                    className="w-full rounded-md p-2 border border-gray-300 md:w-52"
-                    defaultValue={applicant.status}
-                  >
-                    {statuses.map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table> */}
       </div>
 
 
