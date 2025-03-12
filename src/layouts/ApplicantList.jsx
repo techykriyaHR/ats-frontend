@@ -265,8 +265,17 @@ export default function ApplicantList({
                 <button
                   className="block text-center text-sm px-2 py-2 text-gray-dark hover:bg-gray-100"
                   onClick={() => {
-                    exportToExcel(dateFilterType, selectedDate, 'Business Operations Associate', ["NONE", "TEST_SENT"]);
+                    let exportValue = "";
+                  
+                    if (dateFilterType === "year" && selectedDate) {
+                      exportValue = selectedDate.getFullYear().toString();
+                    } else if (dateFilterType === "month" && selectedDate) {
+                      exportValue = moment(selectedDate).format("MMMM").toLowerCase();
+                    }
+                  
+                    exportToExcel(dateFilterType, exportValue, 'Business Operations Associate', ["NONE", "TEST_SENT"]);
                   }}
+                  
                 >
                   Excel
                 </button>
