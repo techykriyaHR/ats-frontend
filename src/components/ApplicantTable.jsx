@@ -16,7 +16,7 @@ const ApplicantTable = () => {
     useEffect(() => {
         api.get(`/applicants`)
             .then(response => {
-                console.log("Applicant Fetched Successfully.",);
+                console.log("Applicant Fetched Successfully.");
                 setApplicantData(response.data);
             })
             .catch(error => console.error("Error fetching data:", error));
