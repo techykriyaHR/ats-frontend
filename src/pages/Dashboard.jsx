@@ -8,7 +8,7 @@ import AnalysisPage from "../components/AnalysisComponents/AnalysisPage";
 import ApplicantDetailsPage from "./ApplicantDetailsPage";
 import AddApplicantForm from "./AddApplicantForm";
 import WarningModal from "../components/Modals/WarningModal";
-import useUserStore from "../Context/userStore";
+import useUserStore from "../Context/userStore.jsx";
 import api from "../api/axios";
 import Cookies from "js-cookie";
 
