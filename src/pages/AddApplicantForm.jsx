@@ -13,6 +13,7 @@ import {
 import axios from "axios"
 import Cookies from "js-cookie"
 import useUserStore from "../context/userStore"
+import api from "../api/axios"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -43,27 +44,25 @@ function AddApplicantForm({ onClose }) {
   useEffect(() => {
     const fetchPositions = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/company/positions`)
-        setPositions(response.data.positions)
+        const response = await api.get("/company/positions");
+        setPositions(response.data.positions);
       } catch (error) {
-        console.error("Error fetching positions:", error)
+        console.error("Error fetching positions:", error);
       }
-    }
-
+    };
     const fetchUsers = async () => {
       try {
-        const token = Cookies.get("token")
-        const response = await axios.get(`${API_BASE_URL}/user/user-accounts`, {
+        const token = Cookies.get("token");
+        const response = await api.get("/user/user-accounts", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        })
-        setUsers(response.data.userAccounts)
+        });
+        setUsers(response.data.userAccounts);
       } catch (error) {
-        console.error("Error fetching users:", error)
+        console.error("Error fetching users:", error);
       }
-    }
-
+    };
     fetchPositions()
     fetchUsers()
   }, [])
@@ -91,16 +90,16 @@ function AddApplicantForm({ onClose }) {
     }
 
     try {
-      const duplicateCheckResponse = await axios.post(`${API_BASE_URL}/applicants/add/check-duplicates`, payload)
+      const duplicateCheckResponse = await api.post("/applicants/add/check-duplicates", payload);
 
-      console.log("Duplicate check response:", duplicateCheckResponse.data)
+      console.log("Duplicate check response:", duplicateCheckResponse.data);
       if (duplicateCheckResponse.data.isDuplicate) {
-        setDuplicates(duplicateCheckResponse.data.possibleDuplicates)
+        setDuplicates(duplicateCheckResponse.data.possibleDuplicates);
       } else {
-        setDuplicates([])
+        setDuplicates([]);
       }
     } catch (error) {
-      console.error("Error checking for duplicates:", error)
+      console.error("Error checking for duplicates:", error);
     }
   }
 
@@ -138,11 +137,11 @@ function AddApplicantForm({ onClose }) {
 
     try {
       // Proceed with adding the applicant if no duplicates are found
-      const response = await axios.post(`${API_BASE_URL}/applicants/add`, payload)
-      console.log("Applicant added:", response.data)
-      onClose()
+      const response = await api.post("/applicants/add", payload);
+      console.log("Applicant added:", response.data);
+      onClose();
     } catch (error) {
-      console.error("Error adding applicant:", error)
+      console.error("Error adding applicant:", error);
     }
   }
 
