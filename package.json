@@ -27,6 +27,7 @@
     "js-cookie": "^3.0.5",
     "json2csv": "^6.0.0-alpha.2",
     "jwt-decode": "^4.0.0",
+    "quill": "^2.0.3",
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.0",
     "react-datepicker": "^8.1.0",

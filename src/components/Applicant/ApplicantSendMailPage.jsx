@@ -6,6 +6,8 @@ import TextAlign from "@tiptap/extension-text-align";
 import Strike from "@tiptap/extension-strike";
 import CodeBlock from "@tiptap/extension-code-block";
 import Blockquote from "@tiptap/extension-blockquote";
+import axios from "axios";
+
 import {
   BoldIcon,
   ItalicIcon,
@@ -48,6 +50,29 @@ function ApplicantSendMailPage() {
     }
   };
 
+  const handleSendEmail = async () => {
+    const formData = new FormData();
+    formData.append("applicant_id", "02c59390-7d65-46c8-934e-e300b5db0504");
+    formData.append("user_id", "fcd3eee1-9a10-40d6-8444-b0f5b8632af1");
+    formData.append("email_subject", subject);
+    formData.append("email_body", emailContent);
+    if (attachment) {
+      formData.append("files", attachment);
+    }
+
+    try {
+      await axios.post("https://ats-backend-three.vercel.app/email/applicant", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      alert("Email sent successfully");
+    } catch (error) {
+      console.error("Error sending email:", error);
+      alert("Failed to send email");
+    }
+  };
+
   if (!editor) {
     return null;
   }
@@ -83,7 +108,6 @@ function ApplicantSendMailPage() {
         <EditorContent editor={editor} className="rounded-lg bg-white min-h-[500px] p-4 border border-gray-200" />
       </div>
   
-
       <div className="flex border border-gray-100 bg-white mb-5">
         <label htmlFor="file-upload" className="cursor-pointer bg-teal-600 text-white text-center px-8 py-2 rounded-md">
           Attachment
@@ -91,22 +115,11 @@ function ApplicantSendMailPage() {
         </label>
         <span className="text-gray-500">{attachment ? attachment.name : "No file chosen"}</span>
       </div>
-
   
       <div className="flex justify-between items-center">
-        <div>
-          <input
-            list="templates"
-            id="templateInput"
-            className="bg-teal-600 hover:bg-teal-700 text-white text-center px-4 py-2 rounded-md w-full"
-            placeholder="Use Template"
-          />
-          <datalist id="templates">
-            <option value="Template 1" />
-            <option value="Template 2" />
-          </datalist>
-        </div>
-        <button className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-md shadow-md">Send</button>
+        <button onClick={handleSendEmail} className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-md shadow-md">
+          Send
+        </button>
       </div>
     </div>
   );
