@@ -1,14 +1,33 @@
-// src/components/StatusCounter.js
 import React from "react";
 import { usePositions } from "../hooks/usePositions";
 import { useStages } from "../hooks/useStages";
 import { useCollapse } from "../hooks/useCollapse";
 import { filterCounter } from "../utils/statusCounterFunctions";
+import { initialStages } from "../utils/StagesData";
 
 export default function StatusCounter() {
   const positions = usePositions();
   const { stages, setStages, toggleStage, toggleStatus } = useStages();
   const { collapsedStages, toggleCollapse } = useCollapse();
+
+  // Check if at least one status is selected
+  const hasSelectedStatus = stages.some((stage) =>
+    stage.statuses.some((status) => status.selected),
+  );
+
+  // Function to clear all selections
+  const clearSelections = () => {
+    setStages((prevStages) =>
+      prevStages.map((stage) => ({
+        ...stage,
+        selected: false,
+        statuses: stage.statuses.map((status) => ({
+          ...status,
+          selected: false,
+        })),
+      })),
+    );
+  };
 
   return (
     <div className="border-gray-light mx-auto w-full rounded-3xl border bg-white p-6">
@@ -16,7 +35,9 @@ export default function StatusCounter() {
         <h2 className="headline text-gray-dark md:mb-0">Status Counter</h2>
         <select
           className="border-gray-light max-w-[120px] rounded-md border p-1 text-sm"
-          onChange={(e) => filterCounter(e.target.value, setStages)}
+          onChange={(e) =>
+            filterCounter(e.target.value, setStages, initialStages)
+          }
         >
           <option value="All">All Positions</option>
           {positions.map((position) => (
@@ -80,6 +101,18 @@ export default function StatusCounter() {
           </div>
         ))}
       </div>
+
+      {/* Show Clear Button if any status is selected */}
+      {hasSelectedStatus && (
+        <div className="mt-4 text-end">
+          <button
+            onClick={clearSelections}
+            className="text-gray-dark border-gray-light hover:bg-gray-light cursor-pointer rounded-lg border p-2 text-sm transition"
+          >
+            Clear
+          </button>
+        </div>
+      )}
     </div>
   );
 }
