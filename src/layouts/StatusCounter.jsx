@@ -14,7 +14,7 @@ export default function StatusCounter() {
       <div className="mb-4 flex items-center justify-between rounded-lg">
         <h2 className="headline text-gray-dark md:mb-0">Status Counter</h2>
         <select className="border border-gray-light max-w-[120px] p-1 rounded-md text-sm"
-          onChange={(e) => {filterCounter(e.target.value, setStages, initialStages); console.log(e.target.value)}}
+          onChange={(e) => { filterCounter(e.target.value, setStages, initialStages); console.log(e.target.value) }}
         >
           <option value="All">All Positions</option>
           {positions.map((position) => (
