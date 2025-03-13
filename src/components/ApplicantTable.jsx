@@ -18,6 +18,7 @@ const ApplicantTable = () => {
             .then(response => {
                 console.log("Applicant Fetched Successfully.");
                 setApplicantData(response.data);
+    
             })
             .catch(error => console.error("Error fetching data:", error));
     }, []);
