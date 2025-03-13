@@ -1,20 +1,22 @@
-import React, { useState } from "react";
+// src/components/StatusCounter.js
+import React from "react";
 import { usePositions } from "../hooks/usePositions";
 import { useStages } from "../hooks/useStages";
-import { initialStages } from "../utils/StagesData";
+import { useCollapse } from "../hooks/useCollapse";
 import { filterCounter } from "../utils/statusCounterFunctions";
 
 export default function StatusCounter() {
   const positions = usePositions();
   const { stages, setStages, toggleStage, toggleStatus } = useStages();
-  //const [stages, setStages] = useState()
+  const { collapsedStages, toggleCollapse } = useCollapse();
 
   return (
-    <div className="w-full h-99/100 mx-auto rounded-3xl bg-white p-6 border border-gray-light">
+    <div className="border-gray-light mx-auto w-full rounded-3xl border bg-white p-6">
       <div className="mb-4 flex items-center justify-between rounded-lg">
         <h2 className="headline text-gray-dark md:mb-0">Status Counter</h2>
-        <select className="border border-gray-light max-w-[120px] p-1 rounded-md text-sm"
-          onChange={(e) => { filterCounter(e.target.value, setStages, initialStages); console.log(e.target.value) }}
+        <select
+          className="border-gray-light max-w-[120px] rounded-md border p-1 text-sm"
+          onChange={(e) => filterCounter(e.target.value, setStages)}
         >
           <option value="All">All Positions</option>
           {positions.map((position) => (
@@ -30,35 +32,51 @@ export default function StatusCounter() {
           <div key={stage.name}>
             {/* Stage Button */}
             <div
-              className={`flex cursor-pointer items-center justify-between ${stage.selected ? "bg-teal text-white" : "bg-gray-light text-gray-dark"
-                } px-2 rounded-md hover:bg-teal-soft mb-2`}
+              className={`flex cursor-pointer items-center justify-between ${
+                stage.selected
+                  ? "bg-teal text-white"
+                  : "bg-gray-light text-gray-dark"
+              } hover:bg-teal-soft mb-2 rounded-md px-2`}
               onClick={() => toggleStage(stage.name)}
             >
               <div className="flex flex-1 items-center justify-between">
                 <span className="body-bold">{stage.name}</span>
                 <div className="flex items-center gap-2">
                   <span className="text-sm">{stage.count}</span>
-                  <div className="rounded-lg bg-teal-soft w-3 h-3 border-2 border-background"></div>
+                  <span
+                    className="hover:text-gray-light text-red-soft"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevents parent click event
+                      toggleCollapse(stage.name);
+                    }}
+                  >
+                    {collapsedStages[stage.name] ? "▼" : "▲"}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Status Buttons */}
-            <div className="overflow-hidden">
-              <div className="space-y-2">
+            {/* Status Buttons - Collapsible */}
+            {!collapsedStages[stage.name] && (
+              <div className="space-y-2 overflow-hidden">
                 {stage.statuses.map((status) => (
                   <div
                     onClick={() => toggleStatus(stage.name, status.name)}
                     key={status.name}
-                    className={`flex justify-between items-center rounded-lg px-3 py-1 mx-1 border ${status.selected ? "border-teal-soft bg-teal-soft" : "border-gray-light"
-                      } hover:bg-gray-light`}
+                    className={`mx-1 flex items-center justify-between rounded-lg border px-3 py-1 ${
+                      status.selected
+                        ? "border-teal-soft bg-teal-soft"
+                        : "border-gray-light"
+                    } hover:bg-gray-light`}
                   >
-                    <span className="body-regular text-gray-dark">{status.name}</span>
+                    <span className="body-regular text-gray-dark">
+                      {status.name}
+                    </span>
                     <span className="headline">{status.count}</span>
                   </div>
                 ))}
               </div>
-            </div>
+            )}
           </div>
         ))}
       </div>
