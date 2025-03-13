@@ -1,19 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { usePositions } from "../hooks/usePositions";
 import { useStages } from "../hooks/useStages";
+import { initialStages } from "../utils/StagesData";
+import { filterCounter } from "../utils/statusCounterFunctions";
 
 export default function StatusCounter() {
   const positions = usePositions();
-  const { stages, toggleStage, toggleStatus } = useStages();
+  const { stages, setStages, toggleStage, toggleStatus } = useStages();
+  //const [stages, setStages] = useState()
 
   return (
     <div className="w-full h-99/100 mx-auto rounded-3xl bg-white p-6 border border-gray-light">
       <div className="mb-4 flex items-center justify-between rounded-lg">
         <h2 className="headline text-gray-dark md:mb-0">Status Counter</h2>
-        <select className="border border-gray-light max-w-[120px] p-1 rounded-md text-sm">
-          <option value="all">All Positions</option>
+        <select className="border border-gray-light max-w-[120px] p-1 rounded-md text-sm"
+          onChange={(e) => {filterCounter(e.target.value, setStages, initialStages); console.log(e.target.value)}}
+        >
+          <option value="All">All Positions</option>
           {positions.map((position) => (
-            <option key={position.job_id} value={position.job_id}>
+            <option key={position.job_id} value={position.title}>
               {position.title}
             </option>
           ))}

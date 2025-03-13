@@ -1,10 +1,19 @@
 // /src/hooks/useStages.js
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { initialStages } from "../utils/StagesData";
+import { fetchCounts, filterCounter } from "../utils/statusCounterFunctions";
 
 export const useStages = () => {
     const [stages, setStages] = useState(initialStages);
 
+    useEffect(() => {
+        const fetchInitialCounts = async () => {
+            await fetchCounts(setStages, initialStages);
+        };
+        console.log("okayyyy")
+        fetchInitialCounts();
+    }, []);
+    
     const toggleStage = (stageName) => {
         setStages((prevStages) =>
             prevStages.map((stage) =>
@@ -44,5 +53,5 @@ export const useStages = () => {
         );
     };
 
-    return { stages, toggleStage, toggleStatus };
+    return { stages, setStages, toggleStage, toggleStatus };
 };
