@@ -6,66 +6,54 @@ import api from '../api/axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-
-
 const ApplicantTable = () => {
+    // State for applicant data, pagination, and statuses
+    const [applicantData, setApplicantData] = useState([]);
+    const [totalApplicants, setTotalApplicants] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [perPage, setPerPage] = useState(10);
+    const [statuses, setStatuses] = useState([]);
 
-    // State to track applicant data
-    let [applicantData, setApplicantData] = useState([]);
-
+    // Fetch applicants with pagination
     useEffect(() => {
-        api.get(`/applicants`)
-            .then(response => {
-                console.log("Applicant Fetched Successfully.");
-                setApplicantData(response.data);
-            })
-            .catch(error => console.error("Error fetching data:", error));
-    }, []);
+        fetchApplicants(currentPage, perPage);
+    }, [currentPage, perPage]);
 
-    // All possible statuses
-    let [statuses, setStatuses] = useState([]);
+    const fetchApplicants = async (page, limit) => {
+        try {
+            const response = await api.get(`/applicants?page=${page}&limit=${limit}`);
+            setApplicantData(response.data.applicants);
+            setTotalApplicants(response.data.totalApplicants);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
 
+    // Fetch statuses
     useEffect(() => {
-        console.log(API_BASE_URL);
-
-        api.get(`/status`)
+        api.get('/status')
             .then(response => {
-                console.log("Status Fetched Successfully.",);
                 setStatuses(response.data);
             })
-            .catch(error => console.error("Error fetching data:", error));
+            .catch(error => console.error("Error fetching statuses:", error));
     }, []);
 
     // Function to handle status change
     const updateStatus = async (id, progress_id, status) => {
-        let data = {
-            "progress_id": progress_id,
-            "status": status
-        }
+        const data = { progress_id, status };
         try {
             await axios.put(`${API_BASE_URL}/applicant/update/status`, data);
             setApplicantData(prevData =>
                 prevData.map(applicant =>
                     applicant.applicant_id === id
-                        ? { ...applicant, status: status }
+                        ? { ...applicant, status }
                         : applicant
                 )
             );
         } catch (error) {
-            console.error("Update Status Failed: " + error);
-        }
-    }
-
-    // Function to handle row click
-    const handleApplicantRowClick = (row) => {
-        const applicant = applicantData.find((applicant) => applicant.applicant_id === row.applicant_id);
-        if (applicant) {
-
-            console.log(applicant.applicant_id);
-
+            console.error("Update Status Failed:", error);
         }
     };
-
 
     // Define table columns
     const columns = [
@@ -95,22 +83,20 @@ const ApplicantTable = () => {
                         <option key={status} value={status}>
                             {status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}
                         </option>
-                    ))
-                    }
-                </select >
+                    ))}
+                </select>
             ),
         },
     ];
 
-    const LoadingComponent = () => (
-        <div className="flex flex-col space-y-2">
-            <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
-            <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
-            <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
-            <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
-            <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
-        </div>
-    );
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    const handlePerRowsChange = (newPerPage, page) => {
+        setPerPage(newPerPage);
+        setCurrentPage(page);
+    };
 
     return (
         <DataTable
@@ -122,12 +108,14 @@ const ApplicantTable = () => {
             responsive
             columns={columns}
             data={applicantData}
-            component:striped={true}
-            onRowClicked={handleApplicantRowClick}
+            onRowClicked={row => console.log(row.applicant_id)}
             pagination
-            progressPending={!applicantData.length || !statuses.length}
-            // progressPending={true}
-            progressComponent={<LoadingComponent />}
+            paginationServer
+            paginationTotalRows={totalApplicants}
+            paginationPerPage={perPage}
+            paginationRowsPerPageOptions={[5, 10, 15, 20]}
+            onChangePage={handlePageChange}
+            onChangeRowsPerPage={handlePerRowsChange}
         />
     );
 };
