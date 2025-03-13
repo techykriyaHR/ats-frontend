@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import {
   FaCalendarAlt,
@@ -161,117 +159,13 @@ function AddApplicantForm({ onClose }) {
     setShowConfirmationModal(false)
   }
 
-  const populateRandomData = () => {
-    // Generate random names
-    const firstNames = ['John', 'Jane', 'Alice', 'Bob', 'Michael', 'Emma', 'David', 'Sophia', 'James', 'Olivia', 'Daniel', 'Emily'];
-    const middleInitials = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const lastNames = ['Doe', 'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Wilson'];
-
-    // Generate random birth year between 1970 and 2000
-    const randomYear = Math.floor(Math.random() * 31) + 1970;
-    const randomMonth = Math.floor(Math.random() * 12) + 1;
-    const randomDay = Math.floor(Math.random() * 28) + 1; // Using 28 to avoid date issues
-    const birthdate = `${randomYear}-${randomMonth.toString().padStart(2, '0')}-${randomDay.toString().padStart(2, '0')}`;
-
-    // Generate random gender with probability distribution
-    const genderRoll = Math.random();
-    const gender = genderRoll < 0.45 ? 'male' : (genderRoll < 0.9 ? 'female' : 'other');
-
-    // Generate random first and last name
-    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-    const middleInitial = middleInitials[Math.floor(Math.random() * middleInitials.length)] + '.';
-    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-
-    // Generate random email based on name
-    const emailDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'example.com', 'company.net'];
-    const emailDomain = emailDomains[Math.floor(Math.random() * emailDomains.length)];
-    const emailPrefix = Math.random() < 0.5 ?
-      `${firstName.toLowerCase()}.${lastName.toLowerCase()}` :
-      `${firstName.toLowerCase()}${Math.floor(Math.random() * 1000)}`;
-    const email = `${emailPrefix}@${emailDomain}`;
-
-    // Generate random phone number
-    const areaCode = Math.floor(Math.random() * 900) + 100;
-    const prefix = Math.floor(Math.random() * 900) + 100;
-    const lineNumber = Math.floor(Math.random() * 9000) + 1000;
-    const phone = `${areaCode}${prefix}${lineNumber}`;
-
-    // Generate random CV link
-    const cvDomains = ['drive.google.com', 'dropbox.com', 'onedrive.live.com', 'linkedin.com'];
-    const cvDomain = cvDomains[Math.floor(Math.random() * cvDomains.length)];
-    const cvId = Math.random().toString(36).substring(2, 10);
-    const cvLink = `https://${cvDomain}/cv-${cvId}`;
-
-    // Generate random application date within the last 2 years
-    const now = new Date();
-    const twoYearsAgo = new Date();
-    twoYearsAgo.setFullYear(now.getFullYear() - 2);
-    const randomDate = new Date(twoYearsAgo.getTime() + Math.random() * (now.getTime() - twoYearsAgo.getTime()));
-    const dateApplied = randomDate.toISOString().split('T')[0];
-
-    // Generate random source with weighted distribution
-    const sources = [
-      { name: 'Referral', weight: 0.35 },
-      { name: 'Website', weight: 0.25 },
-      { name: 'LinkedIn', weight: 0.15 },
-      { name: 'Indeed', weight: 0.1 },
-      { name: 'Social Media', weight: 0.08 },
-      { name: 'Podcast', weight: 0.04 },
-      { name: 'Job Fair', weight: 0.03 }
-    ];
-
-    let sourceRoll = Math.random();
-    let cumulativeWeight = 0;
-    let source = sources[sources.length - 1].name;
-
-    for (const sourceOption of sources) {
-      cumulativeWeight += sourceOption.weight;
-      if (sourceRoll <= cumulativeWeight) {
-        source = sourceOption.name;
-        break;
-      }
-    }
-
-    // Random position and referrer still use existing data but with random selection
-    const position = positions.length > 0 ? positions[Math.floor(Math.random() * positions.length)].job_id : '';
-    const referrer = users.length > 0 ? users[Math.floor(Math.random() * users.length)].user_id : '';
-
-    // Random test result link
-    const testResultId = Math.random().toString(36).substring(2, 12);
-    const testResult = `https://results.company.com/test-${testResultId}`;
-
-    const randomData = {
-      firstName,
-      middleName: middleInitial,
-      lastName,
-      birthdate,
-      gender,
-      email,
-      phone,
-      cvLink,
-      position,
-      source,
-      referrer,
-      testResult,
-      dateApplied,
-    };
-
-    setFormData(randomData);
-
-  }
 
   return (
-    <div className="flex-1 p-6 overflow-auto bg-[#d9ebeb]">
-      <div className="p-6 bg-white rounded-lg shadow-md">
+    <>
+      <div className="min-h-screen bg-white p-8">
+
         <div className="flex justify-between items-center mb-6 p-4 border-b border-[#66b2b2]">
           <h1 className="text-2xl font-semibold text-[#008080]">Add New Applicant</h1>
-          <button
-            type="button"
-            className="px-4 py-2 rounded-md bg-[#008080] text-white hover:bg-[#006666] transition-colors duration-300 shadow-md"
-            onClick={populateRandomData}
-          >
-            Populate Random Data
-          </button>
         </div>
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="flex-1">
@@ -336,7 +230,7 @@ function AddApplicantForm({ onClose }) {
 
                 <div className="space-y-3">
                   <label className="mb-2 text-[#008080] font-medium">Gender</label>
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row sm:gap-4 gap-2">
                     <label className="flex items-center space-x-2 cursor-pointer">
                       <input
                         type="radio"
@@ -365,16 +259,17 @@ function AddApplicantForm({ onClose }) {
                       <input
                         type="radio"
                         name="gender"
-                        value="other"
-                        checked={formData.gender === "other"}
+                        value="others"
+                        checked={formData.gender === "others"}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         className="accent-[#008080]"
                       />
-                      <span>Other</span>
+                      <span>Others</span>
                     </label>
                   </div>
                 </div>
+
 
                 <div className="flex flex-col">
                   <label className="mb-2 text-[#008080] font-medium">Date Applied</label>
@@ -548,66 +443,66 @@ function AddApplicantForm({ onClose }) {
           </div>
 
           <div className="w-full lg:w-96 p-6 bg-white rounded-lg shadow-md border border-[#66b2b2]">
-            <div className="flex items-center justify-between mb-6 pb-2 border-b border-[#66b2b2]">
-              <h2 className="text-lg font-semibold text-[#008080] flex items-center gap-2">
-                <FaExclamationTriangle className={duplicates.length > 0 ? "text-yellow-600" : "text-[#008080]"} />
-                Possible Duplicates ({duplicates.length})
-              </h2>
-            </div>
-            {duplicates.length > 0 ? (
-              <div className="space-y-4 max-h-96 overflow-auto pr-2">
-                {duplicates.slice(0, 3).map((duplicate, index) => (
+  <div className="flex items-center justify-between mb-6 pb-2 border-b border-[#66b2b2]">
+    <h2 className="text-lg font-semibold text-[#008080] flex items-center gap-2">
+      <FaExclamationTriangle className={duplicates.length > 0 ? "text-yellow-600" : "text-[#008080]"} />
+      Possible Duplicates ({duplicates.length})
+    </h2>
+  </div>
+  {duplicates.length > 0 ? (
+    <div className="space-y-4 max-h-200 overflow-auto pr-2">
+      {duplicates.slice(0, 3).map((duplicate, index) => (  
+        <div
+          key={index}
+          className="border border-[#66b2b2] rounded-lg p-4 space-y-2 hover:shadow-md transition-shadow"
+        >
+          {duplicate.applicantFromDb && (
+            <>
+              <h3 className="font-medium text-[#008080]">
+                {duplicate.applicantFromDb.first_name} {duplicate.applicantFromDb.last_name}
+              </h3>
+              <div className="space-y-1 text-sm text-gray-600">
+                <p>Date Applied: {new Date(duplicate.applicantFromDb.date_created).toLocaleDateString()}</p>
+                <p>Email Address: {duplicate.applicantFromDb.email_1}</p>
+                {duplicate.applicantFromDb.email_2 && (
+                  <p>Second Email Address: {duplicate.applicantFromDb.email_2}</p>
+                )}
+                {duplicate.applicantFromDb.email_3 && (
+                  <p>Third Email Address: {duplicate.applicantFromDb.email_3}</p>
+                )}
+                <p>Mobile Number: {duplicate.applicantFromDb.mobile_number_1}</p>
+                {duplicate.applicantFromDb.mobile_number_2 && (
+                  <p>Second Mobile Number: {duplicate.applicantFromDb.mobile_number_2}</p>
+                )}
+                <p>Gender: {duplicate.applicantFromDb.gender}</p>
+              </div>
+              <div className="space-y-1 pt-2">
+                {duplicate.similarity.map((similarity, index) => (
                   <div
                     key={index}
-                    className="border border-[#66b2b2] rounded-lg p-4 space-y-2 hover:shadow-md transition-shadow"
+                    className="flex items-center gap-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded-md"
                   >
-                    {duplicate.applicantFromDb && (
-                      <>
-                        <h3 className="font-medium text-[#008080]">
-                          {duplicate.applicantFromDb.first_name} {duplicate.applicantFromDb.last_name}
-                        </h3>
-                        <div className="space-y-1 text-sm text-gray-600">
-                          <p>Date Applied: {new Date(duplicate.applicantFromDb.date_created).toLocaleDateString()}</p>
-                          <p>Email Address: {duplicate.applicantFromDb.email_1}</p>
-                          {duplicate.applicantFromDb.email_2 && (
-                            <p>Second Email Address: {duplicate.applicantFromDb.email_2}</p>
-                          )}
-                          {duplicate.applicantFromDb.email_3 && (
-                            <p>Third Email Address: {duplicate.applicantFromDb.email_3}</p>
-                          )}
-                          <p>Mobile Number: {duplicate.applicantFromDb.mobile_number_1}</p>
-                          {duplicate.applicantFromDb.mobile_number_2 && (
-                            <p>Second Mobile Number: {duplicate.applicantFromDb.mobile_number_2}</p>
-                          )}
-                          <p>Gender: {duplicate.applicantFromDb.gender}</p>
-                        </div>
-                        <div className="space-y-1 pt-2">
-                          {duplicate.similarity.map((similarity, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center gap-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded-md"
-                            >
-                              <FaExclamationTriangle className="h-4 w-4" />
-                              <span>Similarity in {similarity}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </>
-                    )}
+                    <FaExclamationTriangle className="h-4 w-4" />
+                    <span>Similarity in {similarity}</span>
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-48 text-gray-500">
-                <FaUserAlt className="h-12 w-12 text-[#66b2b2] mb-4" />
-                <p>No duplicates found</p>
-              </div>
-            )}
-          </div>
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div className="flex flex-col items-center justify-center h-48 text-gray-500">
+      <FaUserAlt className="h-12 w-12 text-[#66b2b2] mb-4" />
+      <p>No duplicates found</p>
+    </div>
+  )}
+</div>
         </div>
 
         {showConfirmationModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
               <h3 className="text-lg font-semibold text-[#008080] mb-4">Confirm Action</h3>
               <p className="mb-6">Are you sure you want to leave this page? Unsaved changes will be lost.</p>
@@ -629,7 +524,7 @@ function AddApplicantForm({ onClose }) {
           </div>
         )}
       </div>
-    </div>
+    </>
   )
 }
 
