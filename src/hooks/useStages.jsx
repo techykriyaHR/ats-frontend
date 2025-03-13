@@ -10,10 +10,10 @@ export const useStages = () => {
         const fetchInitialCounts = async () => {
             await fetchCounts(setStages, initialStages);
         };
-        console.log("okayyyy")
+        console.log("Status Counts Fetched Successfully.");
         fetchInitialCounts();
     }, []);
-    
+
     const toggleStage = (stageName) => {
         setStages((prevStages) =>
             prevStages.map((stage) =>
