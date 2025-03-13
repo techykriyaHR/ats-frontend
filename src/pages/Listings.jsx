@@ -1,20 +1,20 @@
 import { useState, useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
-import Sidebar from "../layouts/Sidebar";
-import Header from "../layouts/Header";
-import ApplicantList from "../layouts/ApplicantList";
-import StatusCounter from "../layouts/StatusCounter";
-import AnalysisPage from "../components/AnalysisComponents/AnalysisPage";
-import ApplicantDetailsPage from "./ApplicantDetailsPage";
-import AddApplicantForm from "./AddApplicantForm";
-import WarningModal from "../components/Modals/WarningModal";
+import Sidebar from "../layouts/Sidebar.jsx";
+import Header from "../layouts/Header.jsx";
+import ApplicantList from "../layouts/ApplicantList.jsx";
+import StatusCounter from "../layouts/StatusCounter.jsx";
+import AnalysisPage from "../components/AnalysisComponents/AnalysisPage.jsx";
+import ApplicantDetailsPage from "./ApplicantDetailsPage.jsx";
+import AddApplicantForm from "./AddApplicantForm.jsx";
+import WarningModal from "../components/Modals/WarningModal.jsx";
 import useUserStore from "../context/userStore.jsx";
-import api from "../api/axios";
+import api from "../api/axios.js";
 import Cookies from "js-cookie";
 
 const MAX_TABS = 10;
 
-export default function Dashboard() {
+export default function Listings() {
   const [selectedView, setSelectedView] = useState("listings");
   const [tabs, setTabs] = useState([]);
   const [activeTab, setActiveTab] = useState(null);
