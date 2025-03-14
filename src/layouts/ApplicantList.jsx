@@ -22,186 +22,7 @@ export default function ApplicantList({
   const dropdownRef = useRef(null);
 
   const applicants = [
-    {
-      "applicant_id": "A21",
-      "first_name": "Rachel",
-      "middle_name": "Marie",
-      "last_name": "Stewart",
-      "date_created": "2025-03-07T04:15:22.000Z",
-      "status": "BLACKLISTED",
-      "title": "Graphic Designer"
-    },
-    {
-      "applicant_id": "A22",
-      "first_name": "Steve",
-      "middle_name": null,
-      "last_name": "Parker",
-      "date_created": "2025-03-08T02:30:45.000Z",
-      "status": "JOB_OFFER_ACCEPTED",
-      "title": "Software Engineer"
-    },
-    {
-      "applicant_id": "A23",
-      "first_name": "Megan",
-      "middle_name": "Louise",
-      "last_name": "Collins",
-      "date_created": "2025-03-06T06:22:10.000Z",
-      "status": "TEST_SENT",
-      "title": "Data Analyst"
-    },
-    {
-      "applicant_id": "A24",
-      "first_name": "David",
-      "middle_name": "Robert",
-      "last_name": "Hughes",
-      "date_created": "2025-03-07T11:45:33.000Z",
-      "status": "BLACKLISTED",
-      "title": "Marketing Manager"
-    },
-    {
-      "applicant_id": "A25",
-      "first_name": "Sophia",
-      "middle_name": null,
-      "last_name": "Bennett",
-      "date_created": "2025-03-06T14:11:29.000Z",
-      "status": "FIRST_INTERVIEW",
-      "title": "HR Specialist"
-    },
-    {
-      "applicant_id": "A26",
-      "first_name": "Daniel",
-      "middle_name": "Ray",
-      "last_name": "Evans",
-      "date_created": "2025-03-09T17:20:50.000Z",
-      "status": "BLACKLISTED",
-      "title": "Product Manager"
-    },
-    {
-      "applicant_id": "A27",
-      "first_name": "Isabella",
-      "middle_name": "Claire",
-      "last_name": "Morris",
-      "date_created": "2025-03-08T10:30:55.000Z",
-      "status": "JOB_OFFER_ACCEPTED",
-      "title": "Data Scientist"
-    },
-    {
-      "applicant_id": "A28",
-      "first_name": "Lucas",
-      "middle_name": null,
-      "last_name": "Hill",
-      "date_created": "2025-03-07T03:50:14.000Z",
-      "status": "TEST_SENT",
-      "title": "Software Engineer"
-    },
-    {
-      "applicant_id": "A29",
-      "first_name": "Emma",
-      "middle_name": "Rose",
-      "last_name": "Scott",
-      "date_created": "2025-03-06T08:14:40.000Z",
-      "status": "FIRST_INTERVIEW",
-      "title": "Content Strategist"
-    },
-    {
-      "applicant_id": "A30",
-      "first_name": "Henry",
-      "middle_name": null,
-      "last_name": "King",
-      "date_created": "2025-03-06T19:45:00.000Z",
-      "status": "JOB_OFFER_ACCEPTED",
-      "title": "DevOps Engineer"
-    },
-    {
-      "applicant_id": "A31",
-      "first_name": "Olivia",
-      "middle_name": "Grace",
-      "last_name": "Green",
-      "date_created": "2025-03-08T15:20:30.000Z",
-      "status": "BLACKLISTED",
-      "title": "SEO Specialist"
-    },
-    {
-      "applicant_id": "A32",
-      "first_name": "Noah",
-      "middle_name": null,
-      "last_name": "Baker",
-      "date_created": "2025-03-06T23:59:59.000Z",
-      "status": "TEST_SENT",
-      "title": "Cybersecurity Analyst"
-    },
-    {
-      "applicant_id": "A33",
-      "first_name": "Ava",
-      "middle_name": "Lynn",
-      "last_name": "Walker",
-      "date_created": "2025-03-06T16:35:22.000Z",
-      "status": "FIRST_INTERVIEW",
-      "title": "Customer Success Manager"
-    },
-    {
-      "applicant_id": "A34",
-      "first_name": "James",
-      "middle_name": "Edward",
-      "last_name": "Hall",
-      "date_created": "2025-03-07T12:10:45.000Z",
-      "status": "JOB_OFFER_ACCEPTED",
-      "title": "Solutions Architect"
-    },
-    {
-      "applicant_id": "A35",
-      "first_name": "Chloe",
-      "middle_name": null,
-      "last_name": "Allen",
-      "date_created": "2025-03-06T09:05:55.000Z",
-      "status": "BLACKLISTED",
-      "title": "UX Researcher"
-    },
-    {
-      "applicant_id": "A36",
-      "first_name": "Benjamin",
-      "middle_name": "Joseph",
-      "last_name": "Young",
-      "date_created": "2025-03-07T18:00:10.000Z",
-      "status": "TEST_SENT",
-      "title": "QA Engineer"
-    },
-    {
-      "applicant_id": "A37",
-      "first_name": "Ella",
-      "middle_name": "Sophia",
-      "last_name": "Hernandez",
-      "date_created": "2025-03-08T07:45:33.000Z",
-      "status": "JOB_OFFER_ACCEPTED",
-      "title": "Business Analyst"
-    },
-    {
-      "applicant_id": "A38",
-      "first_name": "William",
-      "middle_name": null,
-      "last_name": "Wright",
-      "date_created": "2025-03-06T22:30:50.000Z",
-      "status": "FIRST_INTERVIEW",
-      "title": "Sales Executive"
-    },
-    {
-      "applicant_id": "A39",
-      "first_name": "Zoe",
-      "middle_name": "Isabel",
-      "last_name": "Lopez",
-      "date_created": "2025-03-09T05:55:15.000Z",
-      "status": "BLACKLISTED",
-      "title": "Social Media Manager"
-    },
-    {
-      "applicant_id": "A40",
-      "first_name": "Jack",
-      "middle_name": "Daniel",
-      "last_name": "Adams",
-      "date_created": "2025-03-22T13:10:20.000Z",
-      "status": "JOB_OFFER_ACCEPTED",
-      "title": "Network Administrator"
-    },
+    // Your applicant data here
   ];
 
   // Close dropdown when clicking outside
@@ -217,7 +38,7 @@ export default function ApplicantList({
 
   const handleRowClick = (id) => {
     const applicant = applicants.find((applicant) => applicant.applicant_id === id);
-    onSelectApplicant(applicant.applicant_id);
+    onSelectApplicant(applicant);
   };
 
   const clearFilter = () => {
@@ -337,15 +158,8 @@ export default function ApplicantList({
         className="rounded-lg bg-white"
         style={{ height: "", overflowY: "auto" }}
       >
-        <ApplicantTable
-        // applicants={filteredApplicants}
-        // handleRowClick={handleRowClick}
-        // sortOrder={sortOrder}
-        // toggleSortOrder={toggleSortOrder}
-        />
+        <ApplicantTable onSelectApplicant={onSelectApplicant} />
       </div>
-
-
     </div>
   );
 }
