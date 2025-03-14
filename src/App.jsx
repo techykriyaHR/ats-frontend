@@ -16,6 +16,8 @@ function App() {
         <Route path="/add-applicant" element={<PrivateRoute element={<AddApplicantForm />} />} />
         <Route path="/applicant/:id" element={<PrivateRoute element={<ApplicantDetailsPage />} />} />
         <Route path="/" element={<Navigate to="/login" />} />
+     {/* Hello world */}
+
       </Routes>
     </BrowserRouter>
   );
