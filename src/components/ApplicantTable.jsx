@@ -18,7 +18,7 @@ const ApplicantTable = () => {
             .then(response => {
                 console.log("Applicant Fetched Successfully.");
                 setApplicantData(response.data);
-    
+
             })
             .catch(error => console.error("Error fetching data:", error));
     }, []);
@@ -27,7 +27,6 @@ const ApplicantTable = () => {
     let [statuses, setStatuses] = useState([]);
 
     useEffect(() => {
-        console.log(API_BASE_URL);
 
         api.get(`/status`)
             .then(response => {

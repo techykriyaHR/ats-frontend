@@ -15,12 +15,6 @@ import Cookies from "js-cookie";
 const MAX_TABS = 10;
 
 export default function Listings() {
-  const [selectedView, setSelectedView] = useState("listings");
-  const [tabs, setTabs] = useState([]);
-  const [activeTab, setActiveTab] = useState(null);
-  const [showAddApplicantForm, setShowAddApplicantForm] = useState(false);
-  const [showWarningModal, setShowWarningModal] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const setUser = useUserStore((state) => state.setUser);
   const user = useUserStore((state) => state.user);
@@ -34,9 +28,10 @@ export default function Listings() {
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log("User data fetched:", response.data); // Debugging log
+        // console.log("User data fetched:", response.data); // Debugging log
         setUser(response.data);
-        console.log("User data set in Zustand:", response.data); // Debugging log
+        console.log('User Data Set Successfully in Zustand');
+        // console.log("User data set in Zustand:", response.data); // Debugging log
       } catch (error) {
         console.error("Failed to fetch user info:", error);
       }
@@ -44,6 +39,14 @@ export default function Listings() {
 
     fetchUserInfo();
   }, [setUser]);
+
+  const [selectedView, setSelectedView] = useState("listings");
+  const [tabs, setTabs] = useState([]);
+  const [activeTab, setActiveTab] = useState(null);
+  const [showAddApplicantForm, setShowAddApplicantForm] = useState(false);
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeWarningModal = () => setShowWarningModal(false);
