@@ -66,7 +66,7 @@ export default function Listings() {
         setShowWarningModal(true);
         return prevTabs; // Return unchanged tabs
       }
-  
+
       // Check if tab is already open
       const isTabOpen = prevTabs.some((tab) => tab.id === applicant.applicant_id);
       if (isTabOpen) {
@@ -74,10 +74,10 @@ export default function Listings() {
         setActiveTab(applicant.applicant_id);
         return prevTabs;
       }
-  
+
       // Add new tab
-      const newTabs = [...prevTabs, { 
-        id: applicant.applicant_id, 
+      const newTabs = [...prevTabs, {
+        id: applicant.applicant_id,
         name: `${applicant.first_name} ${applicant.last_name}`,
         data: applicant // Store the full applicant data
       }];
@@ -101,7 +101,7 @@ export default function Listings() {
         );
       }
     }
-  
+
     switch (selectedView) {
       case "listings":
         return (
