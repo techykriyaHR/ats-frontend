@@ -15,6 +15,15 @@ import Cookies from "js-cookie";
 const MAX_TABS = 10;
 
 export default function Listings() {
+  const [selectedView, setSelectedView] = useState("listings");
+  const [tabs, setTabs] = useState(() => {
+    const savedTabs = localStorage.getItem("tabs");
+    return savedTabs ? JSON.parse(savedTabs) : [];
+  });
+  const [activeTab, setActiveTab] = useState(null);
+  const [showAddApplicantForm, setShowAddApplicantForm] = useState(false);
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const setUser = useUserStore((state) => state.setUser);
 
@@ -27,10 +36,9 @@ export default function Listings() {
             Authorization: `Bearer ${token}`,
           },
         });
-        // console.log("User data fetched:", response.data); // Debugging log
+        console.log("User data fetched:", response.data); // Debugging log
         setUser(response.data);
-        console.log('User Data Set Successfully in Zustand');
-        // console.log("User data set in Zustand:", response.data); // Debugging log
+        console.log("User data set in Zustand:", response.data); // Debugging log
       } catch (error) {
         console.error("Failed to fetch user info:", error);
       }
@@ -39,19 +47,9 @@ export default function Listings() {
     fetchUserInfo();
   }, [setUser]);
 
-
   useEffect(() => {
     localStorage.setItem("tabs", JSON.stringify(tabs));
   }, [tabs]);
-
-  const [selectedView, setSelectedView] = useState("listings");
-  const [tabs, setTabs] = useState([]);
-  const [activeTab, setActiveTab] = useState(null);
-  const [showAddApplicantForm, setShowAddApplicantForm] = useState(false);
-  const [showWarningModal, setShowWarningModal] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeWarningModal = () => setShowWarningModal(false);
@@ -68,7 +66,7 @@ export default function Listings() {
         setShowWarningModal(true);
         return prevTabs; // Return unchanged tabs
       }
-  
+
       // Check if tab is already open
       const isTabOpen = prevTabs.some((tab) => tab.id === applicant.applicant_id);
       if (isTabOpen) {
@@ -76,10 +74,10 @@ export default function Listings() {
         setActiveTab(applicant.applicant_id);
         return prevTabs;
       }
-  
+
       // Add new tab
-      const newTabs = [...prevTabs, { 
-        id: applicant.applicant_id, 
+      const newTabs = [...prevTabs, {
+        id: applicant.applicant_id,
         name: `${applicant.first_name} ${applicant.last_name}`,
         data: applicant // Store the full applicant data
       }];
@@ -103,7 +101,7 @@ export default function Listings() {
         );
       }
     }
-  
+
     switch (selectedView) {
       case "listings":
         return (
