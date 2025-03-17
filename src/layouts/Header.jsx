@@ -1,7 +1,7 @@
 import { FaHeartbeat, FaList, FaChartBar, FaBars } from "react-icons/fa";
 import { useState } from "react";
 
-export default function Header({ onSelectView, onToggleSidebar }) {
+export default function Header({ onSelectView, onToggleSidebar, onToggleATSHealthcheck }) {
   const [currentView, setCurrentView] = useState("listings");
 
   const handleSelectView = (view) => {
@@ -23,7 +23,7 @@ export default function Header({ onSelectView, onToggleSidebar }) {
       </div>
       <div className="flex items-center gap-4">
         
-        <button className="rounded-full p-2 text-teal-600 hover:bg-teal-600/10 hover:text-teal-700">
+        <button className="rounded-full p-2 text-teal-600 hover:bg-teal-600/10 hover:text-teal-700" onClick={onToggleATSHealthcheck}>
           <FaHeartbeat className="h-6 w-6 md:h-10 md:w-10" />
         </button>
       </div>

@@ -8,6 +8,7 @@ import AnalysisPage from "../components/AnalysisComponents/AnalysisPage.jsx";
 import ApplicantDetailsPage from "./ApplicantDetailsPage.jsx";
 import AddApplicantForm from "./AddApplicantForm.jsx";
 import WarningModal from "../components/Modals/WarningModal.jsx";
+import ATSHealthcheck from "../components/Modals/ATSHeathcheck.jsx";
 import useUserStore from "../context/userStore.jsx";
 import api from "../api/axios.js";
 import Cookies from "js-cookie";
@@ -24,6 +25,7 @@ export default function Listings() {
   const [showAddApplicantForm, setShowAddApplicantForm] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showATSHealthcheck, setShowATSHealthcheck] = useState(false);
 
   const setUser = useUserStore((state) => state.setUser);
 
@@ -53,6 +55,7 @@ export default function Listings() {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeWarningModal = () => setShowWarningModal(false);
+  const toggleATSHealthcheck = () => setShowATSHealthcheck(!showATSHealthcheck);
 
   const selectView = (view) => {
     setSelectedView(view);
@@ -64,6 +67,10 @@ export default function Listings() {
       // Check if we've already reached the maximum number of tabs
       if (prevTabs.length >= MAX_TABS && !prevTabs.some(tab => tab.id === applicant.applicant_id)) {
         setShowWarningModal(true);
+        // Close the ATS Healthcheck modal if it's open
+        if (showATSHealthcheck) {
+          setShowATSHealthcheck(false);
+        }
         return prevTabs; // Return unchanged tabs
       }
 
@@ -147,7 +154,7 @@ export default function Listings() {
           <AddApplicantForm onClose={() => setShowAddApplicantForm(false)} />
         ) : (
           <>
-            <Header onToggleSidebar={toggleSidebar} />
+            <Header onToggleSidebar={toggleSidebar} onToggleATSHealthcheck={toggleATSHealthcheck} />
             {/* Tabs Section */}
             {selectedView === "listings" && !showAddApplicantForm && (
               <div className="mb-4 flex rounded-lg border border-gray-light bg-white p-1 pb-0">
@@ -190,6 +197,21 @@ export default function Listings() {
       {showWarningModal && (
         <WarningModal message={`You can only open up to ${MAX_TABS} tabs.`} onClose={closeWarningModal} />
       )}
-    </div >
+
+      {/* ATS Healthcheck Modal */}
+      {showATSHealthcheck && (
+        <div className="fixed inset-0 flex items-start justify-end z-50 pointer-events-none">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md mt-4 relative pointer-events-auto">
+            <button
+              className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
+              onClick={toggleATSHealthcheck}
+            >
+              <FaTimes className="h-5 w-5" />
+            </button>
+            <ATSHealthcheck onSelectApplicant={selectApplicant} />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
