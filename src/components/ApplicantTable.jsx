@@ -1,49 +1,67 @@
 import DataTable from 'react-data-table-component';
 import { useState, useEffect } from 'react';
 import moment from 'moment';
-import axios from 'axios';
 import api from '../api/axios';
+import Toast from '../assets/Toast';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const statusMapping = {
+    "NONE": "",
+    "TEST_SENT": "Test Sent",
+    "INTERVIEW_SCHEDULE_SENT": "Interview Schedule Sent",
+    "FIRST_INTERVIEW": "First Interview",
+    "SECOND_INTERVIEW": "Second Interview",
+    "THIRD_INTERVIEW": "Third Interview",
+    "FOURTH_INTERVIEW": "Fourth Interview",
+    "FOLLOW_UP_INTERVIEW": "Follow Up Interview",
+    "FOR_JOB_OFFER": "Job Offer Accepted",
+    "JOB_OFFER_REJECTED": "Job Offer Rejected",
+    "JOB_OFFER_ACCEPTED": "Job Offer Accepted",
+    "WITHDREW_APPLICATION": "Withdrew Application",
+    "BLACKLISTED": "Blacklisted",
+    "NOT_FIT": "Not Fit",
+};
 
+const ApplicantTable = ({ onSelectApplicant }) => {
+    const [applicantData, setApplicantData] = useState([]);
+    const [statuses, setStatuses] = useState([]);
+    const [toasts, setToasts] = useState([]);
 
-
-const ApplicantTable = () => {
-
-    // State to track applicant data
-    let [applicantData, setApplicantData] = useState([]);
+    // Add a ref to track and manage toast timeouts
+    const [toastTimeouts, setToastTimeouts] = useState({});
 
     useEffect(() => {
         api.get(`/applicants`)
             .then(response => {
                 console.log("Applicant Fetched Successfully.");
                 setApplicantData(response.data);
-
             })
             .catch(error => console.error("Error fetching data:", error));
     }, []);
 
-    // All possible statuses
-    let [statuses, setStatuses] = useState([]);
-
     useEffect(() => {
-
         api.get(`/status`)
             .then(response => {
-                console.log("Status Fetched Successfully.",);
+                console.log("Status Fetched Successfully.");
                 setStatuses(response.data);
             })
             .catch(error => console.error("Error fetching data:", error));
     }, []);
 
-    // Function to handle status change
+    // Clean up timeouts when component unmounts
+    useEffect(() => {
+        return () => {
+            // Clear all timeouts on unmount
+            Object.values(toastTimeouts).forEach(timeoutId => clearTimeout(timeoutId));
+        };
+    }, [toastTimeouts]);
+
     const updateStatus = async (id, progress_id, status) => {
         let data = {
             "progress_id": progress_id,
             "status": status
-        }
+        };
         try {
-            await axios.put(`${API_BASE_URL}/applicant/update/status`, data);
+            await api.put(`/applicant/update/status`, data);
             setApplicantData(prevData =>
                 prevData.map(applicant =>
                     applicant.applicant_id === id
@@ -51,23 +69,86 @@ const ApplicantTable = () => {
                         : applicant
                 )
             );
+            const applicant = applicantData.find(applicant => applicant.applicant_id === id);
+            addToast(applicant, status);
         } catch (error) {
             console.error("Update Status Failed: " + error);
         }
-    }
+    };
 
-    // Function to handle row click
-    const handleApplicantRowClick = (row) => {
-        const applicant = applicantData.find((applicant) => applicant.applicant_id === row.applicant_id);
-        if (applicant) {
+    const addToast = (applicant, status) => {
+        const toastId = Date.now();
+        const newToast = {
+            id: toastId,
+            applicant,
+            status: statusMapping[status] || status,
+            previousStatus: statusMapping[applicant.status] || applicant.status
+        };
 
-            console.log(applicant.applicant_id);
+        setToasts(prevToasts => [...prevToasts, newToast]);
 
+        // Store the timeout ID so we can clear it if needed
+        const timeoutId = setTimeout(() => removeToast(toastId), 10000);
+        setToastTimeouts(prev => ({ ...prev, [toastId]: timeoutId }));
+    };
+
+    const removeToast = (id) => {
+        // Clear the timeout for this toast
+        if (toastTimeouts[id]) {
+            clearTimeout(toastTimeouts[id]);
+
+            // Remove this timeout from the state
+            setToastTimeouts(prev => {
+                const updated = { ...prev };
+                delete updated[id];
+                return updated;
+            });
+        }
+
+        // Remove the toast from state
+        setToasts(prevToasts => prevToasts.filter(toast => toast.id !== id));
+    };
+
+    const undoStatusUpdate = async (toast) => {
+        const { applicant, previousStatus } = toast;
+
+        try {
+            // Create the data object for the API call
+            let data = {
+                "progress_id": applicant.progress_id,
+                "status": Object.keys(statusMapping).find(key => statusMapping[key] === previousStatus)
+            };
+
+            // Make the API call directly
+            await api.put(`/applicant/update/status`, data);
+
+            // Update the state without creating a new toast
+            setApplicantData(prevData =>
+                prevData.map(app =>
+                    app.applicant_id === applicant.applicant_id
+                        ? { ...app, status: Object.keys(statusMapping).find(key => statusMapping[key] === previousStatus) }
+                        : app
+                )
+            );
+
+            // Remove the current toast
+            removeToast(toast.id);
+        } catch (error) {
+            console.error("Undo status update failed:", error);
         }
     };
 
+    const handleStatusChange = (id, progress_id, newStatus) => {
+        updateStatus(id, progress_id, newStatus);
+    };
 
-    // Define table columns
+    const handleApplicantRowClick = (row) => {
+        const applicant = applicantData.find((applicant) => applicant.applicant_id === row.applicant_id);
+        if (applicant) {
+            onSelectApplicant(applicant);
+        }
+    };
+
     const columns = [
         {
             name: 'Date Applied',
@@ -88,16 +169,15 @@ const ApplicantTable = () => {
                 <select
                     className='border border-gray-light max-w-[100px]'
                     value={row.status}
-                    onChange={(e) => updateStatus(row.applicant_id, row.progress_id, e.target.value)}
+                    onChange={(e) => handleStatusChange(row.applicant_id, row.progress_id, e.target.value)}
                     style={{ padding: '5px', borderRadius: '5px' }}
                 >
                     {statuses.map(status => (
                         <option key={status} value={status}>
-                            {status.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}
+                            {statusMapping[status] || status}
                         </option>
-                    ))
-                    }
-                </select >
+                    ))}
+                </select>
             ),
         },
     ];
@@ -113,22 +193,32 @@ const ApplicantTable = () => {
     );
 
     return (
-        <DataTable
-            pointerOnHover
-            highlightOnHover
-            fixedHeader
-            striped
-            fixedHeaderScrollHeight="60vh"
-            responsive
-            columns={columns}
-            data={applicantData}
-            component:striped={true}
-            onRowClicked={handleApplicantRowClick}
-            pagination
-            progressPending={!applicantData.length || !statuses.length}
-            // progressPending={true}
-            progressComponent={<LoadingComponent />}
-        />
+        <>
+            <DataTable
+                pointerOnHover
+                highlightOnHover
+                fixedHeader
+                striped
+                fixedHeaderScrollHeight="60vh"
+                responsive
+                columns={columns}
+                data={applicantData}
+                onRowClicked={handleApplicantRowClick}
+                pagination
+                progressPending={!applicantData.length || !statuses.length}
+                progressComponent={<LoadingComponent />}
+            />
+            <div className="fixed top-4 right-4 space-y-2">
+                {toasts.map(toast => (
+                    <Toast
+                        key={toast.id}
+                        toast={toast}
+                        undoStatusUpdate={undoStatusUpdate}
+                        removeToast={removeToast}
+                    />
+                ))}
+            </div>
+        </>
     );
 };
 
