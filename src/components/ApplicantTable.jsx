@@ -73,6 +73,49 @@ const ApplicantTable = ({ onSelectApplicant }) => {
       addToast(applicant, status);
     } catch (error) {
       console.error("Update Status Failed: " + error);
+
+    useEffect(() => {
+        api.get(`/applicants`)
+            .then(response => {
+                console.log("Applicant Fetched Successfully.");
+                setApplicantData(response.data);
+
+            })
+            .catch(error => console.error("Error fetching data:", error));
+    }, []);
+
+    // All possible statuses
+    let [statuses, setStatuses] = useState([]);
+
+    useEffect(() => {
+
+        api.get(`/status`)
+            .then(response => {
+                console.log("Status Fetched Successfully.",);
+                setStatuses(response.data);
+            })
+            .catch(error => console.error("Error fetching data:", error));
+    }, []);
+
+    // Function to handle status change
+    const updateStatus = async (id, progress_id, status) => {
+        let data = {
+            "progress_id": progress_id,
+            "status": status
+        }
+        try {
+            await axios.put(`${API_BASE_URL}/applicant/update/status`, data);
+            setApplicantData(prevData =>
+                prevData.map(applicant =>
+                    applicant.applicant_id === id
+                        ? { ...applicant, status: status }
+                        : applicant
+                )
+            );
+        } catch (error) {
+            console.error("Update Status Failed: " + error);
+        }
+
     }
   };
 
