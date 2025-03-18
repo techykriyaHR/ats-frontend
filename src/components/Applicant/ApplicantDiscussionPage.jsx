@@ -5,7 +5,7 @@ function ApplicantDiscussionPage() {
   const [message, setMessage] = useState("");
 
   return (
-    <div className="mx-auto my-8 max-w-6xl rounded-lg border shadow-lg">
+    <div className="rounded-lg">
       {/* Header tabs */}
       <div className="mb-4 flex w-full overflow-hidden rounded-lg">
         <div className="flex-1 bg-teal-700 px-6 py-3 font-medium text-white">

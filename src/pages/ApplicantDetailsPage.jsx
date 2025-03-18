@@ -18,7 +18,7 @@ function ApplicantDetailsPage({ applicant }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="">
       <ApplicantDetails
         applicant={applicant}
         onTabChange={setActiveTab}
