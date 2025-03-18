@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -28,6 +28,7 @@ function ApplicantSendMailPage() {
   const [subject, setSubject] = useState("Welcome to FullSuite – Preparing for Your Interviews and Assessment");
   const [attachment, setAttachment] = useState(null);
   const [emailContent, setEmailContent] = useState("");
+  const [templates, setTemplates] = useState([]);
 
   const editor = useEditor({
     extensions: [
@@ -43,6 +44,12 @@ function ApplicantSendMailPage() {
       setEmailContent(editor.getHTML());
     },
   });
+
+  useEffect(() => {
+    api.get('/emaill/templates').then(response => {
+      setTemplates(response.data.templates);
+    }).catch(error => console.error("Error fetching data:", error.message));
+  }, [templates]);
 
   const handleSendEmail = async () => {
     const formData = new FormData();
