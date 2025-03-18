@@ -40,6 +40,7 @@ export default function Listings() {
         });
         console.log("User data fetched:", response.data); // Debugging log
         setUser(response.data);
+
         console.log("User data set in Zustand:", response.data); // Debugging log
       } catch (error) {
         console.error("Failed to fetch user info:", error);
@@ -63,14 +64,13 @@ export default function Listings() {
   };
 
   const selectApplicant = (applicant) => {
+    // Close the ATS Healthcheck modal when selecting an applicant
+    setShowATSHealthcheck(false);
+    
     setTabs((prevTabs) => {
       // Check if we've already reached the maximum number of tabs
       if (prevTabs.length >= MAX_TABS && !prevTabs.some(tab => tab.id === applicant.applicant_id)) {
         setShowWarningModal(true);
-        // Close the ATS Healthcheck modal if it's open
-        if (showATSHealthcheck) {
-          setShowATSHealthcheck(false);
-        }
         return prevTabs; // Return unchanged tabs
       }
 
@@ -182,7 +182,6 @@ export default function Listings() {
                   ))}
                 </div>
               </div>
-
             )}
 
             {/* Main Content Section */}
