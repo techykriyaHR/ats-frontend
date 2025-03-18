@@ -1,23 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip } from "chart.js";
+import api from "../../api/axios";
 
 ChartJS.register(ArcElement, Tooltip);
 
 const SourceOfApplication = () => {
-  const data = [
-    { source: "Referral", value: 50 },
-    { source: "Website", value: 30 },
-    { source: "Caravan", value: 20 },
-  ];
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get("/analytic/graphs/source");
+        setData(response.data.source);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const chartData = {
     labels: data.map((entry) => entry.source),
     datasets: [
       {
         data: data.map((entry) => entry.value),
-        backgroundColor: ["#008080", "#66b2b2", "#d9ebeb"],
-        hoverBackgroundColor: ["#007777", "#5daaaa", "#cce5e5"],
+        backgroundColor: ["#008080", "#66b2b2", "#d9ebeb", "#ffcccb", "#c0c0c0"],
+        hoverBackgroundColor: ["#007777", "#5daaaa", "#cce5e5", "#ff9999", "#a9a9a9"],
       },
     ],
   };

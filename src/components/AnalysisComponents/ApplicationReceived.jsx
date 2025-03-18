@@ -1,6 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import api from "../../api/axios";
 
-const ApplicationReceived = ({ totalApplications, months }) => {
+const ApplicationReceived = () => {
+  const [totalApplications, setTotalApplications] = useState(0);
+  const [months, setMonths] = useState([]);
+
+  useEffect(() => {
+    const fetchApplicationTrend = async () => {
+      try {
+        const response = await api.get("/analytic/graphs/application-trend");
+        const data = response.data.data;
+
+        setTotalApplications(data.total);
+        setMonths(data.trend.map((item) => ({ name: item.month, count: item.count })));
+      } catch (error) {
+        console.error("Error fetching application trend data:", error);
+      }
+    };
+
+    fetchApplicationTrend();
+  }, []);
+
   return (
     <>
       <h3 className="mb-4 text-center text-sm text-gray-600">
