@@ -1,41 +1,67 @@
-import React, { useState } from "react";
-import { FaPlus } from "react-icons/fa";
+import { useState } from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import TextAlign from "@tiptap/extension-text-align";
+import Strike from "@tiptap/extension-strike";
+import CodeBlock from "@tiptap/extension-code-block";
+import Blockquote from "@tiptap/extension-blockquote";
+import axios from "axios";
+import {
+  BoldIcon,
+  ItalicIcon,
+  UnderlineIcon,
+  ListBulletIcon,
+  NumberedListIcon,
+  StrikethroughIcon,
+  CodeBracketIcon,
+  ChatBubbleLeftRightIcon,
+  ArrowUturnLeftIcon,
+  ArrowUturnRightIcon,
+  Bars3BottomLeftIcon,
+  Bars3CenterLeftIcon,
+  Bars3BottomRightIcon,
+} from "@heroicons/react/24/outline";
+import api from "../../api/axios";
 
 function ApplicantSendMailPage() {
-  const [subject, setSubject] = useState(
-    "Welcome to FullSuite – Preparing for Your Interviews and Assessment",
-  );
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [subject, setSubject] = useState("Welcome to FullSuite – Preparing for Your Interviews and Assessment");
   const [attachment, setAttachment] = useState(null);
-  const [emailContent, setEmailContent] = useState(`
-Dear Juniper Williams,
+  const [emailContent, setEmailContent] = useState("");
 
-Thank you for applying to FullSuite! We're excited to have you as a candidate and look forward to the opportunity to learn more about you.
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Underline,
+      Strike,
+      CodeBlock,
+      Blockquote,
+      TextAlign.configure({ types: ["heading", "paragraph"] })
+    ],
+    content: emailContent,
+    onUpdate: ({ editor }) => {
+      setEmailContent(editor.getHTML());
+    },
+  });
 
-What to Expect in the Interview Process:
-• Interview Schedule: We'll soon be in touch to arrange the first round of interviews. Please keep an eye on your inbox for an invitation to select a convenient time slot.
-• Interview Format: Depending on the role, you may have a combination of virtual and in-person interviews. We'll provide all the necessary details, including any preparation materials or topics you should be familiar with.
-• Pre-Interview Assessment: Before proceeding with the interviews, we require all candidates to complete an assessment designed to evaluate your technical skills for the Software Engineer Role. This test helps us ensure that your skills align with the job requirements.
-• Test Details: You'll receive an email with a link to the test within the next 48 hours. The test should take approximately 30 minutes to complete.
-• Deadline: Please complete the test by August 26, 2024.
-• Preparation: No special preparation is needed, but we suggest reviewing [any relevant material or topics]. If you encounter any issues or need assistance, feel free to contact us.
-• Who You'll Meet: During the interview process, you'll have the chance to meet with key team members and leaders at [Your Company Name]. This is your opportunity to get to know us as much as it is for us to learn about you.
+  const handleSendEmail = async () => {
+    const formData = new FormData();
+    formData.append("applicant_id", "37f14f12-c113-4c21-9f8a-ccf0f5b39f35");
+    formData.append("user_id", "fcd3eee1-9a10-40d6-8444-b0f5b8632af1");
+    formData.append("email_subject", subject);
+    formData.append("email_body", emailContent);
+    if (attachment) {
+      formData.append("files", attachment);
+    }
 
-Next Steps:
-Once you've completed the assessment, and your test results have been reviewed, we'll follow up to schedule your interviews. We'll send you a confirmation email with all the details you need. Should you have any scheduling constraints, please let us know, and we'll do our best to accommodate you.
-
-If you have any questions about the test or the interview process, don't hesitate to reach out to us at percy@fullsuite.ph or 09123456789. We're here to help and ensure you feel confident and prepared.
-
-We're looking forward to meeting you and wish you the best of luck with the assessment and interview process.
-
-Best regards,
-Ivan Percival Viniegas
-  `);
-
-  const templates = Array(8).fill("Sample Template");
-
-  const handleTemplateSelect = (index) => {
-    setSelectedTemplate(index);
+    try {
+      api.post('/email/applicant', formData).then(response => {
+        alert("Email sent successfully");
+      }).catch(error => console.error("Error fetching data:", error.message));
+    } catch (error) {
+      console.error("Error sending email:", error);
+      alert("Failed to send email");
+    }
   };
 
   const handleFileChange = (e) => {
@@ -44,86 +70,65 @@ Ivan Percival Viniegas
     }
   };
 
-  const handleEmailContentChange = (e) => {
-    setEmailContent(e.target.innerHTML);
-  };
+  if (!editor) {
+    return null;
+  }
 
   return (
-    <div className="flex min-h-screen flex-col gap-6 bg-gray-50 p-4 md:flex-row">
-      {/* Left sidebar - Template selection */}
-      <div className="w-full rounded-lg bg-white p-6 shadow-sm md:w-80">
-        <h2 className="mb-4 text-sm font-medium text-teal-700">
-          Choose an email template:
-        </h2>
-        <div className="space-y-3">
-          {templates.map((template, index) => (
-            <button
-              key={index}
-              className={`h-12 w-full justify-start border text-left font-normal ${
-                selectedTemplate === index
-                  ? "border-teal-600"
-                  : "border-gray-200"
-              }`}
-              onClick={() => handleTemplateSelect(index)}
-            >
-              {template}
-            </button>
-          ))}
-          <button className="h-12 w-full justify-center border-dashed border-gray-300">
-            <FaPlus className="h-4 w-4 text-teal-600" />
-          </button>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="flex border border-gray-200 rounded-lg mb-5 overflow-hidden">
+        <span className="bg-teal-600 text-white px-4 py-2 rounded-l-lg">Subject</span>
+        <input
+          type="text"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          className="flex-1 border-none bg-white focus-visible:ring-0 focus-visible:ring-offset-0 p-2 rounded-r-lg"
+        />
+      </div>
+  
+      <div className="p-6 bg-white rounded-xl border border-gray-200 shadow-md mb-5">
+        <div className="flex gap-3 mb-4 shadow-lg p-3 rounded-lg bg-gray-100">
+          <BoldIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().toggleBold().run()} />
+          <ItalicIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().toggleItalic().run()} />
+          <UnderlineIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().toggleUnderline().run()} />
+          <StrikethroughIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().toggleStrike().run()} />
+          <ListBulletIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().toggleBulletList().run()} />
+          <NumberedListIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().toggleOrderedList().run()} />
+          <ChatBubbleLeftRightIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().toggleBlockquote().run()} />
+          <CodeBracketIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().toggleCodeBlock().run()} />
+          <ArrowUturnLeftIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().undo().run()} />
+          <ArrowUturnRightIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().redo().run()} />
+          <Bars3BottomLeftIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().setTextAlign('left').run()} />
+          <Bars3CenterLeftIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().setTextAlign('center').run()} />
+          <Bars3BottomRightIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().setTextAlign('right').run()} />
         </div>
+        <EditorContent editor={editor} className="rounded-lg bg-white min-h-[500px] p-4 border border-gray-200" />
+      </div>
+  
+
+      <div className="flex border border-gray-100 bg-white mb-5">
+        <label htmlFor="file-upload" className="cursor-pointer bg-teal-600 text-white text-center px-8 py-2 rounded-md">
+          Attachment
+          <input id="file-upload" type="file" className="hidden" onChange={handleFileChange} />
+        </label>
+        <span className="text-gray-500">{attachment ? attachment.name : "No file chosen"}</span>
       </div>
 
-      {/* Right side - Email composition */}
-      <div className="flex-1">
-        <div className="overflow-hidden rounded-lg bg-white shadow-sm">
-          {/* Subject line */}
-          <div className="flex border-b">
-            <div className="flex items-center bg-teal-600 px-4 py-2 text-white">
-              <span>Subject</span>
-            </div>
-            <input
-              type="text"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="flex-1 border-none focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
-          </div>
-
-          {/* Email body */}
-          <div className="p-6">
-            <div
-              contentEditable
-              className="min-h-[500px] w-full resize-none border-none whitespace-pre-line focus-visible:ring-0"
-              onInput={handleEmailContentChange}
-              dangerouslySetInnerHTML={{ __html: emailContent }}
-            />
-          </div>
-
-          {/* Attachment and send buttons */}
-          <div className="flex justify-between border-t p-4">
-            <div className="flex">
-              <label htmlFor="file-upload" className="cursor-pointer">
-                <div className="rounded-md bg-teal-600 px-4 py-2 text-white">
-                  Attachment
-                </div>
-                <input
-                  id="file-upload"
-                  type="file"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-              </label>
-              <div className="ml-4 flex items-center text-gray-500">
-                {attachment ? attachment.name : "No file chosen"}
-              </div>
-            </div>
-            <button className="rounded-md bg-teal-600 px-4 py-2 text-white hover:bg-teal-700">
-              Send
-            </button>
-          </div>
+  
+      <div className="flex justify-between items-center">
+        <div>
+          <input
+            list="templates"
+            id="templateInput"
+            className="bg-teal-600 hover:bg-teal-700 text-white text-center px-4 py-2 rounded-md w-full"
+            placeholder="Use Template"
+          />
+          <datalist id="templates">
+            <option value="Template 1" />
+            <option value="Template 2" />
+          </datalist>
         </div>
+        <button onClick={handleSendEmail} className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-md shadow-md">Send</button>
       </div>
     </div>
   );
