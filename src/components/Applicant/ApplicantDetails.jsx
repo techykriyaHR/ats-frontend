@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaAddressCard, FaEnvelope, FaMapMarkerAlt, FaPhone, FaUser } from 'react-icons/fa';
+import { FaAddressCard, FaEnvelope, FaPen, FaPhone, FaUser } from 'react-icons/fa';
 import useUserStore from '../../context/userStore';
 import api from '../../api/axios';
 import Loader from '../../assets/Loader';
@@ -146,137 +146,145 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   }
 
   return (
-    <div className="border border-gray-light bg-white rounded-3xl mx-auto ">
-      <div className="xsm:flex-row sm:flex">
+    <div className="border border-gray-light bg-white rounded-xl mx-auto flex flex-col lg:flex-row overflow-hidden body-regular">
 
-        {/* Left Column - Applicant Details */}
-        <div className="body-regular text-gray-dark w-100  h-full px-10 py-5 sm:border-r border-gray-light">
-          <h2 className="display">
-            {`${applicantInfo.first_name || ''} ${applicantInfo.middle_name || ''} ${applicantInfo.last_name || ''}`}
-          </h2>
-          <div className="px-5">
-            <div className="mt-2 flex items-center">
-              <FaUser className="mr-2 h-4 w-4" />
-              {applicantInfo.gender || 'Not specified'}
-            </div>
-            <div className="mt-1 flex items-center">
-              <FaCakeCandles className="mr-2 h-4 w-4" />
-              {applicantInfo.birth_date ? new Date(applicantInfo.birth_date).toLocaleDateString() : 'No birth date'}
-            </div>
-            <div className="mt-1 flex items-center">
-              <FaEnvelope className="mr-2 h-4 w-4" />
-              {[
-                applicantInfo.email_1,
-                applicantInfo.email_2,
-                applicantInfo.email_3,
-              ]
-                .filter(Boolean) // Remove falsy values (null, undefined, empty string)
-                .join(" | ") || "No email provided"}
-            </div>
-            <div className="mt-1 flex items-center">
-              <FaPhone className="mr-2 h-4 w-4" />
-              {[applicantInfo.mobile_number_1, applicantInfo.mobile_number_2].filter(Boolean).join(" | ") || 'No phone number provided'}
-            </div>
-            <div className="mt-1 flex items-center">
-              <FaFileLines className="mr-2 h-4 w-4" />
-              <a
-                href={applicantInfo.resume_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline block mt-1 cursor-pointer"
-              >
-                Test Result
-              </a>
-            </div>
-            <div className="mt-1 flex items-center">
-              <FaAddressCard className="mr-2 h-4 w-4" />
-              <a
-                href={applicantInfo.resume_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline block mt-1 cursor-pointer"
-              >
-                Applicant's Resume
-              </a>
-            </div>
+      {/* Left side */}
+      <div className='p-5 pl-8 w-full lg:w-[350px] text-gray-dark h-full'>
+        <h2 className="display">
+          {`${applicantInfo.first_name || ''} ${applicantInfo.middle_name || ''} ${applicantInfo.last_name || ''}`}
+        </h2>
+        <div className="pl-5 flex flex-col flex-grow">
+          <div className="mt-2 flex items-center flex-shrink-0">
+            <FaUser className="mr-2 h-4 w-4" />
+            {applicantInfo.gender || 'Not specified'}
           </div>
-        </div>
-
-        {/* Right Column - Application Information */}
-        <div className=" body-regular text-gray-dark w-full pt-3 px-10 pt-10">
-          {/* <div className="space-y-1">
-            <div className="flex gap-x-10">
-              <div className="text-teal">Discovered FutSuite at</div>
-              <div className='pl-10'>{applicantInfo.discovered_at || 'Not specified'}</div>
-            </div>
-            <div className="flex gap-x-4">
-              <div className="text-teal">Applied for</div>
-              <div className='pl-10'>{applicantInfo.job_title || 'Not specified'}</div>
-            </div>
-            <div className="flex gap-x-4">
-              <div className="text-teal">Applied on</div>
-              <div className='pl-10'>
-                {applicantInfo.applicant_created_at ?
-                  new Date(applicantInfo.applicant_created_at).toLocaleDateString() :
-                  'Not specified'}
-              </div>
-            </div>
-            <div className="flex gap-x-4">
-              <div className="text-teal">Applied from</div>
-              <div className='pl-10'>{applicantInfo.discovered_at || 'Not specified'}</div>
-            </div>
-          </div> */}
-          <div className="space-y-5 flex">
-            <div className="flex-col space-y-5">
-              <div className="text-teal">Discovered FutSuite at</div>
-              <div className="text-teal">Applied for</div>
-              <div className="text-teal">Applied on</div>
-              <div className="text-teal">Applied from</div>
-            </div>
-            <div className="flex-col space-y-5">
-              <div className='pl-10'>{applicantInfo.discovered_at || 'Not specified'}</div>
-              <div className='pl-10'>{applicantInfo.job_title || 'Not specified'}</div>
-              <div className='pl-10'>
-                {applicantInfo.applicant_created_at ?
-                  new Date(applicantInfo.applicant_created_at).toLocaleDateString() :
-                  'Not specified'}
-              </div>
-              <div className='pl-10'>{applicantInfo.discovered_at || 'Not specified'}</div>
-            </div>
+          <div className="mt-1 flex items-center">
+            <FaCakeCandles className="mr-2 h-4 w-4" />
+            {applicantInfo.birth_date ? new Date(applicantInfo.birth_date).toLocaleDateString() : 'No birth date'}
           </div>
-          {/* <select
-            className="border border-gray-300 p-2 rounded-md w-full md:w-52"
-            value={status}
-            onChange={handleStatusChange}
-          >
-            <option value="" disabled>Select status</option>
-            {statuses.map((statusOption) => (
-              <option key={statusOption} value={statusOption}>
-                {statusOption}
-              </option>
-            ))}
-          </select> */}
+          {applicantInfo.email_1 ? <div className="mt-1 flex items-center">
+            <FaEnvelope className="mr-2 h-4 w-4 flex-shrink-0" />
+            {applicantInfo.email_1}
+          </div> : null}
+          {applicantInfo.email_2 ? <div className="mt-1 flex items-center">
+            <FaEnvelope className="mr-2 h-4 w-4 flex-shrink-0" />
+            {applicantInfo.email_2}
+          </div> : null}
+          {applicantInfo.email_3 ? <div className="mt-1 flex items-center">
+            <FaEnvelope className="mr-2 h-4 w-4 flex-shrink-0" />
+            {applicantInfo.email_3}
+          </div> : null}
+          {applicantInfo.mobile_number_1 ? <div className="mt-1 flex items-center">
+            <FaPhone className="mr-2 h-4 w-4 flex-shrink-0" />
+            {applicantInfo.mobile_number_1}
+          </div> : null}
+          {applicantInfo.mobile_number_2 ? <div className="mt-1 flex items-center">
+            <FaPhone className="mr-2 h-4 w-4 flex-shrink-0" />
+            {applicantInfo.mobile_number_2}
+          </div> : null}
+          <div className="mt-1 flex items-center">
+            <FaFileLines className="mr-2 h-4 w-4" />
+            <a
+              href={applicantInfo.resume_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline block mt-1 cursor-pointer"
+            >
+              Test Result
+            </a>
+          </div>
+          <div className="mt-1 flex items-center">
+            <FaAddressCard className="mr-2 h-4 w-4" />
+            <a
+              href={applicantInfo.resume_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline block mt-1 cursor-pointer"
+            >
+              Applicant's Resume
+            </a>
+          </div>
         </div>
       </div>
 
-      {/* <div className="flex justify-end gap-4 p-4">
-        {user.feature_names["60c8341f-fa4b-11ef-a725-0af0d960a833"] === "Interview Notes" && (
-          <button
-            className={`px-4 py-2 rounded-md ${activeTab === 'discussion' ? 'bg-[#008080] text-white' : 'bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700'}`}
-            onClick={() => onTabChange('discussion')}
-          >
-            Discussion
-          </button>
+      {/* Right side */}
+      <div className="py-5 px-7 flex-1 flex flex-col lg:border-l border-gray-light">
+        <div className="flex-1 flex flex-col">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="headline">Applicant Details</h2>
+            <div className="flex items-center">
+              <select
+                className="border body-regular border-gray-light h-8 rounded-md cursor-pointer"
+                value={status}
+                onChange={handleStatusChange}
+              >
+                <option value="" disabled>Select status</option>
+                {statuses.map((statusOption) => (
+                  <option key={statusOption} value={statusOption}>
+                    {statusOption}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={() => console.log("Edit button clicked")}
+                className="ml-2 p-2.5 rounded-full bg-teal hover:bg-teal/70 cursor-pointer "
+              >
+                <FaPen className="w-4 h-4 text-white" />
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 pl-5 flex-grow">
+            <div className="text-teal">Discovered FutSuite at</div>
+            <div className="col-span-2">{applicantInfo.discovered_at || 'Not specified'}</div>
+            <div className="text-teal">Applied for</div>
+            <div className="col-span-2">{applicantInfo.job_title || 'Not specified'}</div>
+            <div className="text-teal">Applied on</div>
+            <div className="col-span-2">
+              {applicantInfo.applicant_created_at
+                ? new Date(applicantInfo.applicant_created_at).toLocaleDateString()
+                : 'Not specified'}
+            </div>
+            <div className="text-teal">Applied from</div>
+            <div className="col-span-2">{applicantInfo.applied_source || 'Not specified'}</div>
+          </div>
+
+          {/* Pushes everything above and keeps tabs at the bottom */}
+          <div className="mt-auto pt-5 flex justify-end">
+            <div className="flex gap-2 bg-teal-soft p-1 rounded-md">
+              {user.feature_names["60c8341f-fa4b-11ef-a725-0af0d960a833"] === "Interview Notes" && (
+                <button
+                  className={`px-4 py-1 rounded-md ${activeTab === 'discussion'
+                    ? 'bg-[#008080] text-white'
+                    : 'text-teal hover:bg-teal-600/20 hover:text-teal-700 cursor-pointer'
+                    }`}
+                  onClick={() => onTabChange('discussion')}
+                >
+                  Discussion
+                </button>
+              )}
+              {user.feature_names["60c834d5-fa4b-11ef-a725-0af0d960a833"] === "Send Email" && (
+                <button
+                  className={`px-4 py-1 rounded-md ${activeTab === 'sendMail'
+                    ? 'bg-[#008080] text-white'
+                    : 'text-teal hover:bg-teal-600/20 hover:text-teal-700 cursor-pointer'
+                    }`}
+                  onClick={() => onTabChange('sendMail')}
+                >
+                  Send Email
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {toasts.length > 0 && (
+          <Toast toasts={toasts} onUndo={undoStatusUpdate} onDismiss={removeToast} />
         )}
-        {user.feature_names["60c834d5-fa4b-11ef-a725-0af0d960a833"] === "Send Email" && (
-          <button
-            className={`px-4 py-2 rounded-md ${activeTab === 'sendMail' ? 'bg-[#008080] text-white' : 'bg-teal-600/10 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700'}`}
-            onClick={() => onTabChange('sendMail')}
-          >
-            Send Email
-          </button>
-        )}
-      </div> */}
+      </div>
+
+
+
 
       {/* Toast Messages */}
       <div className="fixed bottom-4 right-4 space-y-2">
