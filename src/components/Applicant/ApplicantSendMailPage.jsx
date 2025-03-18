@@ -23,7 +23,6 @@ import {
   Bars3BottomRightIcon,
 } from "@heroicons/react/24/outline";
 import api from "../../api/axios";
-import { sub } from "date-fns";
 
 function ApplicantSendMailPage() {
   const [subject, setSubject] = useState(
@@ -33,6 +32,8 @@ function ApplicantSendMailPage() {
   const [emailContent, setEmailContent] = useState("");
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [showTemplateModal, setShowTemplateModal] = useState(false); // State for modal visibility
+  const [templateTitle, setTemplateTitle] = useState(""); // State for template title input
 
   const editor = useEditor({
     extensions: [
@@ -49,13 +50,17 @@ function ApplicantSendMailPage() {
     },
   });
 
-  useEffect(() => {
+  const fetchTemplates = () => {
     api
       .get("/email/templates")
       .then((response) => {
         setTemplates(response.data.templates);
       })
       .catch((error) => console.error("Error fetching data:", error.message));
+  };
+
+  useEffect(() => {
+    fetchTemplates();
   }, []);
 
   const handleTemplateSelect = (e) => {
@@ -82,19 +87,29 @@ function ApplicantSendMailPage() {
   };
 
   const handleSaveTemplate = () => {
-    //payload
-    const data = {
-      company_id: "468eb32f-f8c1-11ef-a725-0af0d960a833", 
-      title: "benzzzzz", 
-      subject: subject, 
-      body: emailContent, 
+    if (!templateTitle) {
+      alert("Please enter a title for the template.");
+      return;
     }
 
-    api.post('/email/add/template', data).then((response) => {
-      alert("added successfully"); 
-    }).catch((error) => {
-      alert("failed"); 
-    });
+    // Payload
+    const data = {
+      company_id: "468eb32f-f8c1-11ef-a725-0af0d960a833",
+      title: templateTitle, // Use the user-provided title
+      subject: subject,
+      body: emailContent,
+    };
+
+    api
+      .post("/email/add/template", data)
+      .then((response) => {
+        setShowTemplateModal(false); // Close the modal
+        setTemplateTitle(""); // Reset the title input
+        fetchTemplates(); // Refresh the templates list
+      })
+      .catch((error) => {
+        alert("Failed to save template");
+      });
   };
 
   const handleSendEmail = async () => {
@@ -111,7 +126,7 @@ function ApplicantSendMailPage() {
       api
         .post("/email/applicant", formData)
         .then((response) => {
-          alert("Email sent successfully");
+          console.log(response);
         })
         .catch((error) => console.error("Error sending email:", error.message));
     } catch (error) {
@@ -132,6 +147,37 @@ function ApplicantSendMailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
+      {/* Modal for Template Title */}
+      {showTemplateModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30">
+          <div className="rounded-2xl bg-white p-6 shadow-xl w-full max-w-md">
+            <h2 className="mb-3 text-lg font-medium text-gray-800">Save as Template</h2>
+            <p className="text-sm text-gray-600 mb-4">Provide a title for the template.</p>
+            <input
+              type="text"
+              placeholder="Enter template title"
+              value={templateTitle}
+              onChange={(e) => setTemplateTitle(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 p-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <div className="flex justify-end mt-6 space-x-2">
+              <button
+                onClick={() => setShowTemplateModal(false)}
+                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveTemplate}
+                className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mb-5 flex overflow-hidden rounded-lg border border-gray-200">
         <span className="rounded-l-lg bg-teal-600 px-4 py-2 text-white">
           Subject
@@ -240,8 +286,8 @@ function ApplicantSendMailPage() {
             ))}
           </select>
           <button
-            onClick={handleSaveTemplate}
-            className="rounded-md bg-white px-6 py-2 text-teal-600 shadow-md border border-teal-600 hover:bg-teal-700"
+            onClick={() => setShowTemplateModal(true)} // Open the modal
+            className="rounded-md border border-teal-600 bg-white px-6 py-2 text-teal-600 shadow-md hover:bg-teal-700 hover:text-white"
           >
             Save as Template
           </button>
@@ -253,7 +299,6 @@ function ApplicantSendMailPage() {
           Send
         </button>
       </div>
-
     </div>
   );
 }
