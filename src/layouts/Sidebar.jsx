@@ -24,6 +24,7 @@ export default function Sidebar({ isOpen, onToggleSidebar, onSelectView }) {
   const handleLogout = () => {
     Cookies.remove("token");
     localStorage.removeItem("tabs");
+    localStorage.removeItem("isNotificationRead");
     setUser(null); // Clear user data from Zustand store
     navigate("/login");
   };
