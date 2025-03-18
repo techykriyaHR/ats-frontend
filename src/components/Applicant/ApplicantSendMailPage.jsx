@@ -6,7 +6,6 @@ import TextAlign from "@tiptap/extension-text-align";
 import Strike from "@tiptap/extension-strike";
 import CodeBlock from "@tiptap/extension-code-block";
 import Blockquote from "@tiptap/extension-blockquote";
-import axios from "axios";
 import {
   BoldIcon,
   ItalicIcon,
@@ -29,6 +28,7 @@ function ApplicantSendMailPage() {
   const [attachment, setAttachment] = useState(null);
   const [emailContent, setEmailContent] = useState("");
   const [templates, setTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState("");
 
   const editor = useEditor({
     extensions: [
@@ -37,7 +37,7 @@ function ApplicantSendMailPage() {
       Strike,
       CodeBlock,
       Blockquote,
-      TextAlign.configure({ types: ["heading", "paragraph"] })
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
     ],
     content: emailContent,
     onUpdate: ({ editor }) => {
@@ -46,10 +46,25 @@ function ApplicantSendMailPage() {
   });
 
   useEffect(() => {
-    api.get('/emaill/templates').then(response => {
-      setTemplates(response.data.templates);
-    }).catch(error => console.error("Error fetching data:", error.message));
-  }, [templates]);
+    api
+      .get("/email/templates")
+      .then((response) => {
+        setTemplates(response.data.templates);
+      })
+      .catch((error) => console.error("Error fetching data:", error.message));
+  }, []);
+
+  const handleTemplateSelect = (e) => {
+    const selectedTitle = e.target.value;
+    const template = templates.find((t) => t.title === selectedTitle);
+
+    if (template) {
+      setSelectedTemplate(selectedTitle);
+      setSubject(template.subject); // Update the subject
+      editor?.commands.setContent(template.body); // Update the editor content
+      setEmailContent(template.body);
+    }
+  };
 
   const handleSendEmail = async () => {
     const formData = new FormData();
@@ -62,9 +77,12 @@ function ApplicantSendMailPage() {
     }
 
     try {
-      api.post('/email/applicant', formData).then(response => {
-        alert("Email sent successfully");
-      }).catch(error => console.error("Error fetching data:", error.message));
+      api
+        .post("/email/applicant", formData)
+        .then((response) => {
+          alert("Email sent successfully");
+        })
+        .catch((error) => console.error("Error sending email:", error.message));
     } catch (error) {
       console.error("Error sending email:", error);
       alert("Failed to send email");
@@ -92,7 +110,7 @@ function ApplicantSendMailPage() {
           className="flex-1 border-none bg-white focus-visible:ring-0 focus-visible:ring-offset-0 p-2 rounded-r-lg"
         />
       </div>
-  
+
       <div className="p-6 bg-white rounded-xl border border-gray-200 shadow-md mb-5">
         <div className="flex gap-3 mb-4 shadow-lg p-3 rounded-lg bg-gray-100">
           <BoldIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().toggleBold().run()} />
@@ -105,37 +123,41 @@ function ApplicantSendMailPage() {
           <CodeBracketIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().toggleCodeBlock().run()} />
           <ArrowUturnLeftIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().undo().run()} />
           <ArrowUturnRightIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().redo().run()} />
-          <Bars3BottomLeftIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().setTextAlign('left').run()} />
-          <Bars3CenterLeftIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().setTextAlign('center').run()} />
-          <Bars3BottomRightIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().setTextAlign('right').run()} />
+          <Bars3BottomLeftIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().setTextAlign("left").run()} />
+          <Bars3CenterLeftIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().setTextAlign("center").run()} />
+          <Bars3BottomRightIcon className="w-6 h-6 cursor-pointer" onClick={() => editor.chain().focus().setTextAlign("right").run()} />
         </div>
         <EditorContent editor={editor} className="rounded-lg bg-white min-h-[500px] p-4 border border-gray-200" />
       </div>
-  
 
       <div className="flex border border-gray-100 bg-white mb-5">
         <label htmlFor="file-upload" className="cursor-pointer bg-teal-600 text-white text-center px-8 py-2 rounded-md">
           Attachment
           <input id="file-upload" type="file" className="hidden" onChange={handleFileChange} />
         </label>
-        <span className="text-gray-500">{attachment ? attachment.name : "No file chosen"}</span>
+        <span className="text-gray-500 ml-3">{attachment ? attachment.name : "No file chosen"}</span>
       </div>
 
-  
       <div className="flex justify-between items-center">
         <div>
-          <input
-            list="templates"
-            id="templateInput"
+          <select
+            value={selectedTemplate}
+            onChange={handleTemplateSelect}
             className="bg-teal-600 hover:bg-teal-700 text-white text-center px-4 py-2 rounded-md w-full"
-            placeholder="Use Template"
-          />
-          <datalist id="templates">
-            <option value="Template 1" />
-            <option value="Template 2" />
-          </datalist>
+          >
+            <option value="" disabled>
+              Select a Template
+            </option>
+            {templates.map((template) => (
+              <option key={template.template_id} value={template.title}>
+                {template.title}
+              </option>
+            ))}
+          </select>
         </div>
-        <button onClick={handleSendEmail} className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-md shadow-md">Send</button>
+        <button onClick={handleSendEmail} className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-md shadow-md">
+          Send
+        </button>
       </div>
     </div>
   );
