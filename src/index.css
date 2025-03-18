@@ -43,7 +43,7 @@
 }
 .body-tiny {
   font-family: var(--font-sans);
-  font-size: var(--text-small);
-  font-weight: 200;
+  font-size: var(--text-xsmall);
+  font-weight: 400;
   /* color: var(--color-gray-dark); */
 }
