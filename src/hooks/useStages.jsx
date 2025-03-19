@@ -18,8 +18,8 @@ export const useStages = () => {
   }, []);
 
   const toggleStage = (stageName) => {
-    setStages((prevStages) =>
-      prevStages.map((stage) =>
+    setStages(
+      stages.map((stage) =>
         stage.name === stageName
           ? {
               ...stage,
