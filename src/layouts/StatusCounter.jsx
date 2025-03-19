@@ -72,11 +72,10 @@ export default function StatusCounter() {
           <div key={stage.name}>
             {/* Stage Button */}
             <div
-              className={`flex cursor-pointer items-center justify-between ${
-                stage.selected
+              className={`flex cursor-pointer items-center justify-between ${stage.selected
                   ? "bg-teal text-white"
                   : "bg-gray-light text-gray-dark"
-              } hover:bg-teal-soft mb-2 rounded-md px-2`}
+                } hover:bg-teal-soft mb-2 rounded-md px-2`}
               onClick={() => toggleStage(stage.name)}
             >
               <div className="flex flex-1 items-center justify-between">
@@ -119,9 +118,10 @@ export default function StatusCounter() {
                     key={Status.name}
                     className={`mx-1 flex items-center justify-between rounded-lg border px-3 py-1 ${
                       Status.selected
+
                         ? "border-teal-soft bg-teal-soft"
                         : "border-gray-light"
-                    } hover:bg-gray-light`}
+                      } hover:bg-gray-light`}
                   >
                     <span className="body-regular text-gray-dark">
                       {Status.name}

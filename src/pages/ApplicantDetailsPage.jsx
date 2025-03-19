@@ -18,13 +18,13 @@ function ApplicantDetailsPage({ applicant }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="">
       <ApplicantDetails
         applicant={applicant}
         onTabChange={setActiveTab}
         activeTab={activeTab}
       />
-      <div className="mt-4">{renderActiveTab()}</div>
+      <div className="mt-4 mb-10">{renderActiveTab()}</div>
     </div>
   );
 }

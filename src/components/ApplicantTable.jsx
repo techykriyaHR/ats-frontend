@@ -27,7 +27,7 @@ const statusMapping = {
   "WITHDREW_APPLICATION": "Withdrew Application",
   "BLACKLISTED": "Blacklisted",
   "NOT_FIT": "Not Fit",
-};//d akin to ah -Lucky
+};
 
 const ApplicantTable = ({ onSelectApplicant }) => {
 
@@ -46,7 +46,6 @@ const ApplicantTable = ({ onSelectApplicant }) => {
       // Clear all timeouts on unmount
       Object.values(toastTimeouts).forEach(timeoutId => clearTimeout(timeoutId));
     };
-  }, [toastTimeouts]);
 
   const updateStatus = async (id, progress_id, Status, status) => {
     const token = Cookies.get("token");
