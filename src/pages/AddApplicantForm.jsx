@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import {
   FaCalendarAlt,
@@ -10,7 +12,6 @@ import {
   FaLink,
   FaUserFriends,
 } from "react-icons/fa"
-import axios from "axios"
 import Cookies from "js-cookie"
 import useUserStore from "../context/userStore"
 import api from "../api/axios"
@@ -33,7 +34,7 @@ const formSchema = {
   dateApplied: "",
 }
 
-function AddApplicantForm({ onClose }) {
+function AddApplicantForm({ onClose, initialData }) {
   const [formData, setFormData] = useState(formSchema)
   const [positions, setPositions] = useState([])
   const [users, setUsers] = useState([])
@@ -42,27 +43,51 @@ function AddApplicantForm({ onClose }) {
   const user = useUserStore((state) => state.user)
 
   useEffect(() => {
+    if (initialData) {
+      // Map the initialData to match the form schema structure
+      const mappedData = {
+        firstName: initialData.first_name || "",
+        middleName: initialData.middle_name || "",
+        lastName: initialData.last_name || "",
+        birthdate: initialData.birth_date ? new Date(initialData.birth_date).toISOString().split('T')[0] : "",
+        gender: initialData.gender || "",
+        email: initialData.email_1 || "",
+        phone: initialData.mobile_number_1 || "",
+        cvLink: initialData.cv_link || "",
+        position: initialData.job_id || "",
+        source: initialData.discovered_at || "",
+        referrer: initialData.referrer || "",
+        testResult: initialData.test_result || "",
+        dateApplied: initialData.tracking_created_at ? new Date(initialData.tracking_created_at).toISOString().split('T')[0] : "",
+      }
+      setFormData(mappedData)
+      console.log("Initial data:", initialData)
+      console.log("Initial data mapped:", mappedData)
+    }
+  }, [initialData])
+
+  useEffect(() => {
     const fetchPositions = async () => {
       try {
-        const response = await api.get("/company/positions");
-        setPositions(response.data.positions);
+        const response = await api.get("/company/positions")
+        setPositions(response.data.positions)
       } catch (error) {
-        console.error("Error fetching positions:", error);
+        console.error("Error fetching positions:", error)
       }
-    };
+    }
     const fetchUsers = async () => {
       try {
-        const token = Cookies.get("token");
+        const token = Cookies.get("token")
         const response = await api.get("/user/user-accounts", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
-        setUsers(response.data.userAccounts);
+        })
+        setUsers(response.data.userAccounts)
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching users:", error)
       }
-    };
+    }
     fetchPositions()
     fetchUsers()
   }, [])
@@ -90,16 +115,16 @@ function AddApplicantForm({ onClose }) {
     }
 
     try {
-      const duplicateCheckResponse = await api.post("/applicants/add/check-duplicates", payload);
+      const duplicateCheckResponse = await api.post("/applicants/add/check-duplicates", payload)
 
-      console.log("Duplicate check response:", duplicateCheckResponse.data);
+      console.log("Duplicate check response:", duplicateCheckResponse.data)
       if (duplicateCheckResponse.data.isDuplicate) {
-        setDuplicates(duplicateCheckResponse.data.possibleDuplicates);
+        setDuplicates(duplicateCheckResponse.data.possibleDuplicates)
       } else {
-        setDuplicates([]);
+        setDuplicates([])
       }
     } catch (error) {
-      console.error("Error checking for duplicates:", error);
+      console.error("Error checking for duplicates:", error)
     }
   }
 
@@ -137,11 +162,11 @@ function AddApplicantForm({ onClose }) {
 
     try {
       // Proceed with adding the applicant if no duplicates are found
-      const response = await api.post("/applicants/add", payload);
-      console.log("Applicant added:", response.data);
-      onClose();
+      const response = await api.post("/applicants/add", payload)
+      console.log("Applicant added:", response.data)
+      onClose()
     } catch (error) {
-      console.error("Error adding applicant:", error);
+      console.error("Error adding applicant:", error)
     }
   }
 
@@ -158,11 +183,9 @@ function AddApplicantForm({ onClose }) {
     setShowConfirmationModal(false)
   }
 
-
   return (
     <>
       <div className="min-h-screen bg-white p-8">
-
         <div className="flex justify-between items-center mb-6 p-4 border-b border-[#66b2b2]">
           <h1 className="text-2xl font-semibold text-[#008080]">Add New Applicant</h1>
         </div>
@@ -235,7 +258,7 @@ function AddApplicantForm({ onClose }) {
                         type="radio"
                         name="gender"
                         value="male"
-                        checked={formData.gender === "male"}
+                        checked={formData.gender === "Male"}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         className="accent-[#008080]"
@@ -247,7 +270,7 @@ function AddApplicantForm({ onClose }) {
                         type="radio"
                         name="gender"
                         value="female"
-                        checked={formData.gender === "female"}
+                        checked={formData.gender === "Female"}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         className="accent-[#008080]"
@@ -259,7 +282,7 @@ function AddApplicantForm({ onClose }) {
                         type="radio"
                         name="gender"
                         value="others"
-                        checked={formData.gender === "others"}
+                        checked={formData.gender === "Others"}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         className="accent-[#008080]"
@@ -268,7 +291,6 @@ function AddApplicantForm({ onClose }) {
                     </label>
                   </div>
                 </div>
-
 
                 <div className="flex flex-col">
                   <label className="mb-2 text-[#008080] font-medium">Date Applied</label>
@@ -442,62 +464,62 @@ function AddApplicantForm({ onClose }) {
           </div>
 
           <div className="w-full lg:w-96 p-6 bg-white rounded-lg shadow-md border border-[#66b2b2]">
-  <div className="flex items-center justify-between mb-6 pb-2 border-b border-[#66b2b2]">
-    <h2 className="text-lg font-semibold text-[#008080] flex items-center gap-2">
-      <FaExclamationTriangle className={duplicates.length > 0 ? "text-yellow-600" : "text-[#008080]"} />
-      Possible Duplicates ({duplicates.length})
-    </h2>
-  </div>
-  {duplicates.length > 0 ? (
-    <div className="space-y-4 max-h-200 overflow-auto pr-2">
-      {duplicates.slice(0, 3).map((duplicate, index) => (  
-        <div
-          key={index}
-          className="border border-[#66b2b2] rounded-lg p-4 space-y-2 hover:shadow-md transition-shadow"
-        >
-          {duplicate.applicantFromDb && (
-            <>
-              <h3 className="font-medium text-[#008080]">
-                {duplicate.applicantFromDb.first_name} {duplicate.applicantFromDb.last_name}
-              </h3>
-              <div className="space-y-1 text-sm text-gray-600">
-                <p>Date Applied: {new Date(duplicate.applicantFromDb.date_created).toLocaleDateString()}</p>
-                <p>Email Address: {duplicate.applicantFromDb.email_1}</p>
-                {duplicate.applicantFromDb.email_2 && (
-                  <p>Second Email Address: {duplicate.applicantFromDb.email_2}</p>
-                )}
-                {duplicate.applicantFromDb.email_3 && (
-                  <p>Third Email Address: {duplicate.applicantFromDb.email_3}</p>
-                )}
-                <p>Mobile Number: {duplicate.applicantFromDb.mobile_number_1}</p>
-                {duplicate.applicantFromDb.mobile_number_2 && (
-                  <p>Second Mobile Number: {duplicate.applicantFromDb.mobile_number_2}</p>
-                )}
-                <p>Gender: {duplicate.applicantFromDb.gender}</p>
-              </div>
-              <div className="space-y-1 pt-2">
-                {duplicate.similarity.map((similarity, index) => (
+            <div className="flex items-center justify-between mb-6 pb-2 border-b border-[#66b2b2]">
+              <h2 className="text-lg font-semibold text-[#008080] flex items-center gap-2">
+                <FaExclamationTriangle className={duplicates.length > 0 ? "text-yellow-600" : "text-[#008080]"} />
+                Possible Duplicates ({duplicates.length})
+              </h2>
+            </div>
+            {duplicates.length > 0 ? (
+              <div className="space-y-4 max-h-200 overflow-auto pr-2">
+                {duplicates.slice(0, 3).map((duplicate, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded-md"
+                    className="border border-[#66b2b2] rounded-lg p-4 space-y-2 hover:shadow-md transition-shadow"
                   >
-                    <FaExclamationTriangle className="h-4 w-4" />
-                    <span>Similarity in {similarity}</span>
+                    {duplicate.applicantFromDb && (
+                      <>
+                        <h3 className="font-medium text-[#008080]">
+                          {duplicate.applicantFromDb.first_name} {duplicate.applicantFromDb.last_name}
+                        </h3>
+                        <div className="space-y-1 text-sm text-gray-600">
+                          <p>Date Applied: {new Date(duplicate.applicantFromDb.date_created).toLocaleDateString()}</p>
+                          <p>Email Address: {duplicate.applicantFromDb.email_1}</p>
+                          {duplicate.applicantFromDb.email_2 && (
+                            <p>Second Email Address: {duplicate.applicantFromDb.email_2}</p>
+                          )}
+                          {duplicate.applicantFromDb.email_3 && (
+                            <p>Third Email Address: {duplicate.applicantFromDb.email_3}</p>
+                          )}
+                          <p>Mobile Number: {duplicate.applicantFromDb.mobile_number_1}</p>
+                          {duplicate.applicantFromDb.mobile_number_2 && (
+                            <p>Second Mobile Number: {duplicate.applicantFromDb.mobile_number_2}</p>
+                          )}
+                          <p>Gender: {duplicate.applicantFromDb.gender}</p>
+                        </div>
+                        <div className="space-y-1 pt-2">
+                          {duplicate.similarity.map((similarity, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-2 text-sm text-yellow-600 bg-yellow-50 p-2 rounded-md"
+                            >
+                              <FaExclamationTriangle className="h-4 w-4" />
+                              <span>Similarity in {similarity}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>
-            </>
-          )}
-        </div>
-      ))}
-    </div>
-  ) : (
-    <div className="flex flex-col items-center justify-center h-48 text-gray-500">
-      <FaUserAlt className="h-12 w-12 text-[#66b2b2] mb-4" />
-      <p>No duplicates found</p>
-    </div>
-  )}
-</div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-48 text-gray-500">
+                <FaUserAlt className="h-12 w-12 text-[#66b2b2] mb-4" />
+                <p>No duplicates found</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {showConfirmationModal && (
@@ -528,4 +550,3 @@ function AddApplicantForm({ onClose }) {
 }
 
 export default AddApplicantForm
-

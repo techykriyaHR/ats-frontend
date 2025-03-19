@@ -5,6 +5,8 @@ import api from '../../api/axios';
 import Loader from '../../assets/Loader';
 import Toast from '../../assets/Toast';
 import { FaCakeCandles, FaFileLines } from 'react-icons/fa6';
+import AddApplicantForm from '../../pages/AddApplicantForm'; // Import the AddApplicantForm component
+
 
 const statuses = [
   "Test Sent",
@@ -37,12 +39,15 @@ const statusMapping = {
   "NOT_FIT": "Not Fit",
 };
 
+
 function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   const [applicantInfo, setApplicantInfo] = useState({});
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
   const [toasts, setToasts] = useState([]);
   const { user } = useUserStore();
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false); // State to manage the visibility of the AddApplicantForm
+
 
   // Reset state when applicant changes
   useEffect(() => {
@@ -130,6 +135,15 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
 
   const removeToast = (id) => {
     setToasts(toasts.filter(t => t.id !== id));
+  };
+
+
+  const handleEditClick = () => {
+    setIsEditFormOpen(true);
+  };
+
+  const handleCloseEditForm = () => {
+    setIsEditFormOpen(false);
   };
 
   if (loading) {
@@ -226,7 +240,7 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
                 ))}
               </select>
               <button
-                onClick={() => console.log("Edit button clicked")}
+                onClick={handleEditClick}
                 className="ml-2 p-2.5 rounded-full bg-teal hover:bg-teal/70 cursor-pointer "
               >
                 <FaPen className="w-4 h-4 text-white" />
@@ -297,7 +311,19 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
           />
         ))}
       </div>
+
+      {isEditFormOpen && (
+        <div className="fixed inset-0  flex items-center justify-center z-50">
+          <div className="bg-white w-full h-full overflow-auto ml-72"> {/* Adjust for sidebar width */}
+            <AddApplicantForm
+              onClose={handleCloseEditForm}
+              initialData={applicantInfo} // Pass the applicant data to the form
+            />
+          </div>
+        </div>
+      )}
     </div>
+
   );
 }
 
