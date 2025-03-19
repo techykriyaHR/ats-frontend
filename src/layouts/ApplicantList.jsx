@@ -9,7 +9,7 @@ import { PDFDownloadLink } from "@react-pdf/renderer";
 
 import exportToExcel from "../utils/exportToExcel";
 import moment from "moment";
-import ExportToPdf from "../utils/exportToPdf";
+import ExportToPdf from "../utils/ExportToPdf.jsx";
 
 export default function ApplicantList({
   onSelectApplicant,
