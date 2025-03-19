@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import {
   FaCalendarAlt,
@@ -9,6 +11,8 @@ import {
   FaBriefcase,
   FaLink,
   FaUserFriends,
+  FaMinus,
+  FaPlus,
 } from "react-icons/fa"
 import Cookies from "js-cookie"
 import useUserStore from "../context/userStore"
@@ -30,6 +34,8 @@ const formSchema = {
   referrer: "",
   testResult: "",
   dateApplied: "",
+  additionalEmails: ["", ""],
+  additionalPhones: [""],
 }
 
 function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
@@ -39,18 +45,17 @@ function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false)
   const [duplicates, setDuplicates] = useState([])
   const user = useUserStore((state) => state.user)
-  
+
   // Determine if we're editing or adding based on initialData
   const isEditing = !!initialData
 
   useEffect(() => {
     if (initialData) {
-      // Map the initialData to match the form schema structure
       const mappedData = {
         firstName: initialData.first_name || "",
         middleName: initialData.middle_name || "",
         lastName: initialData.last_name || "",
-        birthdate: initialData.birth_date ? new Date(initialData.birth_date).toISOString().split('T')[0] : "",
+        birthdate: initialData.birth_date ? new Date(initialData.birth_date).toISOString().split("T")[0] : "",
         gender: initialData.gender || "",
         email: initialData.email_1 || "",
         phone: initialData.mobile_number_1 || "",
@@ -59,19 +64,21 @@ function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
         source: initialData.discovered_at || "",
         referrer: initialData.referrer || "",
         testResult: initialData.test_result || "",
-        dateApplied: initialData.tracking_created_at ? new Date(initialData.tracking_created_at).toISOString().split('T')[0] : "",
+        dateApplied: initialData.tracking_created_at
+          ? new Date(initialData.tracking_created_at).toISOString().split("T")[0]
+          : "",
+        additionalEmails: [initialData.email_2 || "", initialData.email_3 || ""],
+        additionalPhones: [initialData.mobile_number_2 || ""],
       }
       setFormData(mappedData)
-      console.log("Initial data:", initialData)
-      console.log("Initial data mapped:", mappedData)
     }
   }, [initialData])
 
   useEffect(() => {
     if (formData.firstName || formData.lastName || formData.email || formData.phone) {
-      checkForDuplicates();
+      checkForDuplicates()
     }
-  }, [formData.firstName, formData.lastName, formData.email, formData.phone]);
+  }, [formData.firstName, formData.lastName, formData.email, formData.phone])
 
   useEffect(() => {
     const fetchPositions = async () => {
@@ -134,18 +141,99 @@ function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
       console.error("Error checking for duplicates:", error)
     }
   }
+  const handleAddEmail = () => {
+    // Check if we already have empty fields that aren't displayed
+    const visibleEmails = formData.additionalEmails.filter((email) => email !== "").length
+    const totalEmails = formData.additionalEmails.length
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    if (visibleEmails < totalEmails) {
+      // If we have hidden empty fields, just make one visible by adding a space
+      const newEmails = [...formData.additionalEmails]
+      for (let i = 0; i < newEmails.length; i++) {
+        if (newEmails[i] === "") {
+          newEmails[i] = " " // Add a space to make it visible
+          break
+        }
+      }
+      setFormData((prev) => ({
+        ...prev,
+        additionalEmails: newEmails,
+      }))
+    } else if (totalEmails < 2) {
+      // If we have less than 2 total fields, add a new one
+      setFormData((prev) => ({
+        ...prev,
+        additionalEmails: [...prev.additionalEmails, " "],
+      }))
+    }
   }
 
+  const handleRemoveEmail = (index) => {
+    setFormData((prev) => {
+      const newEmails = prev.additionalEmails.filter((_, i) => i !== index)
+      return { ...prev, additionalEmails: newEmails }
+    })
+  }
+
+  const handleAddPhone = () => {
+    // Check if we already have empty fields that aren't displayed
+    const visiblePhones = formData.additionalPhones.filter((phone) => phone !== "").length
+    const totalPhones = formData.additionalPhones.length
+
+    if (visiblePhones < totalPhones) {
+      // If we have hidden empty fields, just make one visible by adding a space
+      const newPhones = [...formData.additionalPhones]
+      for (let i = 0; i < newPhones.length; i++) {
+        if (newPhones[i] === "") {
+          newPhones[i] = " " // Add a space to make it visible
+          break
+        }
+      }
+      setFormData((prev) => ({
+        ...prev,
+        additionalPhones: newPhones,
+      }))
+    } else if (totalPhones < 1) {
+      // If we have less than 1 total field, add a new one
+      setFormData((prev) => ({
+        ...prev,
+        additionalPhones: [...prev.additionalPhones, " "],
+      }))
+    }
+  }
+
+  const handleRemovePhone = (index) => {
+    setFormData((prev) => {
+      const newPhones = prev.additionalPhones.filter((_, i) => i !== index)
+      return { ...prev, additionalPhones: newPhones }
+    })
+  }
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    if (name.startsWith("additionalEmail")) {
+      const index = Number.parseInt(name.split("_")[1], 10)
+      setFormData((prev) => {
+        const newEmails = [...prev.additionalEmails]
+        newEmails[index] = value
+        return { ...prev, additionalEmails: newEmails }
+      })
+    } else if (name.startsWith("additionalPhone")) {
+      const index = Number.parseInt(name.split("_")[1], 10)
+      setFormData((prev) => {
+        const newPhones = [...prev.additionalPhones]
+        newPhones[index] = value
+        return { ...prev, additionalPhones: newPhones }
+      })
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }))
+    }
+  }
   const handleBlur = () => {
     checkForDuplicates()
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     const payload = {
       applicant: JSON.stringify({
         first_name: formData.firstName,
@@ -164,28 +252,30 @@ function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
         position_id: formData.position,
         test_result: formData.testResult,
         date_applied: formData.dateApplied,
+        email_2: formData.additionalEmails[0] || null,
+        email_3: formData.additionalEmails[1] || null,
+        mobile_number_2: formData.additionalPhones[0] || null,
         ...(initialData && { applicant_id: initialData.applicant_id }),
       }),
-    };
+    }
+
+    console.log("Payload:", payload)
 
     try {
-      let response;
+      let response
       if (isEditing) {
-        console.log("Payload:", payload);
-        response = await api.put(`${API_BASE_URL}/applicant/edit`, payload);
-        console.log("Applicant edited:", response.data);
+        response = await api.put(`${API_BASE_URL}/applicant/edit`, payload)
       } else {
-        response = await api.post(`${API_BASE_URL}/applicants/add`, payload);
-        console.log("Applicant added:", response.data);
+        response = await api.post(`${API_BASE_URL}/applicants/add`, payload)
       }
       if (isEditing && onEditSuccess) {
-        onEditSuccess(); // Call this function after successful edit
+        onEditSuccess()
       }
-      onClose();
+      onClose()
     } catch (error) {
-      console.error("Error submitting applicant:", error);
+      console.error("Error submitting applicant:", error)
     }
-  };
+  }
 
   const handleCancel = () => {
     setShowConfirmationModal(true)
@@ -332,30 +422,121 @@ function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
                   <FaEnvelope className="text-[#008080]" />
                   Contact Information
                 </h3>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="relative">
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      className="w-full p-3 border border-[#66b2b2] rounded-md focus:outline-none focus:ring-2 focus:ring-[#008080] transition-all pl-10"
-                    />
-                    <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#008080]" />
+
+                {/* Two-column layout for contact form */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Email column */}
+                  <div className="space-y-2">
+                    <div className="flex gap-2 items-start">
+                      <div className="relative flex-1">
+                        <input
+                          type="email"
+                          name="email"
+                          placeholder="Email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          className="w-full p-3 border border-[#66b2b2] rounded-md focus:outline-none focus:ring-2 focus:ring-[#008080] transition-all pl-10"
+                        />
+                        <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#008080]" />
+                      </div>
+
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={handleAddEmail}
+                          className="p-3 border border-[#66b2b2] rounded-md bg-white hover:bg-[#d9ebeb] transition-all"
+                        >
+                          <FaPlus className="h-4 w-4 text-[#008080]" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {formData.additionalEmails.map(
+                      (email, index) =>
+                        email !== "" && (
+                          <div key={`email-${index}`} className="flex gap-2 items-start">
+                            <div className="relative flex-1">
+                              <input
+                                type="email"
+                                name={`additionalEmail_${index}`}
+                                placeholder={`Additional Email ${index + 1}`}
+                                value={email === " " ? "" : email}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                className="w-full p-3 border border-[#66b2b2] rounded-md focus:outline-none focus:ring-2 focus:ring-[#008080] transition-all pl-10"
+                              />
+                              <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#008080]" />
+                            </div>
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveEmail(index)}
+                                className="p-3 border border-[#66b2b2] rounded-md bg-white hover:bg-[#d9ebeb] transition-all"
+                              >
+                                <FaMinus className="h-4 w-4 text-red-500" />
+                              </button>
+                            </div>
+                          </div>
+                        )
+                    )}
                   </div>
-                  <div className="relative">
-                    <input
-                      type="tel"
-                      name="phone"
-                      placeholder="(XXX) XXX-XXXX"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      className="w-full p-3 border border-[#66b2b2] rounded-md focus:outline-none focus:ring-2 focus:ring-[#008080] transition-all pl-10"
-                    />
-                    <FaPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#008080]" />
+
+                  {/* Phone column */}
+                  <div className="space-y-2">
+                    <div className="flex gap-2 items-start">
+                      <div className="relative flex-1">
+                        <input
+                          type="tel"
+                          name="phone"
+                          placeholder="(XXX) XXX-XXXX"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          className="w-full p-3 border border-[#66b2b2] rounded-md focus:outline-none focus:ring-2 focus:ring-[#008080] transition-all pl-10"
+                        />
+                        <FaPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#008080]" />
+                      </div>
+
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={handleAddPhone}
+                          className="p-3 border border-[#66b2b2] rounded-md bg-white hover:bg-[#d9ebeb] transition-all"
+                        >
+                          <FaPlus className="h-4 w-4 text-[#008080]" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {formData.additionalPhones.map(
+                      (phone, index) =>
+                        phone !== "" && (
+                          <div key={`phone-${index}`} className="flex gap-2 items-start">
+                            <div className="relative flex-1">
+                              <input
+                                type="tel"
+                                name={`additionalPhone_${index}`}
+                                placeholder={`Additional Phone ${index + 1}`}
+                                value={phone === " " ? "" : phone}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                className="w-full p-3 border border-[#66b2b2] rounded-md focus:outline-none focus:ring-2 focus:ring-[#008080] transition-all pl-10"
+                              />
+                              <FaPhone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#008080]" />
+                            </div>
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() => handleRemovePhone(index)}
+                                className="p-3 border border-[#66b2b2] rounded-md bg-white hover:bg-[#d9ebeb] transition-all"
+                              >
+                                <FaMinus className="h-4 w-4 text-red-500" />
+                              </button>
+                            </div>
+                          </div>
+                        )
+                    )}
                   </div>
                 </div>
               </div>
@@ -569,3 +750,4 @@ function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
 }
 
 export default AddApplicantForm
+
