@@ -24,7 +24,7 @@ function ApplicantDetailsPage({ applicant }) {
         onTabChange={setActiveTab}
         activeTab={activeTab}
       />
-      <div className="mt-4">{renderActiveTab()}</div>
+      <div className="mt-4 mb-10">{renderActiveTab()}</div>
     </div>
   );
 }

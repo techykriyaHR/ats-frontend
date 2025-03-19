@@ -3,18 +3,40 @@ import { FiCalendar, FiPlus, FiSend } from "react-icons/fi";
 
 function ApplicantDiscussionPage() {
   const [message, setMessage] = useState("");
+  const [interviews, setInterviews] = useState(["Interview 1"]);
+  const [activeTab, setActiveTab] = useState("Interview 1");
+
+  const addInterview = () => {
+    setInterviews([...interviews, `Interview ${interviews.length + 1}`]);
+  };
 
   return (
     <div className="rounded-lg">
       {/* Header tabs */}
-      <div className="mb-4 flex w-full overflow-hidden rounded-lg">
-        <div className="flex-1 bg-teal-700 px-6 py-3 font-medium text-white">
-          Interview 1
-        </div>
-        <div className="flex flex-1 items-center justify-center bg-teal-50 px-6 py-3 text-teal-700">
-          <FiPlus className="h-5 w-5" />
-        </div>
+      <div className="mb-4 p-1 flex w-full gap-1 bg-teal-soft rounded-lg text-center items-center body-bold">
+        {/* Interview tabs */}
+        {interviews.map((interview) => (
+          <div
+            key={interview}
+            className={`flex-1 px-5 py-1 font-medium rounded-lg cursor-pointer 
+            ${activeTab === interview ? "bg-teal text-white" : "text-teal"}`}
+            onClick={() => setActiveTab(interview)}
+          >
+            {interview}
+          </div>
+        ))}
+
+        {/* Plus Button (Hidden if limit is reached) */}
+        {interviews.length < 5 && (
+          <div
+            className="flex flex-1 items-center justify-center rounded-lg px-5 py-1 text-teal cursor-pointer hover:bg-teal-soft"
+            onClick={addInterview}
+          >
+            <FiPlus className="h-5 w-5" />
+          </div>
+        )}
       </div>
+
 
       {/* Main content card */}
       <div className="rounded-lg border shadow-sm">
