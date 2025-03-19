@@ -5,7 +5,9 @@ import api from '../../api/axios';
 import Loader from '../../assets/Loader';
 import Toast from '../../assets/Toast';
 import { FaCakeCandles, FaFileLines } from 'react-icons/fa6';
-import AddApplicantForm from '../../pages/AddApplicantForm'; // Import the AddApplicantForm component
+import AddApplicantForm from '../../pages/AddApplicantForm';
+
+
 
 
 const statuses = [
@@ -47,9 +49,8 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   const [toasts, setToasts] = useState([]);
   const { user } = useUserStore();
   const [isEditFormOpen, setIsEditFormOpen] = useState(false); // State to manage the visibility of the AddApplicantForm
+  const [editCounter, setEditCounter] = useState(0);
 
-
-  // Reset state when applicant changes
   useEffect(() => {
     setLoading(true);
     setApplicantInfo({});
@@ -73,10 +74,9 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
           setLoading(false);
         });
     } else {
-      // If no applicant is selected, exit loading state
       setLoading(false);
     }
-  }, [applicant]); // Only depend on the applicant prop
+  }, [applicant, editCounter]); // Add editCounter to dependency array
 
   const handleStatusChange = async (e) => {
     const newStatus = e.target.value;
@@ -145,6 +145,9 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   const handleCloseEditForm = () => {
     setIsEditFormOpen(false);
   };
+
+
+
 
   if (loading) {
     return <Loader />;
@@ -311,17 +314,17 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
           />
         ))}
       </div>
-
       {isEditFormOpen && (
-        <div className="fixed inset-0  flex items-center justify-center z-50">
-          <div className="bg-white w-full h-full overflow-auto ml-72"> {/* Adjust for sidebar width */}
-            <AddApplicantForm
-              onClose={handleCloseEditForm}
-              initialData={applicantInfo} // Pass the applicant data to the form
-            />
-          </div>
-        </div>
-      )}
+  <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+    <div className="bg-white w-full h-full overflow-auto lg:ml-72 pointer-events-auto">
+      <AddApplicantForm
+        onClose={handleCloseEditForm}
+        initialData={applicantInfo}
+        onEditSuccess={() => setEditCounter(prev => prev + 1)}
+      />
+    </div>
+  </div>
+)}
     </div>
 
   );

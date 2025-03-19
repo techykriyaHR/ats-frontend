@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import {
   FaCalendarAlt,
@@ -34,13 +32,16 @@ const formSchema = {
   dateApplied: "",
 }
 
-function AddApplicantForm({ onClose, initialData }) {
+function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
   const [formData, setFormData] = useState(formSchema)
   const [positions, setPositions] = useState([])
   const [users, setUsers] = useState([])
   const [showConfirmationModal, setShowConfirmationModal] = useState(false)
   const [duplicates, setDuplicates] = useState([])
   const user = useUserStore((state) => state.user)
+  
+  // Determine if we're editing or adding based on initialData
+  const isEditing = !!initialData
 
   useEffect(() => {
     if (initialData) {
@@ -65,6 +66,12 @@ function AddApplicantForm({ onClose, initialData }) {
       console.log("Initial data mapped:", mappedData)
     }
   }, [initialData])
+
+  useEffect(() => {
+    if (formData.firstName || formData.lastName || formData.email || formData.phone) {
+      checkForDuplicates();
+    }
+  }, [formData.firstName, formData.lastName, formData.email, formData.phone]);
 
   useEffect(() => {
     const fetchPositions = async () => {
@@ -138,7 +145,7 @@ function AddApplicantForm({ onClose, initialData }) {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     const payload = {
       applicant: JSON.stringify({
         first_name: formData.firstName,
@@ -157,18 +164,28 @@ function AddApplicantForm({ onClose, initialData }) {
         position_id: formData.position,
         test_result: formData.testResult,
         date_applied: formData.dateApplied,
+        ...(initialData && { applicant_id: initialData.applicant_id }),
       }),
-    }
+    };
 
     try {
-      // Proceed with adding the applicant if no duplicates are found
-      const response = await api.post("/applicants/add", payload)
-      console.log("Applicant added:", response.data)
-      onClose()
+      let response;
+      if (isEditing) {
+        console.log("Payload:", payload);
+        response = await api.put(`${API_BASE_URL}/applicant/edit`, payload);
+        console.log("Applicant edited:", response.data);
+      } else {
+        response = await api.post(`${API_BASE_URL}/applicants/add`, payload);
+        console.log("Applicant added:", response.data);
+      }
+      if (isEditing && onEditSuccess) {
+        onEditSuccess(); // Call this function after successful edit
+      }
+      onClose();
     } catch (error) {
-      console.error("Error adding applicant:", error)
+      console.error("Error submitting applicant:", error);
     }
-  }
+  };
 
   const handleCancel = () => {
     setShowConfirmationModal(true)
@@ -187,7 +204,9 @@ function AddApplicantForm({ onClose, initialData }) {
     <>
       <div className="min-h-screen bg-white p-8">
         <div className="flex justify-between items-center mb-6 p-4 border-b border-[#66b2b2]">
-          <h1 className="text-2xl font-semibold text-[#008080]">Add New Applicant</h1>
+          <h1 className="text-2xl font-semibold text-[#008080]">
+            {isEditing ? "Edit Applicant" : "Add New Applicant"}
+          </h1>
         </div>
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="flex-1">
@@ -257,7 +276,7 @@ function AddApplicantForm({ onClose, initialData }) {
                       <input
                         type="radio"
                         name="gender"
-                        value="male"
+                        value="Male"
                         checked={formData.gender === "Male"}
                         onChange={handleChange}
                         onBlur={handleBlur}
@@ -269,7 +288,7 @@ function AddApplicantForm({ onClose, initialData }) {
                       <input
                         type="radio"
                         name="gender"
-                        value="female"
+                        value="Female"
                         checked={formData.gender === "Female"}
                         onChange={handleChange}
                         onBlur={handleBlur}
@@ -281,7 +300,7 @@ function AddApplicantForm({ onClose, initialData }) {
                       <input
                         type="radio"
                         name="gender"
-                        value="others"
+                        value="Others"
                         checked={formData.gender === "Others"}
                         onChange={handleChange}
                         onBlur={handleBlur}
@@ -457,7 +476,7 @@ function AddApplicantForm({ onClose, initialData }) {
                   type="submit"
                   className="px-6 py-3 rounded-md bg-[#008080] text-white hover:bg-[#006666] transition-colors duration-300 shadow-md"
                 >
-                  Add Applicant
+                  {isEditing ? "Update Applicant" : "Add Applicant"}
                 </button>
               </div>
             </form>
