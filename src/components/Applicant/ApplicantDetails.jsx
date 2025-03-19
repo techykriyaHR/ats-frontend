@@ -5,6 +5,10 @@ import api from '../../api/axios';
 import Loader from '../../assets/Loader';
 import Toast from '../../assets/Toast';
 import { FaCakeCandles, FaFileLines } from 'react-icons/fa6';
+import AddApplicantForm from '../../pages/AddApplicantForm';
+
+
+
 
 const statuses = [
   "Test Sent",
@@ -37,14 +41,16 @@ const statusMapping = {
   "NOT_FIT": "Not Fit",
 };
 
+
 function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   const [applicantInfo, setApplicantInfo] = useState({});
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
   const [toasts, setToasts] = useState([]);
   const { user } = useUserStore();
+  const [isEditFormOpen, setIsEditFormOpen] = useState(false); // State to manage the visibility of the AddApplicantForm
+  const [editCounter, setEditCounter] = useState(0);
 
-  // Reset state when applicant changes
   useEffect(() => {
     setLoading(true);
     setApplicantInfo({});
@@ -68,10 +74,9 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
           setLoading(false);
         });
     } else {
-      // If no applicant is selected, exit loading state
       setLoading(false);
     }
-  }, [applicant]); // Only depend on the applicant prop
+  }, [applicant, editCounter]); // Add editCounter to dependency array
 
   const handleStatusChange = async (e) => {
     const newStatus = e.target.value;
@@ -131,6 +136,18 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   const removeToast = (id) => {
     setToasts(toasts.filter(t => t.id !== id));
   };
+
+
+  const handleEditClick = () => {
+    setIsEditFormOpen(true);
+  };
+
+  const handleCloseEditForm = () => {
+    setIsEditFormOpen(false);
+  };
+
+
+
 
   if (loading) {
     return <Loader />;
@@ -226,7 +243,7 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
                 ))}
               </select>
               <button
-                onClick={() => console.log("Edit button clicked")}
+                onClick={handleEditClick}
                 className="ml-2 p-2.5 rounded-full bg-teal hover:bg-teal/70 cursor-pointer "
               >
                 <FaPen className="w-4 h-4 text-white" />
@@ -297,7 +314,19 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
           />
         ))}
       </div>
+      {isEditFormOpen && (
+  <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+    <div className="bg-white w-full h-full overflow-auto lg:ml-72 pointer-events-auto">
+      <AddApplicantForm
+        onClose={handleCloseEditForm}
+        initialData={applicantInfo}
+        onEditSuccess={() => setEditCounter(prev => prev + 1)}
+      />
     </div>
+  </div>
+)}
+    </div>
+
   );
 }
 
