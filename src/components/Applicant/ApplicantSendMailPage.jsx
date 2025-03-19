@@ -1,41 +1,138 @@
-import React, { useState } from "react";
-import { FaPlus } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import TextAlign from "@tiptap/extension-text-align";
+import Strike from "@tiptap/extension-strike";
+import CodeBlock from "@tiptap/extension-code-block";
+import Blockquote from "@tiptap/extension-blockquote";
+import { generateJSON } from "@tiptap/html"; // Import the utility to convert HTML to JSON
+import {
+  BoldIcon,
+  ItalicIcon,
+  UnderlineIcon,
+  ListBulletIcon,
+  NumberedListIcon,
+  StrikethroughIcon,
+  CodeBracketIcon,
+  ChatBubbleLeftRightIcon,
+  ArrowUturnLeftIcon,
+  ArrowUturnRightIcon,
+  Bars3BottomLeftIcon,
+  Bars3CenterLeftIcon,
+  Bars3BottomRightIcon,
+} from "@heroicons/react/24/outline";
+import api from "../../api/axios";
 
 function ApplicantSendMailPage() {
   const [subject, setSubject] = useState(
     "Welcome to FullSuite – Preparing for Your Interviews and Assessment",
   );
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [attachment, setAttachment] = useState(null);
-  const [emailContent, setEmailContent] = useState(`
-Dear Juniper Williams,
+  const [emailContent, setEmailContent] = useState("");
+  const [templates, setTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [showTemplateModal, setShowTemplateModal] = useState(false); // State for modal visibility
+  const [templateTitle, setTemplateTitle] = useState(""); // State for template title input
 
-Thank you for applying to FullSuite! We're excited to have you as a candidate and look forward to the opportunity to learn more about you.
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Underline,
+      Strike,
+      CodeBlock,
+      Blockquote,
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
+    ],
+    content: emailContent,
+    onUpdate: ({ editor }) => {
+      setEmailContent(editor.getHTML());
+    },
+  });
 
-What to Expect in the Interview Process:
-• Interview Schedule: We'll soon be in touch to arrange the first round of interviews. Please keep an eye on your inbox for an invitation to select a convenient time slot.
-• Interview Format: Depending on the role, you may have a combination of virtual and in-person interviews. We'll provide all the necessary details, including any preparation materials or topics you should be familiar with.
-• Pre-Interview Assessment: Before proceeding with the interviews, we require all candidates to complete an assessment designed to evaluate your technical skills for the Software Engineer Role. This test helps us ensure that your skills align with the job requirements.
-• Test Details: You'll receive an email with a link to the test within the next 48 hours. The test should take approximately 30 minutes to complete.
-• Deadline: Please complete the test by August 26, 2024.
-• Preparation: No special preparation is needed, but we suggest reviewing [any relevant material or topics]. If you encounter any issues or need assistance, feel free to contact us.
-• Who You'll Meet: During the interview process, you'll have the chance to meet with key team members and leaders at [Your Company Name]. This is your opportunity to get to know us as much as it is for us to learn about you.
+  const fetchTemplates = () => {
+    api
+      .get("/email/templates")
+      .then((response) => {
+        setTemplates(response.data.templates);
+      })
+      .catch((error) => console.error("Error fetching data:", error.message));
+  };
 
-Next Steps:
-Once you've completed the assessment, and your test results have been reviewed, we'll follow up to schedule your interviews. We'll send you a confirmation email with all the details you need. Should you have any scheduling constraints, please let us know, and we'll do our best to accommodate you.
+  useEffect(() => {
+    fetchTemplates();
+  }, []);
 
-If you have any questions about the test or the interview process, don't hesitate to reach out to us at percy@fullsuite.ph or 09123456789. We're here to help and ensure you feel confident and prepared.
+  const handleTemplateSelect = (e) => {
+    const selectedTitle = e.target.value;
+    const template = templates.find((t) => t.title === selectedTitle);
 
-We're looking forward to meeting you and wish you the best of luck with the assessment and interview process.
+    if (template) {
+      setSelectedTemplate(selectedTitle);
+      setSubject(template.subject); // Update the subject
 
-Best regards,
-Ivan Percival Viniegas
-  `);
+      // Convert the HTML content to JSON format for the editor
+      const jsonContent = generateJSON(template.body, [
+        StarterKit,
+        Underline,
+        Strike,
+        CodeBlock,
+        Blockquote,
+        TextAlign.configure({ types: ["heading", "paragraph"] }),
+      ]);
 
-  const templates = Array(8).fill("Sample Template");
+      editor?.commands.setContent(jsonContent); // Update the editor content
+      setEmailContent(template.body);
+    }
+  };
 
-  const handleTemplateSelect = (index) => {
-    setSelectedTemplate(index);
+  const handleSaveTemplate = () => {
+    if (!templateTitle) {
+      alert("Please enter a title for the template.");
+      return;
+    }
+
+    // Payload
+    const data = {
+      company_id: "468eb32f-f8c1-11ef-a725-0af0d960a833",
+      title: templateTitle, // Use the user-provided title
+      subject: subject,
+      body: emailContent,
+    };
+
+    api
+      .post("/email/add/template", data)
+      .then((response) => {
+        setShowTemplateModal(false); // Close the modal
+        setTemplateTitle(""); // Reset the title input
+        fetchTemplates(); // Refresh the templates list
+      })
+      .catch((error) => {
+        alert("Failed to save template");
+      });
+  };
+
+  const handleSendEmail = async () => {
+    const formData = new FormData();
+    formData.append("applicant_id", "37f14f12-c113-4c21-9f8a-ccf0f5b39f35");
+    formData.append("user_id", "fcd3eee1-9a10-40d6-8444-b0f5b8632af1");
+    formData.append("email_subject", subject);
+    formData.append("email_body", emailContent);
+    if (attachment) {
+      formData.append("files", attachment);
+    }
+
+    try {
+      api
+        .post("/email/applicant", formData)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => console.error("Error sending email:", error.message));
+    } catch (error) {
+      console.error("Error sending email:", error);
+      alert("Failed to send email");
+    }
   };
 
   const handleFileChange = (e) => {
@@ -44,86 +141,163 @@ Ivan Percival Viniegas
     }
   };
 
-  const handleEmailContentChange = (e) => {
-    setEmailContent(e.target.innerHTML);
-  };
+  if (!editor) {
+    return null;
+  }
 
   return (
-    <div className="flex min-h-screen flex-col gap-6 bg-gray-50 p-4 md:flex-row">
-      {/* Left sidebar - Template selection */}
-      <div className="w-full rounded-lg bg-white p-6 shadow-sm md:w-80">
-        <h2 className="mb-4 text-sm font-medium text-teal-700">
-          Choose an email template:
-        </h2>
-        <div className="space-y-3">
-          {templates.map((template, index) => (
-            <button
-              key={index}
-              className={`h-12 w-full justify-start border text-left font-normal ${
-                selectedTemplate === index
-                  ? "border-teal-600"
-                  : "border-gray-200"
-              }`}
-              onClick={() => handleTemplateSelect(index)}
-            >
-              {template}
-            </button>
-          ))}
-          <button className="h-12 w-full justify-center border-dashed border-gray-300">
-            <FaPlus className="h-4 w-4 text-teal-600" />
-          </button>
-        </div>
-      </div>
-
-      {/* Right side - Email composition */}
-      <div className="flex-1">
-        <div className="overflow-hidden rounded-lg bg-white shadow-sm">
-          {/* Subject line */}
-          <div className="flex border-b">
-            <div className="flex items-center bg-teal-600 px-4 py-2 text-white">
-              <span>Subject</span>
-            </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      {/* Modal for Template Title */}
+      {showTemplateModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30">
+          <div className="rounded-2xl bg-white p-6 shadow-xl w-full max-w-md">
+            <h2 className="mb-3 text-lg font-medium text-gray-800">Save as Template</h2>
+            <p className="text-sm text-gray-600 mb-4">Provide a title for the template.</p>
             <input
               type="text"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="flex-1 border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              placeholder="Enter template title"
+              value={templateTitle}
+              onChange={(e) => setTemplateTitle(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 p-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
-          </div>
-
-          {/* Email body */}
-          <div className="p-6">
-            <div
-              contentEditable
-              className="min-h-[500px] w-full resize-none border-none whitespace-pre-line focus-visible:ring-0"
-              onInput={handleEmailContentChange}
-              dangerouslySetInnerHTML={{ __html: emailContent }}
-            />
-          </div>
-
-          {/* Attachment and send buttons */}
-          <div className="flex justify-between border-t p-4">
-            <div className="flex">
-              <label htmlFor="file-upload" className="cursor-pointer">
-                <div className="rounded-md bg-teal-600 px-4 py-2 text-white">
-                  Attachment
-                </div>
-                <input
-                  id="file-upload"
-                  type="file"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-              </label>
-              <div className="ml-4 flex items-center text-gray-500">
-                {attachment ? attachment.name : "No file chosen"}
-              </div>
+            <div className="flex justify-end mt-6 space-x-2">
+              <button
+                onClick={() => setShowTemplateModal(false)}
+                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveTemplate}
+                className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+              >
+                Save
+              </button>
             </div>
-            <button className="rounded-md bg-teal-600 px-4 py-2 text-white hover:bg-teal-700">
-              Send
-            </button>
           </div>
         </div>
+      )}
+
+      <div className="mb-5 flex overflow-hidden rounded-lg border border-gray-200">
+        <span className="rounded-l-lg bg-teal-600 px-4 py-2 text-white">
+          Subject
+        </span>
+        <input
+          type="text"
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          className="flex-1 rounded-r-lg border-none bg-white p-2 focus-visible:ring-0 focus-visible:ring-offset-0"
+        />
+      </div>
+
+      <div className="mb-5 rounded-xl border border-gray-200 bg-white p-6 shadow-md">
+        <div className="mb-4 flex gap-3 rounded-lg bg-gray-100 p-3 shadow-lg">
+          <BoldIcon
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => editor.chain().focus().toggleBold().run()}
+          />
+          <ItalicIcon
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+          />
+          <UnderlineIcon
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+          />
+          <StrikethroughIcon
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+          />
+          <ListBulletIcon
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+          />
+          <NumberedListIcon
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          />
+          <ChatBubbleLeftRightIcon
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          />
+          <CodeBracketIcon
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          />
+          <ArrowUturnLeftIcon
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => editor.chain().focus().undo().run()}
+          />
+          <ArrowUturnRightIcon
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => editor.chain().focus().redo().run()}
+          />
+          <Bars3BottomLeftIcon
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => editor.chain().focus().setTextAlign("left").run()}
+          />
+          <Bars3CenterLeftIcon
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => editor.chain().focus().setTextAlign("center").run()}
+          />
+          <Bars3BottomRightIcon
+            className="h-6 w-6 cursor-pointer"
+            onClick={() => editor.chain().focus().setTextAlign("right").run()}
+          />
+        </div>
+        <EditorContent
+          editor={editor}
+          className="min-h-[500px] rounded-lg border border-gray-200 bg-white p-4"
+        />
+      </div>
+
+      <div className="mb-5 flex border border-gray-100 bg-white">
+        <label
+          htmlFor="file-upload"
+          className="cursor-pointer rounded-md bg-teal-600 px-8 py-2 text-center text-white"
+        >
+          Attachment
+          <input
+            id="file-upload"
+            type="file"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+        </label>
+        <span className="ml-3 text-gray-500">
+          {attachment ? attachment.name : "No file chosen"}
+        </span>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <select
+            value={selectedTemplate}
+            onChange={handleTemplateSelect}
+            className="rounded-md bg-teal-600 px-4 py-2 text-center text-white hover:bg-teal-700"
+          >
+            <option value="" disabled>
+              Select a Template
+            </option>
+            {templates.map((template) => (
+              <option key={template.template_id} value={template.title}>
+                {template.title}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={() => setShowTemplateModal(true)} // Open the modal
+            className="rounded-md border border-teal-600 bg-white px-6 py-2 text-teal-600 shadow-md hover:bg-teal-700 hover:text-white"
+          >
+            Save as Template
+          </button>
+        </div>
+        <button
+          onClick={handleSendEmail}
+          className="rounded-md bg-teal-600 px-6 py-2 text-white shadow-md hover:bg-teal-700"
+        >
+          Send
+        </button>
       </div>
     </div>
   );
