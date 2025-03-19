@@ -42,10 +42,13 @@ const ApplicantTable = ({ onSelectApplicant }) => {
 
   // Clean up timeouts when component unmounts
   useEffect(() => {
+    // Cleanup function to clear all timeouts
     return () => {
-      // Clear all timeouts on unmount
-      Object.values(toastTimeouts).forEach(timeoutId => clearTimeout(timeoutId));
+      Object.values(toastTimeouts).forEach((timeoutId) => {
+        clearTimeout(timeoutId);
+      });
     };
+  }, [toastTimeouts]);
 
   const updateStatus = async (id, progress_id, Status, status) => {
     const token = Cookies.get("token");
