@@ -36,7 +36,7 @@ const ApplicantTable = ({ onSelectApplicant }) => {
   const { positionFilter, setPositionFilter } = positionStore();
   const { setStages } = useStages();
   const { status } = applicantFilterStore();
-  
+
   // Add a ref to track and manage toast timeouts
   const [toastTimeouts, setToastTimeouts] = useState({});
 
@@ -48,7 +48,8 @@ const ApplicantTable = ({ onSelectApplicant }) => {
         clearTimeout(timeoutId);
       });
     };
-  }, [toastTimeouts]);
+  }, []);
+
 
   const updateStatus = async (id, progress_id, Status, status) => {
     const token = Cookies.get("token");
@@ -78,9 +79,9 @@ const ApplicantTable = ({ onSelectApplicant }) => {
       status: statusMapping[status] || status,
       previousStatus: statusMapping[applicant.status] || applicant.status
     };
-    
+
     setToasts(prevToasts => [...prevToasts, newToast]);
-    
+
     // Store the timeout ID so we can clear it if needed
     const timeoutId = setTimeout(() => removeToast(toastId), 10000);
     setToastTimeouts(prev => ({ ...prev, [toastId]: timeoutId }));
@@ -90,7 +91,7 @@ const ApplicantTable = ({ onSelectApplicant }) => {
     // Clear the timeout for this toast
     if (toastTimeouts[id]) {
       clearTimeout(toastTimeouts[id]);
-      
+
       // Remove this timeout from the state
       setToastTimeouts(prev => {
         const updated = { ...prev };
@@ -98,7 +99,7 @@ const ApplicantTable = ({ onSelectApplicant }) => {
         return updated;
       });
     }
-    
+
     // Remove the toast from state
     setToasts(prevToasts => prevToasts.filter(toast => toast.id !== id));
   };
@@ -140,8 +141,8 @@ const ApplicantTable = ({ onSelectApplicant }) => {
     const applicant = applicantData.find((applicant) => applicant.applicant_id === row.applicant_id);
     if (applicant) {
       onSelectApplicant(applicant);
-    } 
-    
+    }
+
   };
 
   const columns = [
