@@ -16,7 +16,6 @@ export default function StatusCounter() {
   const positions = usePositions();
   const { stages, setStages, toggleStage, toggleStatus } = useStages();
   const { collapsedStages, toggleCollapse } = useCollapse();
-  //const { setApplicantData } = useApplicantData();
   const { positionFilter, setPositionFilter } = positionStore();
   const { status, setStatus, clearStatus } = applicantFilterStore();
   const { setApplicantData } = applicantDataStore();
@@ -27,6 +26,39 @@ export default function StatusCounter() {
     stage.statuses.some((status) => status.selected),
   );
 
+  // Function to handle stage click
+  const handleStageClick = (stage) => {
+    const stageStatuses = stage.statuses.map((status) => status.value);
+
+    setSelectedStatuses((prevStatuses) => {
+      // Check if all statuses in the stage are already selected
+      const allSelected = stageStatuses.every((status) =>
+        prevStatuses.includes(status),
+      );
+
+      let updatedStatuses;
+      if (allSelected) {
+        // If all statuses are selected, remove them
+        updatedStatuses = prevStatuses.filter(
+          (status) => !stageStatuses.includes(status),
+        );
+      } else {
+        // Otherwise, add the statuses that are not already selected
+        updatedStatuses = [
+          ...prevStatuses,
+          ...stageStatuses.filter((status) => !prevStatuses.includes(status)),
+        ];
+      }
+
+      // Call filterApplicants with the updated statuses
+      filterApplicants(positionFilter, setApplicantData, updatedStatuses);
+
+      return updatedStatuses; // Return the updated state
+    });
+
+    // Toggle the stage's selected state
+    toggleStage(stage.name);
+  };
 
   // Function to clear all selections
   const clearSelections = () => {
@@ -51,12 +83,16 @@ export default function StatusCounter() {
         <h2 className="headline text-gray-dark md:mb-0">Status Counter</h2>
         <select
           className="border-gray-light max-w-[120px] rounded-md border p-1 text-sm"
-          onChange={(e) =>
-            {
-              filterCounter(e.target.value, setStages, initialStages, setPositionFilter, selectedStatuses);      
-              filterApplicants(e.target.value, setApplicantData, status);       
-            }
-          }
+          onChange={(e) => {
+            filterCounter(
+              e.target.value,
+              setStages,
+              initialStages,
+              setPositionFilter,
+              selectedStatuses,
+            );
+            filterApplicants(e.target.value, setApplicantData, status);
+          }}
         >
           <option value="All">All Positions</option>
           {positions.map((position) => (
@@ -72,11 +108,12 @@ export default function StatusCounter() {
           <div key={stage.name}>
             {/* Stage Button */}
             <div
-              className={`flex cursor-pointer items-center justify-between ${stage.selected
+              className={`flex cursor-pointer items-center justify-between ${
+                stage.selected
                   ? "bg-teal text-white"
                   : "bg-gray-light text-gray-dark"
-                } hover:bg-teal-soft mb-2 rounded-md px-2`}
-              onClick={() => toggleStage(stage.name)}
+              } hover:bg-teal-soft mb-2 rounded-md px-2`}
+              onClick={() => handleStageClick(stage)}
             >
               <div className="flex flex-1 items-center justify-between">
                 <span className="body-bold">{stage.name}</span>
@@ -101,27 +138,39 @@ export default function StatusCounter() {
                 {stage.statuses.map((Status) => (
                   <div
                     onClick={() => {
-                      toggleStatus(stage.name, Status.name, Status.value, positionFilter, setApplicantData); 
+                      toggleStatus(
+                        stage.name,
+                        Status.name,
+                        Status.value,
+                        positionFilter,
+                        setApplicantData,
+                      );
                       setSelectedStatuses((prevStatuses) => {
-                        const updatedStatuses = prevStatuses.includes(Status.value)
-                          ? prevStatuses.filter((status) => status !== Status.value) // Remove if already present
+                        const updatedStatuses = prevStatuses.includes(
+                          Status.value,
+                        )
+                          ? prevStatuses.filter(
+                              (status) => status !== Status.value,
+                            ) // Remove if already present
                           : [...prevStatuses, Status.value]; // Add if not present
-            
+
                         // Use the updatedStatuses directly in filterApplicants
-                        filterApplicants(positionFilter, setApplicantData, updatedStatuses);
-            
+                        filterApplicants(
+                          positionFilter,
+                          setApplicantData,
+                          updatedStatuses,
+                        );
+
                         return updatedStatuses; // Return the updated state
                       });
                       setStatus(Status.value);
-                      //filterApplicants(positionFilter, setApplicantData, selectedStatuses);
                     }}
                     key={Status.name}
                     className={`mx-1 flex items-center justify-between rounded-lg border px-3 py-1 ${
                       Status.selected
-
                         ? "border-teal-soft bg-teal-soft"
                         : "border-gray-light"
-                      } hover:bg-gray-light`}
+                    } hover:bg-gray-light`}
                   >
                     <span className="body-regular text-gray-dark">
                       {Status.name}
