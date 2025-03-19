@@ -266,7 +266,7 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
             <div className="col-span-2">{applicantInfo.applied_source || 'Not specified'}</div>
           </div>
 
-          {/* Pushes everything above and keeps tabs at the bottom */}
+          {/* Tabs */}
           <div className="mt-auto pt-5 flex justify-end">
             <div className="flex gap-2 bg-teal-soft p-1 rounded-md">
               {user.feature_names["60c8341f-fa4b-11ef-a725-0af0d960a833"] === "Interview Notes" && (
