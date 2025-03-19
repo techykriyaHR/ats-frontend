@@ -5,9 +5,11 @@ import { FaFileExport } from "react-icons/fa";
 import AddApplicantDropdown from "../components/AddApplicantDropdown";
 import ApplicantTable from "../components/ApplicantTable";
 
+import { PDFDownloadLink } from "@react-pdf/renderer";
+
 import exportToExcel from "../utils/exportToExcel";
-import exportToPdf from "../utils/exportToPdf";
 import moment from "moment";
+import ExportToPdf from "../utils/exportToPdf";
 
 export default function ApplicantList({
   onSelectApplicant,
@@ -18,12 +20,23 @@ export default function ApplicantList({
   const [dateFilterType, setDateFilterType] = useState("month");
   const [sortOrder, setSortOrder] = useState("desc");
   const [isOpen, setIsOpen] = useState(false);
+  const [exportValue, setExportValue] = useState("");
 
   const dropdownRef = useRef(null);
 
   const applicants = [
     // Your applicant data here
   ];
+
+  const handleExportClick = () => {
+    let value = "";
+    if (dateFilterType === "year" && selectedDate) {
+      value = selectedDate.getFullYear().toString();
+    } else if (dateFilterType === "month" && selectedDate) {
+      value = moment(selectedDate).format("MMMM").toLowerCase();
+    }
+    setExportValue(value);
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -86,26 +99,32 @@ export default function ApplicantList({
                 <button
                   className="block text-center text-sm px-2 py-2 text-gray-dark hover:bg-gray-100"
                   onClick={() => {
-                    let exportValue = "";
-                  
-                    if (dateFilterType === "year" && selectedDate) {
-                      exportValue = selectedDate.getFullYear().toString();
-                    } else if (dateFilterType === "month" && selectedDate) {
-                      exportValue = moment(selectedDate).format("MMMM").toLowerCase();
-                    }
-                  
+                    handleExportClick();
                     exportToExcel(dateFilterType, exportValue, 'Business Operations Associate', ["NONE", "TEST_SENT"]);
                   }}
-                  
                 >
                   Excel
                 </button>
 
                 <button
                   className="block text-center text-sm px-2 py-2 text-gray-dark hover:bg-gray-100"
+                  onClick={handleExportClick} // Ensure exportValue is updated
                 >
-                  PDF
+                  <PDFDownloadLink
+                    document={
+                      <ExportToPdf
+                        dateFilter={dateFilterType}
+                        dateFilterValue={exportValue}
+                        position="Business Operations Associate"
+                        status={["NONE", "TEST_SENT"]}
+                      />
+                    }
+                    fileName="table.pdf"
+                  >
+                    {({ loading }) => (loading ? "Loading..." : "Download PDF")}
+                  </PDFDownloadLink>
                 </button>
+
               </div>
             )}
           </div>
