@@ -16,7 +16,7 @@ function ApplicantDiscussionPage() {
       case "Discussion Box":
         return <DiscussionBox />;
       default:
-        return <InterviewNotes />;
+        return <InterviewNotes interview={activeTab} />;
     }
   };
 
