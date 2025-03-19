@@ -12,6 +12,7 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isOpen, setIsOpen] = useState(true); // New state to control notification visibility
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -160,11 +161,17 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
 
   const handleApplicantClick = (applicant) => {
     onSelectApplicant(applicant);
+    setIsOpen(false); // Close the notification panel when an applicant is clicked
   };
+
+  // If not open, return null to hide the component
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div className="flex items-center justify-center p-4">
-      <div className=" rounded-lg shadow-lg w-full max-w-md overflow-hidden relative">
+      <div className="rounded-lg shadow-lg w-full max-w-md overflow-hidden relative">
         <div className="p-4">
           <h2 className="text-xl font-bold mb-4">Notification</h2>
           <div className="flex border-b border-gray-200">
