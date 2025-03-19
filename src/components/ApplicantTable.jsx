@@ -3,9 +3,17 @@ import { useState, useEffect } from 'react';
 import moment from 'moment';
 import api from '../api/axios';
 import Toast from '../assets/Toast';
+import { useApplicantData } from '../hooks/useApplicantData';
+import positionStore from '../context/positionStore';
+import { initialStages } from '../utils/StagesData';
+import { useStages } from '../hooks/useStages';
+import { filterCounter } from '../utils/statusCounterFunctions';
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
+import applicantFilterStore from '../context/applicantFilterStore';
 
 const statusMapping = {
-  "NONE": "",
+  "NONE": "White Listed",
   "TEST_SENT": "Test Sent",
   "INTERVIEW_SCHEDULE_SENT": "Interview Schedule Sent",
   "FIRST_INTERVIEW": "First Interview",
@@ -13,39 +21,24 @@ const statusMapping = {
   "THIRD_INTERVIEW": "Third Interview",
   "FOURTH_INTERVIEW": "Fourth Interview",
   "FOLLOW_UP_INTERVIEW": "Follow Up Interview",
-  "FOR_JOB_OFFER": "Job Offer Accepted",
+  "FOR_JOB_OFFER": "For Job Offer",
   "JOB_OFFER_REJECTED": "Job Offer Rejected",
   "JOB_OFFER_ACCEPTED": "Job Offer Accepted",
   "WITHDREW_APPLICATION": "Withdrew Application",
   "BLACKLISTED": "Blacklisted",
   "NOT_FIT": "Not Fit",
-};
+};//d akin to ah -Lucky
 
 const ApplicantTable = ({ onSelectApplicant }) => {
-  const [applicantData, setApplicantData] = useState([]);
-  const [statuses, setStatuses] = useState([]);
+
+  const { applicantData, setApplicantData, statuses, setStatuses, updateApplicantStatus } = useApplicantData();
   const [toasts, setToasts] = useState([]);
+  const { positionFilter, setPositionFilter } = positionStore();
+  const { setStages } = useStages();
+  const { status } = applicantFilterStore();
   
   // Add a ref to track and manage toast timeouts
   const [toastTimeouts, setToastTimeouts] = useState({});
-
-  useEffect(() => {
-    api.get(`/applicants`)
-      .then(response => {
-        console.log("Applicant Fetched Successfully.");
-        setApplicantData(response.data);
-      })
-      .catch(error => console.error("Error fetching data:", error));
-  }, []);
-
-  useEffect(() => {
-    api.get(`/status`)
-      .then(response => {
-        console.log("Status Fetched Successfully.");
-        setStatuses(response.data);
-      })
-      .catch(error => console.error("Error fetching data:", error));
-  }, []);
 
   // Clean up timeouts when component unmounts
   useEffect(() => {
@@ -55,22 +48,21 @@ const ApplicantTable = ({ onSelectApplicant }) => {
     };
   }, [toastTimeouts]);
 
-  const updateStatus = async (id, progress_id, status) => {
+  const updateStatus = async (id, progress_id, Status, status) => {
+    const token = Cookies.get("token");
+    const decoded = jwtDecode(token)
+
     let data = {
       "progress_id": progress_id,
-      "status": status
+      "status": Status,
+      "user_id": decoded.user_id,
     };
     try {
       await api.put(`/applicant/update/status`, data);
-      setApplicantData(prevData =>
-        prevData.map(applicant =>
-          applicant.applicant_id === id
-            ? { ...applicant, status: status }
-            : applicant
-        )
-      );
+      updateApplicantStatus(id, Status);
       const applicant = applicantData.find(applicant => applicant.applicant_id === id);
-      addToast(applicant, status);
+      addToast(applicant, Status);
+      filterCounter(positionFilter, setStages, initialStages, setPositionFilter, status);
     } catch (error) {
       console.error("Update Status Failed: " + error);
     }
@@ -138,15 +130,16 @@ const ApplicantTable = ({ onSelectApplicant }) => {
     }
   };
 
-  const handleStatusChange = (id, progress_id, newStatus) => {
-    updateStatus(id, progress_id, newStatus);
+  const handleStatusChange = (id, progress_id, newStatus, status) => {
+    updateStatus(id, progress_id, newStatus, status);
   };
 
   const handleApplicantRowClick = (row) => {
     const applicant = applicantData.find((applicant) => applicant.applicant_id === row.applicant_id);
     if (applicant) {
       onSelectApplicant(applicant);
-    }
+    } 
+    
   };
 
   const columns = [
@@ -169,7 +162,7 @@ const ApplicantTable = ({ onSelectApplicant }) => {
         <select
           className='border border-gray-light max-w-[100px]'
           value={row.status}
-          onChange={(e) => handleStatusChange(row.applicant_id, row.progress_id, e.target.value)}
+          onChange={(e) => handleStatusChange(row.applicant_id, row.progress_id, e.target.value, status)}
           style={{ padding: '5px', borderRadius: '5px' }}
         >
           {statuses.map(status => (
