@@ -28,7 +28,7 @@ function ApplicantSendMailPage() {
   const [subject, setSubject] = useState(
     "Welcome to FullSuite – Preparing for Your Interviews and Assessment",
   );
-  const [attachment, setAttachment] = useState(null);
+  const [attachments, setAttachments] = useState([]);
   const [emailContent, setEmailContent] = useState("");
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState("");
@@ -44,6 +44,11 @@ function ApplicantSendMailPage() {
       Blockquote,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
     ],
+    editorProps: {
+      attributes: {
+        class: 'body-regular border border-gray-light rounded-lg prose prose-sm sm:prose lg:prose-lg xl:prose-2xl min-h-100 p-5 mx-auto focus:outline-none',
+      },
+    },
     content: emailContent,
     onUpdate: ({ editor }) => {
       setEmailContent(editor.getHTML());
@@ -118,8 +123,8 @@ function ApplicantSendMailPage() {
     formData.append("user_id", "fcd3eee1-9a10-40d6-8444-b0f5b8632af1");
     formData.append("email_subject", subject);
     formData.append("email_body", emailContent);
-    if (attachment) {
-      formData.append("files", attachment);
+    if (attachments) {
+      formData.append("files", attachments);
     }
 
     try {
@@ -136,9 +141,18 @@ function ApplicantSendMailPage() {
   };
 
   const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setAttachment(e.target.files[0]);
+    if (e.target.files && e.target.files.length > 0) {
+      const selectedFiles = Array.from(e.target.files); // Convert FileList to array
+      setAttachments(selectedFiles); // Store multiple files
+      console.log("Selected Attachmentss:", selectedFiles); // Log the selected files
     }
+  };
+
+  const handleRemoveFile = (fileName) => {
+    setAttachments((prevAttachments) =>
+      prevAttachments.filter((file) => file.name !== fileName)
+    );
+    console.log("Remaining Attachment:", attachments);
   };
 
   if (!editor) {
@@ -146,11 +160,14 @@ function ApplicantSendMailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* Modal for Template Title */}
+    <div className="h-full mb-5">
+      {/* Modal for Adding New Template Title */}
       {showTemplateModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/30">
-          <div className="rounded-2xl bg-white p-6 shadow-xl w-full max-w-md">
+          <div
+            className="rounded-2xl bg-white p-6 shadow-xl w-full max-w-md"
+            onClick={(e) => e.stopPropagation()} // Prevent clicks from propagating
+          >
             <h2 className="mb-3 text-lg font-medium text-gray-800">Save as Template</h2>
             <p className="text-sm text-gray-600 mb-4">Provide a title for the template.</p>
             <input
@@ -178,20 +195,22 @@ function ApplicantSendMailPage() {
         </div>
       )}
 
-      <div className="mb-5 flex overflow-hidden rounded-lg border border-gray-200">
-        <span className="rounded-l-lg bg-teal-600 px-4 py-2 text-white">
+      {/* Email Subject */}
+      <div className="mb-5 flex overflow-hidden rounded-lg border border-gray-light">
+        <span className="rounded-l-lg bg-teal px-4 py-2 text-white body-regular">
           Subject
         </span>
         <input
           type="text"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          className="flex-1 rounded-r-lg border-none bg-white p-2 focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="flex-1 rounded-r-lg bg-white body-regular text-gray-dark p-2 focus-visible:ring-0 focus-visible:ring-offset-0"
         />
       </div>
 
-      <div className="mb-5 rounded-xl border border-gray-200 bg-white p-6 shadow-md">
-        <div className="mb-4 flex gap-3 rounded-lg bg-gray-100 p-3 shadow-lg">
+      {/* Email Content */}
+      <div className="mb-5 rounded-xl border border-gray-200 bg-white p-3">
+        <div className="mb-4 flex gap-3 rounded-lg bg-white">
           <BoldIcon
             className="h-6 w-6 cursor-pointer"
             onClick={() => editor.chain().focus().toggleBold().run()}
@@ -204,33 +223,9 @@ function ApplicantSendMailPage() {
             className="h-6 w-6 cursor-pointer"
             onClick={() => editor.chain().focus().toggleUnderline().run()}
           />
-          <StrikethroughIcon
-            className="h-6 w-6 cursor-pointer"
-            onClick={() => editor.chain().focus().toggleStrike().run()}
-          />
           <ListBulletIcon
             className="h-6 w-6 cursor-pointer"
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-          />
-          <NumberedListIcon
-            className="h-6 w-6 cursor-pointer"
-            onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          />
-          <ChatBubbleLeftRightIcon
-            className="h-6 w-6 cursor-pointer"
-            onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          />
-          <CodeBracketIcon
-            className="h-6 w-6 cursor-pointer"
-            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-          />
-          <ArrowUturnLeftIcon
-            className="h-6 w-6 cursor-pointer"
-            onClick={() => editor.chain().focus().undo().run()}
-          />
-          <ArrowUturnRightIcon
-            className="h-6 w-6 cursor-pointer"
-            onClick={() => editor.chain().focus().redo().run()}
           />
           <Bars3BottomLeftIcon
             className="h-6 w-6 cursor-pointer"
@@ -247,34 +242,51 @@ function ApplicantSendMailPage() {
         </div>
         <EditorContent
           editor={editor}
-          className="min-h-[500px] rounded-lg border border-gray-200 bg-white p-4"
         />
       </div>
 
-      <div className="mb-5 flex border border-gray-100 bg-white">
+      {/* Attachments */}
+      <div className="mb-5 flex border border-gray-light body-regular bg-white items-center overflow-hidden rounded-lg">
         <label
           htmlFor="file-upload"
-          className="cursor-pointer rounded-md bg-teal-600 px-8 py-2 text-center text-white"
+          className="cursor-pointer rounded-l-lg bg-teal px-4 py-2 text-white"
         >
-          Attachment
+          Attachments
           <input
             id="file-upload"
             type="file"
             className="hidden"
             onChange={handleFileChange}
+            multiple
           />
         </label>
-        <span className="ml-3 text-gray-500">
-          {attachment ? attachment.name : "No file chosen"}
-        </span>
+        {attachments.length > 0 ? (
+          <div className="flex items-center flex-1 gap-2 ml-2">
+            {attachments.map((file) => (
+              <div key={file.name} className="flex items-center gap-2 bg-gray-200 px-2 py-1 rounded-lg">
+                <span className="text-gray-dark">{file.name}</span>
+                <button
+                  onClick={() => handleRemoveFile(file.name)}
+                  className="text-gray-dark hover:bg-gray-dark/20 px-0.5 cursor-pointer rounded-md"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <span className="flex-1 p-2 text-gray-dark">No files selected</span>
+        )}
       </div>
 
-      <div className="flex items-center justify-between">
+      {/* Send Email Button */}
+      <div div className="flex items-center justify-between body-regular" >
         <div className="flex items-center space-x-4">
+
           <select
             value={selectedTemplate}
             onChange={handleTemplateSelect}
-            className="rounded-md bg-teal-600 px-4 py-2 text-center text-white hover:bg-teal-700"
+            className="border border-teal text-teal bg-white p-2 rounded-lg hover:bg-gray-light cursor-pointer"
           >
             <option value="" disabled>
               Select a Template
@@ -285,21 +297,23 @@ function ApplicantSendMailPage() {
               </option>
             ))}
           </select>
+
           <button
             onClick={() => setShowTemplateModal(true)} // Open the modal
-            className="rounded-md border border-teal-600 bg-white px-6 py-2 text-teal-600 shadow-md hover:bg-teal-700 hover:text-white"
+            className="border border-gray-light text-gray-dark bg-white p-1.5 rounded-lg hover:border-teal hover:bg-gray-light cursor-pointer"
           >
             Save as Template
           </button>
+
         </div>
         <button
           onClick={handleSendEmail}
-          className="rounded-md bg-teal-600 px-6 py-2 text-white shadow-md hover:bg-teal-700"
+          className="rounded-lg bg-teal px-6 py-2 text-white hover:bg-teal-light cursor-pointer"
         >
           Send
         </button>
       </div>
-    </div>
+    </div >
   );
 }
 
