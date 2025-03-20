@@ -94,7 +94,7 @@ export default function StatusCounter() {
             );
             search === "" ? 
             filterApplicants(e.target.value, setApplicantData, status) :
-            searchApplicant(search, setApplicantData, e.target.value);
+            searchApplicant(search, setApplicantData, e.target.value, status);
           }}
         >
           <option value="All">All Positions</option>
@@ -156,11 +156,13 @@ export default function StatusCounter() {
                               (status) => status !== Status.value,
                             ) // Remove if already present
                           : [...prevStatuses, Status.value]; // Add if not present
+                          search === "" ?
                         filterApplicants(
                           positionFilter,
                           setApplicantData,
                           updatedStatuses,
-                        ) ;
+                        ) : 
+                        searchApplicant(search, setApplicantData, positionFilter, updatedStatuses);
                         return updatedStatuses; // Return the updated state
                       });
                       setStatus(Status.value);

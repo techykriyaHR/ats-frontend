@@ -20,7 +20,7 @@ export default function ApplicantList({
   onSelectApplicant,
   onAddApplicantClick,
 }) {
-  const {search, setSearch } = applicantFilterStore();
+  const {search, setSearch, status } = applicantFilterStore();
   const [selectedDate, setSelectedDate] = useState(null);
   const [dateFilterType, setDateFilterType] = useState("month");
   const [sortOrder, setSortOrder] = useState("desc");
@@ -149,7 +149,7 @@ export default function ApplicantList({
             type="text"
             placeholder="Search"
             value={search}
-            onChange={(e) => {setSearch(e.target.value); searchApplicant(e.target.value, setApplicantData, positionFilter)}}
+            onChange={(e) => {setSearch(e.target.value); searchApplicant(e.target.value, setApplicantData, positionFilter, status)}}
             className="w-full body-regular rounded-md border border-gray-300 p-2"
           />
         </div>
