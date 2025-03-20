@@ -50,7 +50,7 @@ const Toast = ({ toast, undoStatusUpdate, removeToast }) => {
   }
 
   return (
-    <div className="fixed top-4 right-4 z-50" style={{ animation: `slide-up 0.5s ease-out` }}>
+    <div className="w-full max-w-md" style={{ animation: `slide-up 0.5s ease-out` }}>
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg flex items-center max-w-md overflow-hidden">
         {/* Status indicator */}
         <div className={`${getStatusColor(toast.status)} w-2 self-stretch`} />
