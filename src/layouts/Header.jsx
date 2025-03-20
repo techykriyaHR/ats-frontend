@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { FaHeartbeat, FaBars } from "react-icons/fa"
 import api from "../api/axios"
@@ -79,11 +77,11 @@ export default function Header({ onSelectView, onToggleSidebar, onToggleATSHealt
           <FaHeartbeat className="h-6 w-6 md:h-10 md:w-10" />
 
           {notificationCount > 0 && !isNotificationRead && (
-         <span className="notification-badge absolute -top-1 -right-1 flex items-center justify-center">
-         <span className="flex items-center justify-center bg-red-500 border-black text-white text-xs font-bold rounded-full h-5 w-5 shadow-sm">
-           {notificationCount > 9 ? "9+" : notificationCount}
-         </span>
-       </span>
+            <span className="notification-badge absolute -top-1 -right-1 flex items-center justify-center">
+              <span className="flex items-center justify-center bg-red-500 border-black text-white text-xs font-bold rounded-full h-5 w-5 shadow-sm">
+                {notificationCount > 9 ? "9+" : notificationCount}
+              </span>
+            </span>
           )}
         </button>
       </div>
