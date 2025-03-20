@@ -44,8 +44,10 @@ function ApplicantDiscussionPage({ user_id = "fcd3eee1-9a10-40d6-8444-b0f5b8632a
 
       console.log(data);
       
-      api.post('/interview', data).then(() => {
-        setInterview_id(response.data.user_id); 
+      api.post('/interview', data).then((response) => {
+        console.log(response.data);
+        
+        setInterview_id(response.data.interview_id); 
         setInterviews([...interviews, `Interview ${interviews.length}`]);
         setIsModalOpen(false);
       }).catch((error) => {
@@ -59,7 +61,7 @@ function ApplicantDiscussionPage({ user_id = "fcd3eee1-9a10-40d6-8444-b0f5b8632a
       case "Discussion Box":
         return <DiscussionBox />;
       default:
-        return <InterviewNotes interview={activeTab}  interview_id={} note_type={noteType}/>;
+        return <InterviewNotes interview={activeTab}  interview_id={interview_id} note_type={noteType}/>;
     }
   };
 
