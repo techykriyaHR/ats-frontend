@@ -11,6 +11,9 @@ import exportToExcel from "../utils/exportToExcel";
 import moment from "moment";
 import ExportToPdf from "../utils/ExportToPdf";
 
+import applicantDataStore from "../context/applicantDataStore";
+import { searchApplicant } from "../utils/applicantDataUtils";
+
 export default function ApplicantList({
   onSelectApplicant,
   onAddApplicantClick,
@@ -21,6 +24,7 @@ export default function ApplicantList({
   const [sortOrder, setSortOrder] = useState("desc");
   const [isOpen, setIsOpen] = useState(false);
   const [exportValue, setExportValue] = useState("");
+  const { setApplicantData } = applicantDataStore();
 
   const dropdownRef = useRef(null);
 
@@ -57,6 +61,8 @@ export default function ApplicantList({
   const clearFilter = () => {
     setSelectedDate(null);
     setDateFilterType("month");
+    setSearch("");
+    searchApplicant("", setApplicantData);
   };
 
   const toggleSortOrder = () => {
@@ -140,7 +146,7 @@ export default function ApplicantList({
             type="text"
             placeholder="Search"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {setSearch(e.target.value); searchApplicant(e.target.value, setApplicantData)}}
             className="w-full body-regular rounded-md border border-gray-300 p-2"
           />
         </div>
