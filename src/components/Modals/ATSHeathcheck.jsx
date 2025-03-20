@@ -1,7 +1,4 @@
-"use client"
-
 import { useState, useEffect } from "react";
-import { FaUserTie, FaCode, FaDatabase, FaChartBar, FaServer, FaCamera } from "react-icons/fa";
 import api from "../../api/axios.js"; // Import the axios instance
 
 export default function ATSHealthcheck({ onSelectApplicant }) {
@@ -42,7 +39,6 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
               name: `${applicant.first_name} ${applicant.last_name}`,
               position: applicant.title,
               timeAgo: getTimeAgo(applicant.date_created),
-              icon: getIconByPosition(applicant.title),
               applicantData: applicant // Store the full applicant data
             };
 
@@ -109,23 +105,6 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
     }
   };
 
-  // Helper function to get icon based on position title
-  const getIconByPosition = (position) => {
-    if (position.includes("Engineer") || position.includes("Developer")) {
-      return <FaCode className="text-gray-600" />;
-    } else if (position.includes("Data")) {
-      return <FaDatabase className="text-gray-600" />;
-    } else if (position.includes("Finance") || position.includes("Financial")) {
-      return <FaChartBar className="text-gray-600" />;
-    } else if (position.includes("IT") || position.includes("Administrator")) {
-      return <FaServer className="text-gray-600" />;
-    } else if (position.includes("Media") || position.includes("Graphics")) {
-      return <FaCamera className="text-gray-600" />;
-    } else {
-      return <FaUserTie className="text-gray-600" />;
-    }
-  };
-
   // Helper function to format status display
   const getFormattedStatus = (status, stage) => {
     if (status === "FIRST_INTERVIEW") return "First Interview Stage";
@@ -145,17 +124,12 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
   };
 
   const getStatusColor = (status) => {
-    if (status.includes("New")) return "text-emerald-600";
-    if (status.includes("Blacklisted")) return "text-emerald-600";
-    if (status.includes("Interview")) return "text-blue-600";
-    if (status.includes("Job Offer")) return "text-blue-600";
-    if (status.includes("Test")) return "text-blue-600";
-    return "text-gray-800";
+    return "text-black";
   };
 
   const getTimeAgoColor = (timeAgo) => {
-    if (timeAgo.includes("Applied")) return "text-emerald-600";
-    if (timeAgo.includes("Last updated")) return "text-orange-600";
+    if (timeAgo.includes("Applied")) return "text-[#008080]";
+    if (timeAgo.includes("Last updated")) return "text-[#008080]";
     return "text-gray-500";
   };
 
@@ -177,7 +151,7 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
           <div className="flex border-b border-gray-200">
             <button
               className={`pb-2 px-4 ${
-                activeTab === "general" ? "text-emerald-600 border-b-2 border-emerald-600 font-medium" : "text-gray-500"
+                activeTab === "general" ? "text-[#008080] border-b-2 border-[#008080] font-medium" : "text-gray-500"
               }`}
               onClick={() => setActiveTab("general")}
             >
@@ -186,7 +160,7 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
             <button
               className={`pb-2 px-4 ${
                 activeTab === "needsAttention"
-                  ? "text-emerald-600 border-b-2 border-emerald-600 font-medium"
+                  ? "text-[#008080] border-b-2 border-[#008080] font-medium"
                   : "text-gray-500"
               }`}
               onClick={() => setActiveTab("needsAttention")}
@@ -215,7 +189,6 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
                     onClick={() => handleApplicantClick(notification.applicantData)}
                   >
                     <div className="flex items-center">
-                      <div className="mr-3">{notification.icon}</div>
                       <div>
                         <div className="font-medium">{notification.name}</div>
                         <div className="text-sm text-gray-500">{notification.position}</div>
@@ -240,7 +213,6 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
                     onClick={() => handleApplicantClick(notification.applicantData)}
                   >
                     <div className="flex items-center">
-                      <div className="mr-3">{notification.icon}</div>
                       <div>
                         <div className="font-medium">{notification.name}</div>
                         <div className="text-sm text-gray-500">{notification.position}</div>
