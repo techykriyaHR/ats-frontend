@@ -66,7 +66,7 @@ export default function Listings() {
   const selectApplicant = (applicant) => {
     // Close the ATS Healthcheck modal when selecting an applicant
     setShowATSHealthcheck(false);
-    
+
     setTabs((prevTabs) => {
       // Check if we've already reached the maximum number of tabs
       if (prevTabs.length >= MAX_TABS && !prevTabs.some(tab => tab.id === applicant.applicant_id)) {
@@ -92,10 +92,17 @@ export default function Listings() {
       return newTabs;
     });
   };
+
   const closeTab = (id) => {
     setTabs((prevTabs) => prevTabs.filter((tab) => tab.id !== id));
     if (activeTab === id) setActiveTab(null);
   };
+
+  const closeAllTabs = () => {
+    setTabs([]);
+    setActiveTab(null);
+  };
+
   const renderContent = () => {
     if (activeTab !== null && selectedView === "listings") {
       const activeApplicant = tabs.find((tab) => tab.id === activeTab);
@@ -157,16 +164,16 @@ export default function Listings() {
             <Header onToggleSidebar={toggleSidebar} onToggleATSHealthcheck={toggleATSHealthcheck} />
             {/* Tabs Section */}
             {selectedView === "listings" && !showAddApplicantForm && (
-              <div className="mb-4 flex rounded-lg border border-gray-light bg-white p-1 pb-0">
-                {/* Scrollable Tabs Container */}
-                <div className="flex flex-wrap space-x-2 whitespace-nowrap items-center">
-                  {/* Applicant List Tab */}
-                  <button className={`px-3 py-1 mb-1 rounded-md border body-bold transition-colors cursor-pointer
-                      ${activeTab === null ? "bg-teal-soft text-teal border-teal-soft" : "bg-white text-teal border-teal hover:bg-gray-light"}`}
-                    onClick={() => setActiveTab(null)}>
-                    Applicant List
-                  </button>
-                  {/* Dynamic Tabs */}
+              <div className="mb-4 flex flex-wrap items-center rounded-lg border border-gray-light bg-white p-1 pb-0">
+                {/* Applicant List Tab */}
+                <button className={`px-3 py-1 mb-1 mr-2 rounded-md border body-bold transition-colors cursor-pointer
+                    ${activeTab === null ? "bg-teal-soft text-teal border-teal-soft" : "bg-white text-teal border-teal hover:bg-gray-light"}`}
+                  onClick={() => setActiveTab(null)}>
+                  Applicant List
+                </button>
+
+                {/* Dynamic Tabs */}
+                <div className="flex flex-1 flex-wrap space-x-2 whitespace-nowrap items-center overflow-x-auto">
                   {tabs.map((tab) => (
                     <div key={tab.id} className={`flex items-center px-2 py-1 mb-1 rounded-md body-regular transition-colors h-6 
                       ${activeTab === tab.id ? "bg-teal-soft text-teal" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
@@ -181,6 +188,17 @@ export default function Listings() {
                     </div>
                   ))}
                 </div>
+
+                {/* Close All Tabs Button - Only show when tabs exist */}
+
+                {tabs.length > 0 && (
+                  <div
+                    className="px-3 py-1 mb-1 ml-2  body-regular transition-colors cursor-pointer text-gray-light hover:text-gray-dark"
+                    onClick={closeAllTabs}
+                  >
+                    Clear
+                  </div>
+                )}
               </div>
             )}
 
