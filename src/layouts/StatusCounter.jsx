@@ -11,13 +11,14 @@ import statusCounterStore from "../context/statusCounterStore";
 import { set } from "date-fns";
 import applicantFilterStore from "../context/applicantFilterStore";
 import applicantDataStore from "../context/applicantDataStore";
+import { searchApplicant } from "../utils/applicantDataUtils";
 
 export default function StatusCounter() {
   const positions = usePositions();
   const { stages, setStages, toggleStage, toggleStatus } = useStages();
   const { collapsedStages, toggleCollapse } = useCollapse();
   const { positionFilter, setPositionFilter } = positionStore();
-  const { status, setStatus, clearStatus } = applicantFilterStore();
+  const { status, setStatus, clearStatus, search } = applicantFilterStore();
   const { setApplicantData } = applicantDataStore();
   const [selectedStatuses, setSelectedStatuses] = useState([]);
 
@@ -91,7 +92,9 @@ export default function StatusCounter() {
               setPositionFilter,
               selectedStatuses,
             );
-            filterApplicants(e.target.value, setApplicantData, status);
+            search === "" ? 
+            filterApplicants(e.target.value, setApplicantData, status) :
+            searchApplicant(search, setApplicantData, e.target.value);
           }}
         >
           <option value="All">All Positions</option>
@@ -153,14 +156,11 @@ export default function StatusCounter() {
                               (status) => status !== Status.value,
                             ) // Remove if already present
                           : [...prevStatuses, Status.value]; // Add if not present
-
-                        // Use the updatedStatuses directly in filterApplicants
                         filterApplicants(
                           positionFilter,
                           setApplicantData,
                           updatedStatuses,
-                        );
-
+                        ) ;
                         return updatedStatuses; // Return the updated state
                       });
                       setStatus(Status.value);
