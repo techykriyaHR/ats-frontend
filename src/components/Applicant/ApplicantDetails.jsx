@@ -228,6 +228,7 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
                 className="border body-regular border-gray-light h-8 rounded-md cursor-pointer"
                 value={status}
                 onChange={handleStatusChange}
+                disabled={toasts.length > 0} // Disable when there are active toasts
               >
                 <option value="" disabled>Select status</option>
                 {statuses.map((statusOption) => (
@@ -238,7 +239,7 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
               </select>
               <button
                 onClick={handleEditClick}
-                className="ml-2 p-2.5 rounded-full bg-teal hover:bg-teal/70 cursor-pointer "
+                className="ml-2 p-2.5 rounded-full bg-teal hover:bg-teal/70 cursor-pointer"
               >
                 <FaPen className="w-4 h-4 text-white" />
               </button>
@@ -295,7 +296,7 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
       </div>
 
       {/* Toast Messages */}
-      <div className="fixed bottom-4 right-4 space-y-2">
+      <div className="fixed top-4 right-4 space-y-2">
         {toasts.map(toast => (
           <Toast
             key={toast.id}
