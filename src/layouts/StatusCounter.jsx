@@ -8,9 +8,9 @@ import { filterApplicants, fetchApplicants } from "../utils/applicantDataUtils";
 import { useApplicantData } from "../hooks/useApplicantData";
 import positionStore from "../context/positionStore";
 import statusCounterStore from "../context/statusCounterStore";
-import { set } from "date-fns";
 import applicantFilterStore from "../context/applicantFilterStore";
 import applicantDataStore from "../context/applicantDataStore";
+import useLoadingStore from "../context/loadingStore";
 
 export default function StatusCounter() {
   const positions = usePositions();
@@ -19,6 +19,7 @@ export default function StatusCounter() {
   const { positionFilter, setPositionFilter } = positionStore();
   const { status, setStatus, clearStatus } = applicantFilterStore();
   const { setApplicantData } = applicantDataStore();
+  const { loading, setLoading } = useLoadingStore();
   const [selectedStatuses, setSelectedStatuses] = useState([]);
 
   // Check if at least one status is selected
@@ -28,6 +29,7 @@ export default function StatusCounter() {
 
   // Function to handle stage click
   const handleStageClick = (stage) => {
+    setLoading(true); // Set loading to true before filtering
     const stageStatuses = stage.statuses.map((status) => status.value);
 
     setSelectedStatuses((prevStatuses) => {
@@ -51,7 +53,9 @@ export default function StatusCounter() {
       }
 
       // Call filterApplicants with the updated statuses
-      filterApplicants(positionFilter, setApplicantData, updatedStatuses);
+      filterApplicants(positionFilter, setApplicantData, updatedStatuses).finally(() => {
+        setLoading(false); // Set loading to false after filtering
+      });
 
       return updatedStatuses; // Return the updated state
     });
@@ -62,6 +66,7 @@ export default function StatusCounter() {
 
   // Function to clear all selections
   const clearSelections = () => {
+    setLoading(true); // Set loading to true before clearing selections
     setStages(
       stages.map((stage) => ({
         ...stage,
@@ -74,7 +79,9 @@ export default function StatusCounter() {
     );
     setSelectedStatuses([]);
     clearStatus([]);
-    fetchApplicants(setApplicantData);
+    fetchApplicants(setApplicantData).finally(() => {
+      setLoading(false); // Set loading to false after clearing selections
+    });
   };
 
   return (
@@ -84,6 +91,7 @@ export default function StatusCounter() {
         <select
           className="border-gray-light max-w-[120px] rounded-md border p-1 text-sm"
           onChange={(e) => {
+            setLoading(true); // Set loading to true before filtering
             filterCounter(
               e.target.value,
               setStages,
@@ -91,7 +99,9 @@ export default function StatusCounter() {
               setPositionFilter,
               selectedStatuses,
             );
-            filterApplicants(e.target.value, setApplicantData, status);
+            filterApplicants(e.target.value, setApplicantData, status).finally(() => {
+              setLoading(false); // Set loading to false after filtering
+            });
           }}
         >
           <option value="All">All Positions</option>
@@ -138,6 +148,7 @@ export default function StatusCounter() {
                 {stage.statuses.map((Status) => (
                   <div
                     onClick={() => {
+                      setLoading(true); // Set loading to true before toggling status
                       toggleStatus(
                         stage.name,
                         Status.name,
@@ -159,7 +170,9 @@ export default function StatusCounter() {
                           positionFilter,
                           setApplicantData,
                           updatedStatuses,
-                        );
+                        ).finally(() => {
+                          setLoading(false); // Set loading to false after toggling status
+                        });
 
                         return updatedStatuses; // Return the updated state
                       });

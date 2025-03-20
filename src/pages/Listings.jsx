@@ -96,6 +96,11 @@ export default function Listings() {
     setTabs((prevTabs) => prevTabs.filter((tab) => tab.id !== id));
     if (activeTab === id) setActiveTab(null);
   };
+
+  const closeAllTabs = () => {
+    setTabs([]);
+    setActiveTab(null);
+  };
   const renderContent = () => {
     if (activeTab !== null && selectedView === "listings") {
       const activeApplicant = tabs.find((tab) => tab.id === activeTab);
