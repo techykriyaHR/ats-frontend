@@ -7,9 +7,6 @@ import Toast from '../../assets/Toast';
 import { FaCakeCandles, FaFileLines } from 'react-icons/fa6';
 import AddApplicantForm from '../../pages/AddApplicantForm';
 
-
-
-
 const statuses = [
   "Test Sent",
   "Interview Schedule Sent",
@@ -40,7 +37,6 @@ const statusMapping = {
   "BLACKLISTED": "Blacklisted",
   "NOT_FIT": "Not Fit",
 };
-
 
 function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   const [applicantInfo, setApplicantInfo] = useState({});
@@ -90,7 +86,8 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
       const backendStatus = Object.keys(statusMapping).find(key => statusMapping[key] === newStatus);
       let data = {
         "progress_id": applicantInfo.progress_id,
-        "status": backendStatus
+        "status": backendStatus,
+        "user_id": user.user_id,
       };
       try {
         await api.put(`/applicant/update/status`, data);
@@ -119,7 +116,8 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
 
     let data = {
       "progress_id": applicantInfo.progress_id,
-      "status": backendStatus
+      "status": backendStatus,
+      "user_id": user.user_id,
     };
 
     try {
@@ -137,7 +135,6 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
     setToasts(toasts.filter(t => t.id !== id));
   };
 
-
   const handleEditClick = () => {
     setIsEditFormOpen(true);
   };
@@ -145,9 +142,6 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   const handleCloseEditForm = () => {
     setIsEditFormOpen(false);
   };
-
-
-
 
   if (loading) {
     return <Loader />;
@@ -300,9 +294,6 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
         )}
       </div>
 
-
-
-
       {/* Toast Messages */}
       <div className="fixed bottom-4 right-4 space-y-2">
         {toasts.map(toast => (
@@ -315,18 +306,17 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
         ))}
       </div>
       {isEditFormOpen && (
-  <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-    <div className="bg-white w-full h-full overflow-auto lg:ml-72 pointer-events-auto">
-      <AddApplicantForm
-        onClose={handleCloseEditForm}
-        initialData={applicantInfo}
-        onEditSuccess={() => setEditCounter(prev => prev + 1)}
-      />
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="bg-white w-full h-full overflow-auto lg:ml-72 pointer-events-auto">
+            <AddApplicantForm
+              onClose={handleCloseEditForm}
+              initialData={applicantInfo}
+              onEditSuccess={() => setEditCounter(prev => prev + 1)}
+            />
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-)}
-    </div>
-
   );
 }
 

@@ -9,8 +9,8 @@ import { initialStages } from '../utils/StagesData';
 import { useStages } from '../hooks/useStages';
 import { filterCounter } from '../utils/statusCounterFunctions';
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 import applicantFilterStore from '../context/applicantFilterStore';
+import useUserStore from '../context/userStore';
 
 const statusMapping = {
   "NONE": "White Listed",
@@ -30,12 +30,12 @@ const statusMapping = {
 };
 
 const ApplicantTable = ({ onSelectApplicant }) => {
-
   const { applicantData, setApplicantData, statuses, setStatuses, updateApplicantStatus } = useApplicantData();
   const [toasts, setToasts] = useState([]);
   const { positionFilter, setPositionFilter } = positionStore();
   const { setStages } = useStages();
   const { status } = applicantFilterStore();
+  const { user } = useUserStore();
 
   // Add a ref to track and manage toast timeouts
   const [toastTimeouts, setToastTimeouts] = useState({});
@@ -48,17 +48,13 @@ const ApplicantTable = ({ onSelectApplicant }) => {
         clearTimeout(timeoutId);
       });
     };
-  }, []);
-
+  }, [toastTimeouts]);
 
   const updateStatus = async (id, progress_id, Status, status) => {
-    const token = Cookies.get("token");
-    const decoded = jwtDecode(token)
-
     let data = {
       "progress_id": progress_id,
       "status": Status,
-      "user_id": decoded.user_id,
+      "user_id": user.user_id,
     };
     try {
       await api.put(`/applicant/update/status`, data);
@@ -142,7 +138,6 @@ const ApplicantTable = ({ onSelectApplicant }) => {
     if (applicant) {
       onSelectApplicant(applicant);
     }
-
   };
 
   const columns = [
