@@ -2,15 +2,17 @@ import React, { useEffect } from 'react';
 import { AiOutlineClose, AiOutlineUndo, AiOutlineCheckCircle } from 'react-icons/ai';
 
 const Toast = ({ toast, undoStatusUpdate, removeToast }) => {
-  const animationDuration = 5000; 
+  const animationDuration = 5000;
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      removeToast(toast.id);
-    }, animationDuration);
+    if (toast && toast.id) {
+      const timer = setTimeout(() => {
+        removeToast(toast.id);
+      }, animationDuration);
 
-    return () => clearTimeout(timer); // Cleanup if component unmounts early
-  }, [toast.id, removeToast, animationDuration]);
+      return () => clearTimeout(timer); // Cleanup if component unmounts early
+    }
+  }, [toast, removeToast, animationDuration]);
 
   useEffect(() => {
     const styles = {
@@ -42,6 +44,10 @@ const Toast = ({ toast, undoStatusUpdate, removeToast }) => {
 
     return statusColors[status?.toLowerCase()] || statusColors.default;
   };
+
+  if (!toast || !toast.id) {
+    return null; // Return null if toast is not valid
+  }
 
   return (
     <div className="fixed top-4 right-4 z-50" style={{ animation: `slide-up 0.5s ease-out` }}>
