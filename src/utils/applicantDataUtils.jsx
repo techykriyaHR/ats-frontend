@@ -24,13 +24,14 @@ export const filterApplicants = async (position, setApplicantData, status) => {
     }
 }
 
-export const searchApplicant = async (searchValue, setApplicantData) => {
+export const searchApplicant = async (searchValue, setApplicantData, positionFilter) => {
     let sql = "/applicants/search?";
     if (searchValue === "") {
-        fetchApplicants(setApplicantData);
+        positionFilter === "All" ? fetchApplicants(setApplicantData) : filterApplicants(positionFilter, setApplicantData, []);        
     }
     else if (searchValue !== "") {
         sql += `searchQuery=${searchValue}`;
+        positionFilter !== "All" ? sql += `&position=${positionFilter}` : sql += "";
         const { data } = await api.get(sql);
         setApplicantData(data); 
     }
