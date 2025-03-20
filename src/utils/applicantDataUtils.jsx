@@ -23,3 +23,15 @@ export const filterApplicants = async (position, setApplicantData, status) => {
         setApplicantData(data);
     }
 }
+
+export const searchApplicant = async (searchValue, setApplicantData) => {
+    let sql = "/applicants/search?";
+    if (searchValue === "") {
+        fetchApplicants(setApplicantData);
+    }
+    else if (searchValue !== "") {
+        sql += `searchQuery=${searchValue}`;
+        const { data } = await api.get(sql);
+        setApplicantData(data); 
+    }
+}
