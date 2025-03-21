@@ -4,7 +4,7 @@ import Sidebar from "../layouts/Sidebar.jsx";
 import Header from "../layouts/Header.jsx";
 import ApplicantList from "../layouts/ApplicantList.jsx";
 import StatusCounter from "../layouts/StatusCounter.jsx";
-import AnalysisPage from "../components/AnalysisComponents/AnalysisPage.jsx";
+import AnalysisPage from "./AnalysisPage.jsx";
 import ApplicantDetailsPage from "./ApplicantDetailsPage.jsx";
 import AddApplicantForm from "./AddApplicantForm.jsx";
 import WarningModal from "../components/Modals/WarningModal.jsx";
