@@ -10,13 +10,15 @@ import AddApplicantForm from "./AddApplicantForm.jsx";
 import WarningModal from "../components/Modals/WarningModal.jsx";
 import ATSHealthcheck from "../components/Modals/ATSHeathcheck.jsx";
 import useUserStore from "../context/userStore.jsx";
+import Dashboard from "./Dashboard.jsx";
+import Configurations from "./Configurations.jsx";
 import api from "../api/axios.js";
 import Cookies from "js-cookie";
 
 const MAX_TABS = 10;
 
 export default function Listings() {
-  const [selectedView, setSelectedView] = useState("listings");
+  const [selectedView, setSelectedView] = useState("dashboard");
   const [tabs, setTabs] = useState(() => {
     const savedTabs = localStorage.getItem("tabs");
     return savedTabs ? JSON.parse(savedTabs) : [];
@@ -135,6 +137,18 @@ export default function Listings() {
         return (
           <div className="flex h-full items-center justify-center">
             <AnalysisPage />
+          </div>
+        );
+      case "dashboard":
+        return (
+          <div className="flex h-full items-center justify-center">
+            <Dashboard />
+          </div>
+        );
+      case "config":
+        return (
+          <div className="flex h-full items-center justify-center">
+            <Configurations />
           </div>
         );
       default:
