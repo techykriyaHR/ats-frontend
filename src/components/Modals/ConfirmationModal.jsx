@@ -5,11 +5,22 @@ const ConfirmationModal = ({ title, message, confirmText, cancelText, onConfirm,
     // Disable scrolling when modal opens
     document.body.style.overflow = 'hidden';
     
-    // Re-enable scrolling when modal closes
+    // Handle Escape key press
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onCancel();
+      }
+    };
+    
+    // Add event listener
+    document.addEventListener('keydown', handleKeyDown);
+    
+    // Re-enable scrolling and remove event listener when modal closes
     return () => {
       document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [onCancel]);
 
   return (
     <div className="bg-black/50 fixed inset-0 flex items-center justify-center z-50">
