@@ -106,6 +106,7 @@ const ApplicantTable = ({ onSelectApplicant }) => {
     try {
       // Create the data object for the API call
       let data = {
+        "user_id": user.user_id,
         "progress_id": applicant.progress_id,
         "status": Object.keys(statusMapping).find(key => statusMapping[key] === previousStatus)
       };
@@ -114,14 +115,13 @@ const ApplicantTable = ({ onSelectApplicant }) => {
       await api.put(`/applicant/update/status`, data);
 
       // Update the state without creating a new toast
-      setApplicantData(prevData =>
-        prevData.map(app =>
+      setApplicantData(
+        applicantData.map(app =>
           app.applicant_id === applicant.applicant_id
             ? { ...app, status: Object.keys(statusMapping).find(key => statusMapping[key] === previousStatus) }
             : app
         )
       );
-
       // Remove the current toast
       removeToast(toast.id);
     } catch (error) {
