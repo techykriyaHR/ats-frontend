@@ -1,6 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const ConfirmationModal = ({ title, message, confirmText, cancelText, onConfirm, onCancel }) => {
+  useEffect(() => {
+    // Disable scrolling when modal opens
+    document.body.style.overflow = 'hidden';
+    
+    // Re-enable scrolling when modal closes
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   return (
     <div className="bg-black/50 fixed inset-0 flex items-center justify-center z-50">
       <div className="w-full h-full flex items-center justify-center">
