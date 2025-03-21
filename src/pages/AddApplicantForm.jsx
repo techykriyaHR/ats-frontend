@@ -17,6 +17,7 @@ import {
 import Cookies from "js-cookie"
 import useUserStore from "../context/userStore"
 import api from "../api/axios"
+import ConfirmationModal from "../components/Modals/ConfirmationModal"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -44,7 +45,11 @@ function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
   const [users, setUsers] = useState([])
   const [showConfirmationModal, setShowConfirmationModal] = useState(false)
   const [duplicates, setDuplicates] = useState([])
+  const [pendingSubmit, setPendingSubmit] = useState(false)
   const user = useUserStore((state) => state.user)
+  const [modalType, setModalType] = useState(null) // 'submit' or 'cancel'
+
+  
 
   // Determine if we're editing or adding based on initialData
   const isEditing = !!initialData
@@ -232,8 +237,16 @@ function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
     checkForDuplicates()
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+// Modify handleSubmit
+const handleSubmit = async (e) => {
+  e.preventDefault()
+  setPendingSubmit(true)
+  setModalType('submit')
+  setShowConfirmationModal(true)
+}
+
+  const confirmSubmit = async () => {
+    setShowConfirmationModal(false)
     const payload = {
       applicant: JSON.stringify({
         first_name: formData.firstName,
@@ -278,6 +291,7 @@ function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
   }
 
   const handleCancel = () => {
+    setModalType('cancel')
     setShowConfirmationModal(true)
   }
 
@@ -288,6 +302,7 @@ function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
 
   const closeModal = () => {
     setShowConfirmationModal(false)
+    setPendingSubmit(false)
   }
 
   return (
@@ -723,27 +738,20 @@ function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
         </div>
 
         {showConfirmationModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-              <h3 className="text-lg font-semibold text-[#008080] mb-4">Confirm Action</h3>
-              <p className="mb-6">Are you sure you want to leave this page? Unsaved changes will be lost.</p>
-              <div className="flex justify-end gap-4">
-                <button
-                  onClick={closeModal}
-                  className="px-4 py-2 rounded-md bg-white text-[#008080] border border-[#008080] hover:bg-[#d9ebeb]"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={confirmCancel}
-                  className="px-4 py-2 rounded-md bg-[#008080] text-white hover:bg-[#006666]"
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+  <ConfirmationModal
+    title={modalType === 'submit' ? "Confirm Submission" : "Cancel Form"}
+    message={
+      modalType === 'submit' 
+        ? "Are you sure you want to submit this form?" 
+        : "Are you sure you want to cancel? All unsaved changes will be lost."
+    }
+    confirmText={modalType === 'submit' ? "Submit" : "Yes, Cancel"}
+    cancelText={modalType === 'submit' ? "Cancel" : "No, Continue Editing"}
+    onConfirm={modalType === 'submit' ? confirmSubmit : confirmCancel}
+    onCancel={closeModal}
+  />
+)}
+ 
       </div>
     </>
   )
