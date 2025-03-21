@@ -14,12 +14,14 @@ const InterviewNotes = ({ interview, interview_id, note_type}) => {
             note_body: message, 
         }
 
+        console.log('data', data);
+        
+
         api.post('/interview/note', data).then((response) => {
             console.log("added successfully");
         }).catch((error) => {
             console.log(error.message);
         }); 
-
 
     }
     return (

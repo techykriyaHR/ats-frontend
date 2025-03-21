@@ -4,7 +4,7 @@ import DiscussionBox from "../DiscussionBox.jsx";
 import InterviewNotes from "../InterviewNotes.jsx";
 import api from "../../api/axios.js";
 
-function ApplicantDiscussionPage({ user_id = "fcd3eee1-9a10-40d6-8444-b0f5b8632af1", tracking_id = "25406140-959d-421a-acf5-072221ac6cc6" }) {
+function ApplicantDiscussionPage({ user_id = "fcd3eee1-9a10-40d6-8444-b0f5b8632af1", tracking_id = "25406140-959d-421a-acf5-072221ac6cc6", }) {
   const [interviews, setInterviews] = useState(["Discussion Box"]); 
   const [activeTab, setActiveTab] = useState("Discussion Box");
   const [interviewers, setInterviewers] = useState([]);
