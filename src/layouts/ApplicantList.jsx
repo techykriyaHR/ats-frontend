@@ -20,9 +20,9 @@ export default function ApplicantList({
   onSelectApplicant,
   onAddApplicantClick,
 }) {
-  const {search, setSearch, status } = applicantFilterStore();
+  const {search, setSearch, status, dateFilter, setDateFilter, dateFilterType, setDateFilterType } = applicantFilterStore();
   const [selectedDate, setSelectedDate] = useState(null);
-  const [dateFilterType, setDateFilterType] = useState("month");
+  //const [dateFilterType, setDateFilterType] = useState("month");
   const [sortOrder, setSortOrder] = useState("desc");
   const [isOpen, setIsOpen] = useState(false);
   const [exportValue, setExportValue] = useState("");
@@ -65,7 +65,8 @@ export default function ApplicantList({
     setSelectedDate(null);
     setDateFilterType("month");
     setSearch("");
-    searchApplicant("", setApplicantData, positionFilter);
+    searchApplicant("", setApplicantData, positionFilter, status, dateFilterType, dateFilter);
+    setDateFilter("");
   };
 
   const toggleSortOrder = () => {
@@ -149,14 +150,15 @@ export default function ApplicantList({
             type="text"
             placeholder="Search"
             value={search}
-            onChange={(e) => {setSearch(e.target.value); searchApplicant(e.target.value, setApplicantData, positionFilter, status)}}
+            onChange={(e) => {setSearch(e.target.value); searchApplicant(e.target.value, setApplicantData, positionFilter, status, dateFilterType, dateFilter)}}
             className="w-full body-regular rounded-md border border-gray-300 p-2"
           />
         </div>
         <div className="flex w-full items-center gap-2 md:w-auto md:flex-row justify-end">
           <select
             value={dateFilterType}
-            onChange={(e) => setDateFilterType(e.target.value)}
+            onChange={(e) => {setDateFilterType(e.target.value); console.log(e.target.value);
+            }}
             className="flex body-regular rounded-md border border-gray-300 p-2 w-auto"
           >
             <option value="month">Month</option>
@@ -164,7 +166,8 @@ export default function ApplicantList({
           </select>
           <DatePicker
             selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
+            onChange={(date) => {setSelectedDate(date); setDateFilter("February"); searchApplicant(search, setApplicantData, positionFilter, status, dateFilterType, dateFilter);
+            }}
             showMonthYearPicker={dateFilterType === "month"}
             showYearPicker={dateFilterType === "year"}
             dateFormat={dateFilterType === "month" ? "MM/yyyy" : "yyyy"}

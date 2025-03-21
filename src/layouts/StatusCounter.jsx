@@ -12,13 +12,14 @@ import { set } from "date-fns";
 import applicantFilterStore from "../context/applicantFilterStore";
 import applicantDataStore from "../context/applicantDataStore";
 import { searchApplicant } from "../utils/applicantDataUtils";
+import moment from "moment";
 
 export default function StatusCounter() {
   const positions = usePositions();
   const { stages, setStages, toggleStage, toggleStatus } = useStages();
   const { collapsedStages, toggleCollapse } = useCollapse();
   const { positionFilter, setPositionFilter } = positionStore();
-  const { status, setStatus, clearStatus, search } = applicantFilterStore();
+  const { status, setStatus, clearStatus, search, dateFilter, dateFilterType } = applicantFilterStore();
   const { setApplicantData } = applicantDataStore();
   const [selectedStatuses, setSelectedStatuses] = useState([]);
 
@@ -52,7 +53,7 @@ export default function StatusCounter() {
       }
 
       // Call filterApplicants with the updated statuses
-      filterApplicants(positionFilter, setApplicantData, updatedStatuses);
+      filterApplicants(positionFilter, setApplicantData, updatedStatuses, moment(dateFilter).format("MMMM"), dateFilterType);
 
       return updatedStatuses; // Return the updated state
     });
@@ -93,8 +94,8 @@ export default function StatusCounter() {
               selectedStatuses,
             );
             search === "" ? 
-            filterApplicants(e.target.value, setApplicantData, status) :
-            searchApplicant(search, setApplicantData, e.target.value, status);
+            filterApplicants(e.target.value, setApplicantData, status, moment(dateFilter).format("MMMM"), dateFilterType) :
+            searchApplicant(search, setApplicantData, e.target.value, status, dateFilterType, dateFilter);
           }}
         >
           <option value="All">All Positions</option>
@@ -157,13 +158,15 @@ export default function StatusCounter() {
                             ) // Remove if already present
                           : [...prevStatuses, Status.value]; // Add if not present
                           search === "" ?
-                        filterApplicants(
-                          positionFilter,
-                          setApplicantData,
-                          updatedStatuses,
-                        ) : 
-                        searchApplicant(search, setApplicantData, positionFilter, updatedStatuses);
-                        return updatedStatuses; // Return the updated state
+                          filterApplicants(
+                            positionFilter,
+                            setApplicantData,
+                            updatedStatuses,
+                            moment(dateFilter).format("MMMM"),
+                            dateFilterType,
+                          ) : 
+                          searchApplicant(search, setApplicantData, positionFilter, updatedStatuses, dateFilterType, dateFilter);
+                          return updatedStatuses; // Return the updated state
                       });
                       setStatus(Status.value);
                     }}

@@ -1,4 +1,5 @@
 import api from "../api/axios";
+import moment from "moment";
 import { useApplicantData } from "../hooks/useApplicantData";
 
 export const fetchApplicants = async (setApplicantData) => {
@@ -6,13 +7,13 @@ export const fetchApplicants = async (setApplicantData) => {
     setApplicantData(data);
 }
 
-export const filterApplicants = async (position, setApplicantData, status) => {
+export const filterApplicants = async (position, setApplicantData, status, date, dateType) => {
     
     let sql = "/applicants/filter?";
     position != "All" ? sql += `position=${position}` : sql += "";
+    date !== "" ? sql += `&${dateType}=${date}` : sql += "";
     // status != null ? sql += `&status=${status}` : sql += "";
-    console.log(status);
-    if (status.length === 0 && position === "All") {
+    if (status.length === 0 && position === "All" && date === "") {
         fetchApplicants(setApplicantData);
     }
     else {
@@ -24,18 +25,19 @@ export const filterApplicants = async (position, setApplicantData, status) => {
     }
 }
 
-export const searchApplicant = async (searchValue, setApplicantData, positionFilter, status) => {
+export const searchApplicant = async (searchValue, setApplicantData, positionFilter, status, dateFilterType, dateFilter) => {
     let sql = "/applicants/search?";
+    console.log(dateFilterType);
     if (searchValue === "") {
         //positionFilter === "All" ? fetchApplicants(setApplicantData) : filterApplicants(positionFilter, setApplicantData, []);   
-        if (positionFilter === "All" && status == []) {
+        if (positionFilter === "All" && status == [] && dateFilter === "") {
             fetchApplicants(setApplicantData);
         }     
-        else if (positionFilter != "All"){
-            filterApplicants(positionFilter, setApplicantData, []);
-        }
-        else if (status != []) {
-            filterApplicants("All", setApplicantData, status); 
+        else {
+            dateFilterType === 'month' ?
+            filterApplicants(positionFilter, setApplicantData, status, moment(dateFilter).format("MMMM"), dateFilterType) :
+            //filterApplicants(positionFilter, setApplicantData, status, dateFilter, dateFilterType) :
+            filterApplicants(positionFilter, setApplicantData, status, dateFilter, dateFilterType);
         }
     }
     else if (searchValue !== "") {
@@ -44,7 +46,16 @@ export const searchApplicant = async (searchValue, setApplicantData, positionFil
         status.forEach((statusItem) => {
             sql += `&status=${statusItem}`;
         });
+        if (dateFilter !== "") {
+            if (dateFilterType === "month") {
+                sql += `&month=${moment(dateFilter).format("MMMM")}`;
+            }
+            else if (dateFilterType === "year") {
+                sql += `&year=${dateFilter}`;
+            }
+        }
         const { data } = await api.get(sql);
+        console.log(data);
         setApplicantData(data); 
     }
 }

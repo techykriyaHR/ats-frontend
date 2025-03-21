@@ -34,7 +34,7 @@ const ApplicantTable = ({ onSelectApplicant }) => {
   const [toasts, setToasts] = useState([]);
   const { positionFilter, setPositionFilter } = positionStore();
   const { setStages } = useStages();
-  const { status } = applicantFilterStore();
+  const { status, dateFilter } = applicantFilterStore();
   const { user } = useUserStore();
 
   // Add a ref to track and manage toast timeouts
