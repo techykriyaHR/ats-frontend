@@ -1,9 +1,9 @@
-import TopJobPositions from "./TopJobPositions";
-import InternalVsExternalHires from "./InternalVsExternalHires";
-import CandidateDropOffRate from "./CandidateDropOffRate";
-import ApplicationReceived from "./ApplicationReceived";
-import ApplicantStatusChart from "./RequisitionAnalysisGraph";
-import SourceOfApplication from "./SourceOfApplication";
+import TopJobPositions from "../components/AnalysisComponents/TopJobPositions";
+import InternalVsExternalHires from "../components/AnalysisComponents/InternalVsExternalHires";
+import CandidateDropOffRate from "../components/AnalysisComponents/CandidateDropOffRate";
+import ApplicationReceived from "../components/AnalysisComponents/ApplicationReceived";
+import ApplicantStatusChart from "../components/AnalysisComponents/RequisitionAnalysisGraph";
+import SourceOfApplication from "../components/AnalysisComponents/SourceOfApplication";
 
 const AnalysisPage = () => {
   const jobPositions = [
@@ -53,23 +53,23 @@ const AnalysisPage = () => {
   return (
     <div className="space-y-8 md:space-y-10">
       {/* Top row with 4 equal cards */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-        <div className="h-60 rounded-xl bg-white p-6 shadow-xl md:p-8">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-4 text-gray-dark">
+        <div onClick={() => console.log("Expand")} className="h-60 body-regular border border-gray-light rounded-xl bg-white p-4 md:p-6 cursor-pointer">
           <ApplicationReceived
             totalApplications={totalApplications}
             months={months}
           />
         </div>
-        <div className="h-60 rounded-xl bg-white p-6 shadow-xl md:p-8">
+        <div onClick={() => console.log("Expand")} className="h-60 body-regular border border-gray-light rounded-xl bg-white p-4 md:p-6 cursor-pointer">
           <TopJobPositions jobPositions={jobPositions} />
         </div>
-        <div className="h-60 rounded-xl bg-white p-6 shadow-xl md:p-8">
+        <div onClick={() => console.log("Expand")} className="h-60 body-regular border border-gray-light rounded-xl bg-white p-4 md:p-6 cursor-pointer">
           <InternalVsExternalHires
             internalHires={internalHires}
             externalHires={externalHires}
           />
         </div>
-        <div className="h-60 rounded-xl bg-white p-6 shadow-xl md:p-8">
+        <div onClick={() => console.log("Expand")} className="h-60 body-regular border border-gray-light rounded-xl bg-white p-4 md:p-6 cursor-pointer">
           <CandidateDropOffRate
             overallRate={overallRate}
             monthlyRates={monthlyRates}
@@ -78,13 +78,13 @@ const AnalysisPage = () => {
       </div>
 
       {/* Bottom row with 2 cards */}
-      <div className="grid grid-cols-1 gap-6 md:gap-8 lg:grid-cols-3">
-        <div className="rounded-xl bg-white p-6 shadow-xl md:p-8 lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6 md:gap-8 lg:grid-cols-3 text-gray-dark">
+        <div className="rounded-xl border border-gray-light bg-white p-6 md:p-8 lg:col-span-2">
           <div className="h-96">
             <ApplicantStatusChart data={requisitionData} />
           </div>
         </div>
-        <div className="rounded-xl bg-white p-6 shadow-xl md:p-8">
+        <div className="rounded-xl border border-gray-light bg-white p-6 md:p-8">
           <div className="h-96">
             <SourceOfApplication data={sourceData} />
           </div>
