@@ -75,7 +75,7 @@ function ApplicantDiscussionPage({ applicant }) {
       );
     } else {
       const interview = interviewsArray.find(interview => interview.interview_id === activeTab);
-      return <InterviewNotes interview={interview} />;
+      return <InterviewNotes interview={interview} applicant={applicant} fetchDiscussionInterview={fetchDiscussionInterview} />;
     }
   };
 
