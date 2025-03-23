@@ -17,6 +17,7 @@ const DiscussionBox = ({ applicant, discussion, fetchDiscussionInterview }) => {
         api.post('/interview/note', data).then((response) => {
             //trigger the change of the source data
             console.log('add note response: ', response);
+            setNoteBody(""); 
             fetchDiscussionInterview();
         }).catch((error) => {
             console.log(error.message);
