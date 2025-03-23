@@ -31,7 +31,7 @@ function ApplicantDiscussionPage({ applicant }) {
 
   const fetchDiscussionInterview = () => {
     api.get(`/interview?tracking_id=${applicant.tracking_id}`).then((response) => {
-      console.log(response.data);
+      console.log('fetched discussion and interview: ', response.data);
       
       setDiscussion(response.data[0]); 
       setInterviewsArray(response.data.slice(1));
@@ -45,7 +45,6 @@ function ApplicantDiscussionPage({ applicant }) {
     setIsModalOpen(true);
   };
 
-
   const handleAddInterview = () => {
     if (selectedInterviewer && interviewDate && noteType) {
 
@@ -55,27 +54,22 @@ function ApplicantDiscussionPage({ applicant }) {
         date_of_interview: interviewDate,
         note_type: noteType
       }
-
-      console.log(data);
       
       api.post('/interview', data).then((response) => {
         console.log(response.data);
         setInterviews([...interviews, `Interview ${interviews.length}`]);
         setIsModalOpen(false);
+        fetchDiscussionInterview();
       }).catch((error) => {
         console.error(error.message);
       });
     }
   };
 
-
-
-
   useEffect(() => {
     fetchDiscussionInterview(); 
     fetchUsers(); 
   }, []);
-
 
   //by ordering the 
   const renderActiveTab = () => {
