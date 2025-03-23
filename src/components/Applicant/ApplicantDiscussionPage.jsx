@@ -11,8 +11,8 @@ function ApplicantDiscussionPage({ applicant }) {
   const [selectedInterviewer, setSelectedInterviewer] = useState(null);
   const [interviewDate, setInterviewDate] = useState("");
   const [noteType, setNoteType] = useState("FIRST INTERVIEW");
-  const [discussion, setDiscussion] = useState(null); 
-  const [interviewsArray, setInterviewsArray] = useState([]); 
+  const [discussion, setDiscussion] = useState(null);
+  const [interviewsArray, setInterviewsArray] = useState([]);
 
   const fetchUsers = () => {
     api.get("/user/user-accounts")
@@ -27,13 +27,13 @@ function ApplicantDiscussionPage({ applicant }) {
   const fetchDiscussionInterview = () => {
     return api.get(`/interview?tracking_id=${applicant.tracking_id}`).then((response) => {
       console.log('fetched discussion and interview: ', response.data);
-      
-      setDiscussion(response.data[0]); 
+
+      setDiscussion(response.data[0]);
       setInterviewsArray(response.data.slice(1));
 
     }).catch((error) => {
       console.log(error.message);
-    }); 
+    });
   }
 
   const addInterview = () => {
@@ -49,7 +49,7 @@ function ApplicantDiscussionPage({ applicant }) {
         date_of_interview: interviewDate,
         note_type: noteType
       }
-      
+
       api.post('/interview', data).then((response) => {
         console.log(response.data);
         fetchDiscussionInterview();
@@ -66,10 +66,20 @@ function ApplicantDiscussionPage({ applicant }) {
     });
   }, []);
 
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+    return () => document.body.classList.remove("overflow-hidden");
+  }, [isModalOpen]);
+
+
   const renderActiveTab = () => {
     if (activeTab === "Discussion Box") {
       return discussion ? (
-        <DiscussionBox applicant={applicant} discussion={discussion} fetchDiscussionInterview={fetchDiscussionInterview}/>
+        <DiscussionBox applicant={applicant} discussion={discussion} fetchDiscussionInterview={fetchDiscussionInterview} />
       ) : (
         <div>Loading...</div>
       );
@@ -119,11 +129,12 @@ function ApplicantDiscussionPage({ applicant }) {
       {renderActiveTab()}
 
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/30">
-          <div className="rounded-2xl bg-white p-6 shadow-xl w-full max-w-md">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="rounded-2xl bg-white p-6 shadow-xl w-full max-w-md relative">
             <h2 className="mb-3 text-lg font-medium text-gray-800">Add Interview Details</h2>
             <p className="text-sm text-gray-600 mb-4">Select an interviewer, date, and note type.</p>
-            
+
+            {/* Form fields */}
             <label className="block text-sm font-medium text-gray-700 mb-1">Interviewer</label>
             <select
               className="w-full rounded-lg border border-gray-300 p-2 mb-4"
@@ -142,7 +153,7 @@ function ApplicantDiscussionPage({ applicant }) {
               onChange={(e) => setInterviewDate(e.target.value)}
             />
 
-            <label className="block text-sm font-medium text-gray-700 mb-1">Note Type</label>
+            {/* <label className="block text-sm font-medium text-gray-700 mb-1">Note Type</label>
             <select
               className="w-full rounded-lg border border-gray-300 p-2 mb-4"
               value={noteType}
@@ -151,7 +162,7 @@ function ApplicantDiscussionPage({ applicant }) {
               <option value="FIRST INTERVIEW">First Interview</option>
               <option value="SECOND INTERVIEW">Second Interview</option>
               <option value="THIRD INTERVIEW">Third Interview</option>
-            </select>
+            </select> */}
 
             <div className="flex justify-end mt-6 space-x-2">
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Cancel</button>
@@ -160,6 +171,7 @@ function ApplicantDiscussionPage({ applicant }) {
           </div>
         </div>
       )}
+
     </div>
   );
 }

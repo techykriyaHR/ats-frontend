@@ -43,6 +43,7 @@ const DiscussionBox = ({ applicant, discussion, fetchDiscussionInterview }) => {
                 {/* Message input */}
                 <div className=" flex items-center gap-2">
                     <textarea
+                        value={noteBody}
                         onChange={(e) => setNoteBody(e.target.value)}
                         rows="1 "
                         className="w-full p-2.5 body-regular text-gray-dark bg-white rounded-lg border border-gray-light focus:ring-blue-500 focus:border-blue-500" placeholder="Type your message..."></textarea>
