@@ -1,3 +1,5 @@
+
+
 import React from "react";
 import { FiSend } from "react-icons/fi";
 import MessageBox from "./MessageBox"; // Adjust path if needed
@@ -10,20 +12,16 @@ const InterviewNotes = ({ interview }) => {
             <div className="flex border-b border-gray-light text-gray-dark">
                 <div className="flex-1 p-3 pl-5 border-r border-gray-light">
                     <p className=" display">Interview Notes And Feedback</p>
-                    <p className="text-gray-400 body-regular">{interview}</p>
+                    <p className="text-gray-400 body-regular">{interview.interview_id}</p>
                 </div>
                 <div className="flex-1 py-3 px-5 space-y-2">
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-2">
                         <p className="text-gray-dark body-regular">Interviewer</p>
-                        <select name="" className="border border-gray-light body-regular rounded-sm ml-2 p-1">
-                            <option value="3">Interviewer 1</option>
-                            <option value="3">Interviewer 2</option>
-                            <option value="3">Interviewer 3</option>
-                        </select>
+                        <p className="text-gray-800 border border-gray-300 rounded-md px-2">{interview.interviewer_first_name}</p>
                     </div>
                     <div className="flex items-center">
                         <p className="text-gray-dark body-regular">Date</p>
-                        <input type="date" className="border border-gray-light body-regular rounded-sm ml-2 p-1" />
+                        <input type="date" className="border border-gray-light body-regular rounded-sm ml-2 p-1" value={moment(interview.date_of_interview).format("YYYY-MM-DD")} readOnly />
                     </div>
                 </div>
             </div>
@@ -32,14 +30,18 @@ const InterviewNotes = ({ interview }) => {
 
                 {/* Messages */}
                 <div className="max-h-100 overflow-y-auto rounded-lg py-2 px-4">
-                    <MessageBox sender="John Virgil Carvajal" date={moment('2025-03-12 13:00:00').format("LLL")} message="Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam enim ipsa totam impedit maiores! Perspiciatis autem quo expedita voluptatibus magnam laboriosam rem illo error repellat, exercitationem quod provident aperiam eum nemo adipisci explicabo obcaecati deserunt quasi sapiente ab libero. Et aperiam laboriosam id accusantium cum vero cumque! Ex quo, dolores earum placeat ipsum deserunt unde rerum ut velit nobis saepe officia voluptatum ipsam excepturi distinctio accusamus. Quisquam fuga veritatis beatae aspernatur saepe ad soluta numquam illo ut delectus! Natus tenetur modi quod, harum cupiditate doloribus suscipit ipsum, qui eos aperiam repudiandae nobis quas molestias reprehenderit similique vero est esse ipsam." />
-                    <MessageBox sender="John Virgil Carvajal" date={moment('2025-03-12 13:00:00').format("LLL")} message="Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam enim ipsa totam impedit maiores! Perspiciatis autem quo expedita voluptatibus magnam laboriosam rem illo error repellat, exercitationem quod provident aperiam eum nemo adipisci explicabo obcaecati deserunt quasi sapiente ab libero. Et aperiam laboriosam id accusantium cum vero cumque! Ex quo, dolores earum placeat ipsum deserunt unde rerum ut velit nobis saepe officia voluptatum ipsam excepturi distinctio accusamus. Quisquam fuga veritatis beatae aspernatur saepe ad soluta numquam illo ut delectus! Natus tenetur modi quod, harum cupiditate doloribus suscipit ipsum, qui eos aperiam repudiandae nobis quas molestias reprehenderit similique vero est esse ipsam." />
+                    {interview.interview_notes.map((note) =>
+                    (<MessageBox
+                        key={note.note_id}
+                        sender={interview.interviewer_first_name}
+                        date={moment(note.noted_at).format("LLL")}
+                        message={note.note_body} />)
+                    )}
                 </div>
-
 
                 {/* Message input */}
                 <div className=" flex items-center gap-2">
-                    <textarea rows="1 " class="w-full p-2.5 body-regular text-gray-dark bg-white rounded-lg border border-gray-light focus:ring-blue-500 focus:border-blue-500" placeholder="Type your message..."></textarea>
+                    <textarea rows="1 " className="w-full p-2.5 body-regular text-gray-dark bg-white rounded-lg border border-gray-light focus:ring-blue-500 focus:border-blue-500" placeholder="Type your message..."></textarea>
                     <button className="flex p-2 items-center justify-center rounded-full border border-gray-light bg-white hover:bg-teal-soft cursor-pointer">
                         <FiSend className="h-4 w-4 text-teal" />
                     </button>
