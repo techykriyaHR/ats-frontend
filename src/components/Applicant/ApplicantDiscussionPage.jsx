@@ -2,22 +2,17 @@ import React, { useEffect, useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import DiscussionBox from "../DiscussionBox.jsx";
 import InterviewNotes from "../InterviewNotes.jsx";
-import api from "../../api/axios.js"; 
+import api from "../../api/axios.js";
 
 function ApplicantDiscussionPage({ applicant }) {
-  const [interviews, setInterviews] = useState(["Discussion Box"]);
   const [activeTab, setActiveTab] = useState("Discussion Box");
   const [interviewers, setInterviewers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInterviewer, setSelectedInterviewer] = useState(null);
   const [interviewDate, setInterviewDate] = useState("");
   const [noteType, setNoteType] = useState("FIRST INTERVIEW");
-
-
-  //by ordering the data ascending order, we made sure that the first 
-  //the discussion is the first in the array.
-  let [discussion, setDiscussion] = useState(null); 
-  let [interviewsArray, setInterviewsArray] = useState([]); 
+  const [discussion, setDiscussion] = useState(null); 
+  const [interviewsArray, setInterviewsArray] = useState([]); 
 
   const fetchUsers = () => {
     api.get("/user/user-accounts")
@@ -30,7 +25,7 @@ function ApplicantDiscussionPage({ applicant }) {
   };
 
   const fetchDiscussionInterview = () => {
-    api.get(`/interview?tracking_id=${applicant.tracking_id}`).then((response) => {
+    return api.get(`/interview?tracking_id=${applicant.tracking_id}`).then((response) => {
       console.log('fetched discussion and interview: ', response.data);
       
       setDiscussion(response.data[0]); 
@@ -57,9 +52,8 @@ function ApplicantDiscussionPage({ applicant }) {
       
       api.post('/interview', data).then((response) => {
         console.log(response.data);
-        setInterviews([...interviews, `Interview ${interviews.length}`]);
-        setIsModalOpen(false);
         fetchDiscussionInterview();
+        setIsModalOpen(false);
       }).catch((error) => {
         console.error(error.message);
       });
@@ -67,17 +61,21 @@ function ApplicantDiscussionPage({ applicant }) {
   };
 
   useEffect(() => {
-    fetchDiscussionInterview(); 
-    fetchUsers(); 
+    fetchDiscussionInterview().then(() => {
+      fetchUsers();
+    });
   }, []);
 
-  //by ordering the 
   const renderActiveTab = () => {
-    switch (activeTab) {
-      case "Discussion Box":
-        return <DiscussionBox applicant={applicant} discussion={discussion} fetchDiscussionInterview={fetchDiscussionInterview}/>;
-      default:
-        return <InterviewNotes interview={activeTab} />;
+    if (activeTab === "Discussion Box") {
+      return discussion ? (
+        <DiscussionBox applicant={applicant} discussion={discussion} fetchDiscussionInterview={fetchDiscussionInterview}/>
+      ) : (
+        <div>Loading...</div>
+      );
+    } else {
+      const interview = interviewsArray.find(interview => interview.interview_id === activeTab);
+      return <InterviewNotes interview={interview} />;
     }
   };
 
@@ -85,20 +83,29 @@ function ApplicantDiscussionPage({ applicant }) {
     <div className="rounded-lg">
       {/* Header tabs */}
       <div className="mb-4 p-1 flex w-full gap-1 bg-teal-soft rounded-lg text-center items-center body-bold">
+        {/* Discussion tab */}
+        <div
+          className={`flex-1 py-1 font-medium rounded-lg  
+          ${activeTab === "Discussion Box" ? "bg-teal text-white" : "text-teal hover:bg-teal-soft cursor-pointer"}`}
+          onClick={() => setActiveTab("Discussion Box")}
+        >
+          Discussion Box
+        </div>
+
         {/* Interview tabs */}
-        {interviews.map((interview) => (
+        {interviewsArray.map((interview) => (
           <div
-            key={interview}
+            key={interview.interview_id}
             className={`flex-1 py-1 font-medium rounded-lg  
-            ${activeTab === interview ? "bg-teal text-white" : "text-teal hover:bg-teal-soft cursor-pointer"}`}
-            onClick={() => setActiveTab(interview)}
+            ${activeTab === interview.interview_id ? "bg-teal text-white" : "text-teal hover:bg-teal-soft cursor-pointer"}`}
+            onClick={() => setActiveTab(interview.interview_id)}
           >
-            {interview}
+            {`Interview ${interviewsArray.indexOf(interview) + 1}`}
           </div>
         ))}
 
         {/* Plus Button (Hidden if limit is reached) */}
-        {interviews.length < 6 && (
+        {interviewsArray.length < 5 && (
           <div
             className="flex flex-1 items-center justify-center rounded-lg py-1 text-teal cursor-pointer hover:bg-teal-soft"
             onClick={addInterview}
