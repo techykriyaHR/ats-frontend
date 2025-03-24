@@ -65,8 +65,8 @@ export default function ApplicantList({
     setSelectedDate(null);
     setDateFilterType("month");
     setSearch("");
-    searchApplicant("", setApplicantData, positionFilter, status, dateFilterType, dateFilter);
     setDateFilter("");
+    searchApplicant("", setApplicantData, positionFilter, status, dateFilterType, "Invalid date");
   };
 
   const toggleSortOrder = () => {
@@ -166,14 +166,12 @@ export default function ApplicantList({
           </select>
           <DatePicker
             selected={selectedDate}
-            onChange={(date) => {setSelectedDate(date); setDateFilter("February"); searchApplicant(search, setApplicantData, positionFilter, status, dateFilterType, dateFilter);
-            }}
+            onChange={(date) => {setSelectedDate(date); setDateFilter(date); searchApplicant(search, setApplicantData, positionFilter, status, dateFilterType, date)}}
             showMonthYearPicker={dateFilterType === "month"}
             showYearPicker={dateFilterType === "year"}
             dateFormat={dateFilterType === "month" ? "MM/yyyy" : "yyyy"}
             className="flex-auto body-regular rounded-md border border-gray-300 p-2 w-20"
-            placeholderText={`${dateFilterType === "month" ? "MM/yyyy" : "yyyy"
-              }`}
+            placeholderText={`${dateFilterType === "month" ? "MM/yyyy" : "yyyy"}`}
           />
           <button
             className="flex w-auto body-regular rounded-md bg-teal-600 px-4 py-2 text-white hover:bg-teal-700"

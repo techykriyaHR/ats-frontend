@@ -11,8 +11,8 @@ export const filterApplicants = async (position, setApplicantData, status, date,
     
     let sql = "/applicants/filter?";
     position != "All" ? sql += `position=${position}` : sql += "";
-    date !== "" ? sql += `&${dateType}=${date}` : sql += "";
-    // status != null ? sql += `&status=${status}` : sql += "";
+    date !== "Invalid date" ? sql += `&${dateType}=${date}` : sql += "";
+    
     if (status.length === 0 && position === "All" && date === "") {
         fetchApplicants(setApplicantData);
     }
@@ -23,21 +23,19 @@ export const filterApplicants = async (position, setApplicantData, status, date,
         const { data } = await api.get(sql);
         setApplicantData(data);
     }
+    console.log(sql);
 }
 
 export const searchApplicant = async (searchValue, setApplicantData, positionFilter, status, dateFilterType, dateFilter) => {
     let sql = "/applicants/search?";
-    console.log(dateFilterType);
-    if (searchValue === "") {
-        //positionFilter === "All" ? fetchApplicants(setApplicantData) : filterApplicants(positionFilter, setApplicantData, []);   
+    if (searchValue === "") {  
         if (positionFilter === "All" && status == [] && dateFilter === "") {
             fetchApplicants(setApplicantData);
         }     
         else {
             dateFilterType === 'month' ?
             filterApplicants(positionFilter, setApplicantData, status, moment(dateFilter).format("MMMM"), dateFilterType) :
-            //filterApplicants(positionFilter, setApplicantData, status, dateFilter, dateFilterType) :
-            filterApplicants(positionFilter, setApplicantData, status, dateFilter, dateFilterType);
+            filterApplicants(positionFilter, setApplicantData, status, moment(dateFilter).format("YYYY"), dateFilterType);
         }
     }
     else if (searchValue !== "") {
@@ -46,16 +44,16 @@ export const searchApplicant = async (searchValue, setApplicantData, positionFil
         status.forEach((statusItem) => {
             sql += `&status=${statusItem}`;
         });
-        if (dateFilter !== "") {
+        if (moment(dateFilter).format("MMMM") !== "Invalid date") { //Only for Validation
             if (dateFilterType === "month") {
                 sql += `&month=${moment(dateFilter).format("MMMM")}`;
             }
             else if (dateFilterType === "year") {
-                sql += `&year=${dateFilter}`;
+                sql += `&year=${moment(dateFilter).format("YYYY")}`;
             }
         }
         const { data } = await api.get(sql);
-        console.log(data);
         setApplicantData(data); 
     }
+    console.log(sql);
 }

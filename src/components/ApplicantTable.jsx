@@ -188,7 +188,7 @@ const ApplicantTable = ({ onSelectApplicant }) => {
       <DataTable
         pointerOnHover
         highlightOnHover
-        fixedHeader
+        //fixedHeader
         striped
         fixedHeaderScrollHeight="60vh"
         responsive
