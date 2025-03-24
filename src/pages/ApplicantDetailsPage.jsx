@@ -9,7 +9,9 @@ function ApplicantDetailsPage({ applicant }) {
   const renderActiveTab = () => {
     switch (activeTab) {
       case "discussion":
-        return <ApplicantDiscussionPage />;
+        return <ApplicantDiscussionPage
+          applicant={applicant}
+        />;
       case "sendMail":
         return <ApplicantSendMailPage />;
       default:
