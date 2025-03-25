@@ -6,6 +6,7 @@ import Loader from '../../assets/Loader';
 import Toast from '../../assets/Toast';
 import { FaCakeCandles, FaFileLines } from 'react-icons/fa6';
 import AddApplicantForm from '../../pages/AddApplicantForm';
+import { statusMapping } from '../../hooks/statusMapping';
 
 const statuses = [
   "Test Sent",
@@ -20,23 +21,6 @@ const statuses = [
   "Blacklisted",
   "Not Fit",
 ];
-
-const statusMapping = {
-  "NONE": "",
-  "TEST_SENT": "Test Sent",
-  "INTERVIEW_SCHEDULE_SENT": "Interview Schedule Sent",
-  "FIRST_INTERVIEW": "First Interview",
-  "SECOND_INTERVIEW": "Second Interview",
-  "THIRD_INTERVIEW": "Third Interview",
-  "FOURTH_INTERVIEW": "Fourth Interview",
-  "FOLLOW_UP_INTERVIEW": "Follow Up Interview",
-  "FOR_JOB_OFFER": "Job Offer Accepted",
-  "JOB_OFFER_REJECTED": "Job Offer Rejected",
-  "JOB_OFFER_ACCEPTED": "Job Offer Accepted",
-  "WITHDREW_APPLICATION": "Withdrew Application",
-  "BLACKLISTED": "Blacklisted",
-  "NOT_FIT": "Not Fit",
-};
 
 function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   const [applicantInfo, setApplicantInfo] = useState({});
