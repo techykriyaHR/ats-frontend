@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { usePositions } from "../hooks/usePositions";
-import { useStages } from "../hooks/useStages";
+import { useStages, handleStageClick } from "../hooks/useStages";
 import { useCollapse } from "../hooks/useCollapse";
 import { filterCounter } from "../utils/statusCounterFunctions";
 import { initialStages } from "../utils/StagesData";
@@ -28,48 +28,7 @@ export default function StatusCounter() {
   const hasSelectedStatus = stages.some((stage) =>
     stage.statuses.some((status) => status.selected),
   );
-
-  // Function to handle stage click
-  const handleStageClick = (stage) => {
-    const stageStatuses = stage.statuses.map((status) => status.value);
-
-    setSelectedStatuses((prevStatuses) => {
-      // Check if all statuses in the stage are already selected
-      const allSelected = stageStatuses.every((status) =>
-        prevStatuses.includes(status),
-      );
-
-      let updatedStatuses;
-      if (allSelected) {
-        // If all statuses are selected, remove them
-        updatedStatuses = prevStatuses.filter(
-          (status) => !stageStatuses.includes(status),
-        );
-      } else {
-        // Otherwise, add the statuses that are not already selected
-        updatedStatuses = [
-          ...prevStatuses,
-          ...stageStatuses.filter((status) => !prevStatuses.includes(status)),
-        ];
-      }
-
-      // Call filterApplicants with the updated statuses
-      //filterApplicants(positionFilter, setApplicantData, updatedStatuses, moment(dateFilter).format("MMMM"), dateFilterType);
-      if (search === "") {
-        dateFilterType === 'month' ?
-        filterApplicants(positionFilter, setApplicantData, updatedStatuses, moment(dateFilter).format("MMMM"), dateFilterType) :
-        filterApplicants(positionFilter, setApplicantData, updatedStatuses, moment(dateFilter).format("YYYY"), dateFilterType)
-      }
-      else {
-        searchApplicant(search, setApplicantData, positionFilter, updatedStatuses, dateFilterType, dateFilter);
-      }
-
-      return updatedStatuses; // Return the updated state
-    });
-
-    // Toggle the stage's selected state
-    toggleStage(stage.name);
-  };
+  
 
   // Function to clear all selections
   const clearSelections = () => {
@@ -147,7 +106,7 @@ export default function StatusCounter() {
                   ? "bg-teal text-white"
                   : "bg-gray-light text-gray-dark"
               } hover:bg-teal-soft mb-2 rounded-md px-2`}
-              onClick={() => handleStageClick(stage)}
+              onClick={() => handleStageClick(stage, setSelectedStatuses, search, toggleStage, dateFilterType, dateFilter, positionFilter, setApplicantData, searchApplicant)}
             >
               <div className="flex flex-1 items-center justify-between">
                 <span className="body-bold">{stage.name}</span>
