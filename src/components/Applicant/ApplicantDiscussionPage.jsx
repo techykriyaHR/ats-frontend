@@ -64,7 +64,7 @@ function ApplicantDiscussionPage({ applicant }) {
     fetchDiscussionInterview().then(() => {
       fetchUsers();
     });
-  }, []);
+  }, [applicant.applicant_id]);
 
   useEffect(() => {
     if (isModalOpen) {

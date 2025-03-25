@@ -1,5 +1,6 @@
 import api from "../api/axios";
 import moment from "moment";
+import { filterCounter } from "./statusCounterFunctions";
 import { useApplicantData } from "../hooks/useApplicantData";
 
 export const fetchApplicants = async (setApplicantData) => {
@@ -55,3 +56,22 @@ export const searchApplicant = async (searchValue, setApplicantData, positionFil
         setApplicantData(data); 
     }
 }
+
+  export const updateStatus = async (id, progress_id, Status, status, applicantData, setApplicantData, positionFilter, setStages, initialStages, setPositionFilter, user) => {
+    let data = {
+      "progress_id": progress_id,
+      "status": Status,
+      "user_id": user.user_id,
+    };
+  
+    try {
+      await api.put(`/applicant/update/status`, data);
+      const updatedApplicantData = applicantData.map(applicant => 
+        applicant.applicant_id === id ? { ...applicant, status: Status } : applicant
+      );
+      setApplicantData(updatedApplicantData);
+      filterCounter(positionFilter, setStages, initialStages, setPositionFilter, status);
+    } catch (error) {
+      console.error("Update Status Failed: " + error);
+    }
+  };
