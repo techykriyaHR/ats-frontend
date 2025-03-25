@@ -18,6 +18,8 @@ const ApplicantTable = ({ onSelectApplicant }) => {
   const { setStages } = useStages();
   const { status, setSearch } = applicantFilterStore();
   const { user } = useUserStore();
+  // console.log('user id .....', user.user_id);
+  
   const { toasts, addToast, removeToast, undoStatusUpdate } = useToastManager();
 
   const handleStatusChange = (id, progress_id, newStatus, status) => {
