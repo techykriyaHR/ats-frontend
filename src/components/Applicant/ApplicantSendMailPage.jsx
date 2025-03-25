@@ -138,6 +138,11 @@ function ApplicantSendMailPage({ applicant }) {
         .post("/email/applicant", formData)
         .then((response) => {
           console.log(response);
+          alert("email sent.");
+          setEmailContent("");
+          setSubject("");
+          setAttachments([]);
+          editor?.commands.clearContent();
         })
         .catch((error) => console.error("Error sending email:", error.message));
     } catch (error) {

@@ -31,8 +31,6 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   const [isEditFormOpen, setIsEditFormOpen] = useState(false); // State to manage the visibility of the AddApplicantForm
   const [editCounter, setEditCounter] = useState(0);
 
-  console.log('user_id......', user.user_id);
-
   useEffect(() => {
     setLoading(true);
     setApplicantInfo({});
