@@ -157,7 +157,7 @@ export default function ApplicantList({
         <div className="flex w-full items-center gap-2 md:w-auto md:flex-row justify-end">
           <select
             value={dateFilterType}
-            onChange={(e) => {setDateFilterType(e.target.value); console.log(e.target.value);
+            onChange={(e) => {setDateFilterType(e.target.value);
             }}
             className="flex body-regular rounded-md border border-gray-300 p-2 w-auto"
           >

@@ -34,7 +34,7 @@ const ApplicantTable = ({ onSelectApplicant }) => {
   const [toasts, setToasts] = useState([]);
   const { positionFilter, setPositionFilter } = positionStore();
   const { setStages } = useStages();
-  const { status, dateFilter } = applicantFilterStore();
+  const { status, dateFilter, setSearch } = applicantFilterStore();
   const { user } = useUserStore();
 
   // Add a ref to track and manage toast timeouts
@@ -138,6 +138,8 @@ const ApplicantTable = ({ onSelectApplicant }) => {
     if (applicant) {
       onSelectApplicant(applicant);
     }
+    setPositionFilter("All");
+    setSearch("");
   };
 
   const columns = [

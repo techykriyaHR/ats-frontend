@@ -23,7 +23,6 @@ export const filterApplicants = async (position, setApplicantData, status, date,
         const { data } = await api.get(sql);
         setApplicantData(data);
     }
-    console.log(sql);
 }
 
 export const searchApplicant = async (searchValue, setApplicantData, positionFilter, status, dateFilterType, dateFilter) => {
@@ -55,5 +54,4 @@ export const searchApplicant = async (searchValue, setApplicantData, positionFil
         const { data } = await api.get(sql);
         setApplicantData(data); 
     }
-    console.log(sql);
 }
