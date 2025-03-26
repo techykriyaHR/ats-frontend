@@ -1,18 +1,15 @@
 import React, { useState } from "react";
 import { usePositions } from "../hooks/usePositions";
-import { useStages } from "../hooks/useStages";
+import { useStages, handleStageClick } from "../hooks/useStages";
 import { useCollapse } from "../hooks/useCollapse";
 import { filterCounter } from "../utils/statusCounterFunctions";
 import { initialStages } from "../utils/StagesData";
-import { filterApplicants, fetchApplicants } from "../utils/applicantDataUtils";
-import { useApplicantData } from "../hooks/useApplicantData";
+import { filterApplicants } from "../utils/applicantDataUtils";
 import positionStore from "../context/positionStore";
-import statusCounterStore from "../context/statusCounterStore";
-import { set } from "date-fns";
 import applicantFilterStore from "../context/applicantFilterStore";
 import applicantDataStore from "../context/applicantDataStore";
 import { searchApplicant } from "../utils/applicantDataUtils";
-import { fetchCounts } from "../utils/statusCounterFunctions";
+import { fetchCounts, clearSelections } from "../utils/statusCounterFunctions";
 import moment from "moment";
 
 export default function StatusCounter() {
@@ -29,79 +26,6 @@ export default function StatusCounter() {
     stage.statuses.some((status) => status.selected),
   );
 
-  // Function to handle stage click
-  const handleStageClick = (stage) => {
-    const stageStatuses = stage.statuses.map((status) => status.value);
-
-    setSelectedStatuses((prevStatuses) => {
-      // Check if all statuses in the stage are already selected
-      const allSelected = stageStatuses.every((status) =>
-        prevStatuses.includes(status),
-      );
-
-      let updatedStatuses;
-      if (allSelected) {
-        // If all statuses are selected, remove them
-        updatedStatuses = prevStatuses.filter(
-          (status) => !stageStatuses.includes(status),
-        );
-      } else {
-        // Otherwise, add the statuses that are not already selected
-        updatedStatuses = [
-          ...prevStatuses,
-          ...stageStatuses.filter((status) => !prevStatuses.includes(status)),
-        ];
-      }
-
-      // Call filterApplicants with the updated statuses
-      //filterApplicants(positionFilter, setApplicantData, updatedStatuses, moment(dateFilter).format("MMMM"), dateFilterType);
-      if (search === "") {
-        dateFilterType === 'month' ?
-        filterApplicants(positionFilter, setApplicantData, updatedStatuses, moment(dateFilter).format("MMMM"), dateFilterType) :
-        filterApplicants(positionFilter, setApplicantData, updatedStatuses, moment(dateFilter).format("YYYY"), dateFilterType)
-      }
-      else {
-        searchApplicant(search, setApplicantData, positionFilter, updatedStatuses, dateFilterType, dateFilter);
-      }
-
-      return updatedStatuses; // Return the updated state
-    });
-
-    // Toggle the stage's selected state
-    toggleStage(stage.name);
-  };
-
-  // Function to clear all selections
-  const clearSelections = () => {
-    setStages(
-      stages.map((stage) => ({
-        ...stage,
-        selected: false,
-        statuses: stage.statuses.map((status) => ({
-          ...status,
-          selected: false,
-        })),
-      })),
-    );
-    setSelectedStatuses([]);
-    clearStatus([]);
-    setStatus([]);
-    setPositionFilter("All");
-
-    fetchCounts(setStages, initialStages);
-
-    if (search === "") {        
-      dateFilterType === 'month' ?
-      filterApplicants("All", setApplicantData, [], moment(dateFilter).format("MMMM"), dateFilterType) :
-      filterApplicants("All", setApplicantData, [], moment(dateFilter).format("YYYY"), dateFilterType)
-    }
-    else {
-      dateFilterType === 'month' ? 
-      searchApplicant(search, setApplicantData, "All", [], dateFilterType, moment(dateFilter).format("MMMM")):
-      searchApplicant(search, setApplicantData, "All", [],  dateFilterType, moment(dateFilter).format("YYYY"));
-    }
-    //fetchApplicants(setApplicantData);
-  };
 
   return (
     <div className="border-gray-light mx-auto w-full rounded-3xl border bg-white p-6">
@@ -147,7 +71,7 @@ export default function StatusCounter() {
                   ? "bg-teal text-white"
                   : "bg-gray-light text-gray-dark"
               } hover:bg-teal-soft mb-2 rounded-md px-2`}
-              onClick={() => handleStageClick(stage)}
+              onClick={() => handleStageClick(stage, setSelectedStatuses, search, toggleStage, dateFilterType, dateFilter, positionFilter, setApplicantData, setStatus)}
             >
               <div className="flex flex-1 items-center justify-between">
                 <span className="body-bold">{stage.name}</span>
@@ -222,7 +146,7 @@ export default function StatusCounter() {
       {hasSelectedStatus && (
         <div className="mt-4 text-end">
           <button
-            onClick={clearSelections}
+            onClick={() => clearSelections(stages, setStages, setSelectedStatuses, clearStatus, setStatus, setPositionFilter, search, dateFilterType, dateFilter, setApplicantData)}
             className="text-gray-dark border-gray-light hover:bg-gray-light cursor-pointer rounded-lg border p-2 text-sm transition"
           >
             Clear
