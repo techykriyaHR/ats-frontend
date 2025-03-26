@@ -88,7 +88,7 @@ const ApplicantTable = ({ onSelectApplicant }) => {
           defaultSortFieldId={1}
           onRowClicked={handleApplicantRowClick}
           pagination
-          progressPending={applicantData.length === 0}
+          progressPending={applicantData.length === 0 || !statuses.length}
           progressComponent={<LoadingComponent />}
         />
       )}
