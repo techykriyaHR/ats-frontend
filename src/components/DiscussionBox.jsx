@@ -17,7 +17,7 @@ const DiscussionBox = ({ applicant, discussion, fetchDiscussionInterview }) => {
         api.post('/interview/note', data).then((response) => {
             //trigger the change of the source data
             console.log('add note response: ', response);
-            setNoteBody(""); 
+            setNoteBody("");
             fetchDiscussionInterview();
         }).catch((error) => {
             console.log(error.message);
@@ -31,28 +31,29 @@ const DiscussionBox = ({ applicant, discussion, fetchDiscussionInterview }) => {
                 <p className="text-gray-dark headline">Discussion Box</p>
             </div>
 
-            <div className="px-6 pb-5">
-                {discussion.interview_notes.map((note) => 
-                    (<MessageBox 
-                        key={note.note_id}
-                        sender={discussion.interviewer_first_name} 
-                        date={moment(note.noted_at).format("LLL")} 
-                        message={note.note_body} />)
+            <div className="px-6 max-h-150 overflow-y-auto rounded-lg py-2">
+                {discussion.interview_notes.map((note) =>
+                (<MessageBox
+                    key={note.note_id}
+                    sender={discussion.interviewer_first_name}
+                    date={moment(note.noted_at).format("LLL")}
+                    message={note.note_body} />)
                 )}
 
-                {/* Message input */}
-                <div className=" flex items-center gap-2">
-                    <textarea
-                        value={noteBody}
-                        onChange={(e) => setNoteBody(e.target.value)}
-                        rows="1 "
-                        className="w-full p-2.5 body-regular text-gray-dark bg-white rounded-lg border border-gray-light focus:ring-blue-500 focus:border-blue-500" placeholder="Type your message..."></textarea>
-                    <button
-                        onClick={handleSubmit}
-                        className="flex p-2 items-center justify-center rounded-full border border-gray-light bg-white hover:bg-teal-soft cursor-pointer">
-                        <FiSend className="h-4 w-4 text-teal" />
-                    </button>
-                </div>
+
+            </div>
+            {/* Message input */}
+            <div className=" flex items-center m-5 mt-0 gap-2">
+                <textarea
+                    value={noteBody}
+                    onChange={(e) => setNoteBody(e.target.value)}
+                    rows="1 "
+                    className="w-full p-2.5 body-regular text-gray-dark bg-white rounded-lg border border-gray-light focus:ring-blue-500 focus:border-blue-500" placeholder="Type your message..."></textarea>
+                <button
+                    onClick={handleSubmit}
+                    className="flex p-2 items-center justify-center rounded-full border border-gray-light bg-white hover:bg-teal-soft cursor-pointer">
+                    <FiSend className="h-4 w-4 text-teal" />
+                </button>
             </div>
         </div>
     );

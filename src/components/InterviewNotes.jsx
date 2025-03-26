@@ -50,7 +50,7 @@ const InterviewNotes = ({ interview, applicant, fetchDiscussionInterview }) => {
             <div className="px-6 pb-5">
 
                 {/* Messages */}
-                <div className="max-h-100 overflow-y-auto rounded-lg py-2 px-4">
+                <div className="max-h-150 overflow-y-auto rounded-lg py-2 px-4">
                     {interview.interview_notes.map((note) =>
                     (<MessageBox
                         key={note.note_id}
