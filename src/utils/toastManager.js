@@ -3,12 +3,16 @@ import useUserStore from '../context/userStore';
 import api from '../api/axios';
 import applicantDataStore from '../context/applicantDataStore';
 import { statusMapping } from '../hooks/statusMapping';
+import { fetchCounts } from './statusCounterFunctions';
+import { initialStages } from './StagesData';
+import statusCounterStore from '../context/statusCounterStore';
 
 export const useToastManager = () => {
   const [toasts, setToasts] = useState([]);
   const [toastTimeouts, setToastTimeouts] = useState({});
   const { user } = useUserStore();
   const { applicantData, setApplicantData } = applicantDataStore();
+  const { setStages } = statusCounterStore();
 
   const addToast = (applicant, status, statusMapping) => {
     const toastId = Date.now();
@@ -61,6 +65,7 @@ export const useToastManager = () => {
     } catch (error) {
       console.error("Undo status update failed:", error);
     }
+    fetchCounts(setStages, initialStages);
   };
 
   return { toasts, addToast, removeToast, undoStatusUpdate };

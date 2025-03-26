@@ -13,7 +13,7 @@ import { updateStatus } from '../utils/applicantDataUtils';
 import { statusMapping } from '../hooks/statusMapping';
 
 const ApplicantTable = ({ onSelectApplicant }) => {
-  const { applicantData, setApplicantData, statuses, setStatuses, updateApplicantStatus } = useApplicantData();
+  const { applicantData, setApplicantData, statuses } = useApplicantData();
   const { positionFilter, setPositionFilter } = positionStore();
   const { setStages } = useStages();
   const { status, setSearch } = applicantFilterStore();

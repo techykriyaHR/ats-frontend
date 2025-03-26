@@ -9,7 +9,7 @@ import positionStore from "../context/positionStore";
 import applicantFilterStore from "../context/applicantFilterStore";
 import applicantDataStore from "../context/applicantDataStore";
 import { searchApplicant } from "../utils/applicantDataUtils";
-import { fetchCounts, clearSelections } from "../utils/statusCounterFunctions";
+import { clearSelections } from "../utils/statusCounterFunctions";
 import moment from "moment";
 
 export default function StatusCounter() {
