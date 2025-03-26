@@ -10,6 +10,7 @@ import applicantFilterStore from "../context/applicantFilterStore";
 import applicantDataStore from "../context/applicantDataStore";
 import { searchApplicant } from "../utils/applicantDataUtils";
 import { clearSelections } from "../utils/statusCounterFunctions";
+import { MdDeselect } from "react-icons/md";
 import moment from "moment";
 
 export default function StatusCounter() {
@@ -30,35 +31,49 @@ export default function StatusCounter() {
   return (
     <div className="border-gray-light mx-auto w-full rounded-3xl border bg-white p-6">
       <div className="mb-4 flex items-center justify-between rounded-lg">
+
         <h2 className="headline text-gray-dark md:mb-0">Status Counter</h2>
-        <select
-          className="border-gray-light max-w-[120px] rounded-md border p-1 text-sm"
-          onChange={(e) => {
-            filterCounter(
-              e.target.value,
-              setStages,
-              initialStages,
-              setPositionFilter,
-              selectedStatuses,
-            );
-            if (search === "") {        
-              dateFilterType === 'month' ?
-              filterApplicants(e.target.value, setApplicantData, status, moment(dateFilter).format("MMMM"), dateFilterType) :
-              filterApplicants(e.target.value, setApplicantData, status, moment(dateFilter).format("YYYY"), dateFilterType)
-            }
-            else {
-              searchApplicant(search, setApplicantData, e.target.value, status, dateFilterType, dateFilter);
-            }
-          }}
-          value={positionFilter}
-        >
-          <option value="All">All Positions</option>
-          {positions.map((position) => (
-            <option key={position.job_id} value={position.title}>
-              {position.title}
-            </option>
-          ))}
-        </select>
+
+        <div className="items-center flex gap-2">
+
+          <select
+            className="border-gray-light max-w-[120px] rounded-md border p-1 text-sm"
+            onChange={(e) => {
+              filterCounter(
+                e.target.value,
+                setStages,
+                initialStages,
+                setPositionFilter,
+                selectedStatuses,
+              );
+              if (search === "") {
+                dateFilterType === 'month' ?
+                  filterApplicants(e.target.value, setApplicantData, status, moment(dateFilter).format("MMMM"), dateFilterType) :
+                  filterApplicants(e.target.value, setApplicantData, status, moment(dateFilter).format("YYYY"), dateFilterType)
+              }
+              else {
+                searchApplicant(search, setApplicantData, e.target.value, status, dateFilterType, dateFilter);
+              }
+            }}
+            value={positionFilter}
+          >
+            <option value="All">All Positions</option>
+            {positions.map((position) => (
+              <option key={position.job_id} value={position.title}>
+                {position.title}
+              </option>
+            ))}
+          </select>
+          {/* Show Clear Button if any status is selected */}
+          {hasSelectedStatus && (
+            <div className="text-end">
+              <MdDeselect
+                onClick={() => clearSelections(stages, setStages, setSelectedStatuses, clearStatus, setStatus, setPositionFilter, search, dateFilterType, dateFilter, setApplicantData)}
+                className="w-5 h-5 text-gray-dark hover:bg-gray-light rounded-2xl cursor-pointer"
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -66,11 +81,10 @@ export default function StatusCounter() {
           <div key={stage.name}>
             {/* Stage Button */}
             <div
-              className={`flex cursor-pointer items-center justify-between ${
-                stage.selected
-                  ? "bg-teal text-white"
-                  : "bg-gray-light text-gray-dark"
-              } hover:bg-teal-soft mb-2 rounded-md px-2`}
+              className={`flex cursor-pointer items-center justify-between ${stage.selected
+                ? "bg-teal text-white"
+                : "bg-gray-light text-gray-dark"
+                } hover:bg-teal-soft mb-2 rounded-md px-2`}
               onClick={() => handleStageClick(stage, setSelectedStatuses, search, toggleStage, dateFilterType, dateFilter, positionFilter, setApplicantData, setStatus)}
             >
               <div className="flex flex-1 items-center justify-between">
@@ -108,27 +122,26 @@ export default function StatusCounter() {
                           Status.value,
                         )
                           ? prevStatuses.filter(
-                              (status) => status !== Status.value,
-                            )
+                            (status) => status !== Status.value,
+                          )
                           : [...prevStatuses, Status.value];
-                          if (search === "") {        
-                            dateFilterType === 'month' ?
+                        if (search === "") {
+                          dateFilterType === 'month' ?
                             filterApplicants(positionFilter, setApplicantData, updatedStatuses, moment(dateFilter).format("MMMM"), dateFilterType) :
                             filterApplicants(positionFilter, setApplicantData, updatedStatuses, moment(dateFilter).format("YYYY"), dateFilterType)
-                          }
-                          else {
-                            searchApplicant(search, setApplicantData, positionFilter, updatedStatuses, dateFilterType, dateFilter);
-                          }
-                          return updatedStatuses;
+                        }
+                        else {
+                          searchApplicant(search, setApplicantData, positionFilter, updatedStatuses, dateFilterType, dateFilter);
+                        }
+                        return updatedStatuses;
                       });
                       setStatus(Status.value);
                     }}
                     key={Status.name}
-                    className={`mx-1 flex items-center justify-between rounded-lg border px-3 py-1 ${
-                      Status.selected
-                        ? "border-teal-soft bg-teal-soft"
-                        : "border-gray-light"
-                    } hover:bg-gray-light`}
+                    className={`mx-1 flex items-center justify-between rounded-lg border px-3 py-1 ${Status.selected
+                      ? "border-teal-soft bg-teal-soft"
+                      : "border-gray-light"
+                      } hover:bg-gray-light`}
                   >
                     <span className="body-regular text-gray-dark">
                       {Status.name}
@@ -142,17 +155,7 @@ export default function StatusCounter() {
         ))}
       </div>
 
-      {/* Show Clear Button if any status is selected */}
-      {hasSelectedStatus && (
-        <div className="mt-4 text-end">
-          <button
-            onClick={() => clearSelections(stages, setStages, setSelectedStatuses, clearStatus, setStatus, setPositionFilter, search, dateFilterType, dateFilter, setApplicantData)}
-            className="text-gray-dark border-gray-light hover:bg-gray-light cursor-pointer rounded-lg border p-2 text-sm transition"
-          >
-            Clear
-          </button>
-        </div>
-      )}
+
     </div>
   );
 }
