@@ -1,4 +1,8 @@
 import api from "../api/axios";
+import moment from "moment";
+import { initialStages } from "./StagesData";
+import { filterApplicants } from "./applicantDataUtils";
+import { searchApplicant } from "./applicantDataUtils";
 
 //Fetching all
 export const fetchCounts = async (setStages, initialStages) => {
@@ -36,3 +40,33 @@ export const filterCounter = async (position, setStages, initialStages, setPosit
     }))
   })));
 }
+
+export const clearSelections = (stages, setStages, setSelectedStatuses, clearStatus, setStatus, setPositionFilter, search, dateFilterType, dateFilter, setApplicantData) => {
+  setStages(
+    stages.map((stage) => ({
+      ...stage,
+      selected: false,
+      statuses: stage.statuses.map((status) => ({
+        ...status,
+        selected: false,
+      })),
+    })),
+  );
+  setSelectedStatuses([]);
+  clearStatus([]);
+  setStatus([]);
+  setPositionFilter("All");
+
+  fetchCounts(setStages, initialStages);
+
+  if (search === "") {        
+    dateFilterType === 'month' ?
+    filterApplicants("All", setApplicantData, [], moment(dateFilter).format("MMMM"), dateFilterType) :
+    filterApplicants("All", setApplicantData, [], moment(dateFilter).format("YYYY"), dateFilterType)
+  }
+  else {
+    dateFilterType === 'month' ? 
+    searchApplicant(search, setApplicantData, "All", [], dateFilterType, moment(dateFilter).format("MMMM")):
+    searchApplicant(search, setApplicantData, "All", [],  dateFilterType, moment(dateFilter).format("YYYY"));
+  }
+};
