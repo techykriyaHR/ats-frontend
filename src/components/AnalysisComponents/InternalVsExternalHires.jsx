@@ -14,28 +14,28 @@ const InternalVsExternalHires = () => {
       try {
         setIsLoading(true);
         const response = await api.get("/analytic/graphs/applicant-sources");
-        
+
         if (response.data && response.data.data && response.data.data.sources) {
           const sources = response.data.data.sources;
-          
+
           // Find internal and external data
-          const internalSource = sources.find(source => 
-            source.source_type === "Internal Referral" || 
+          const internalSource = sources.find(source =>
+            source.source_type === "Internal Referral" ||
             source.source_type.toLowerCase().includes("internal")
           );
-          
-          const externalSource = sources.find(source => 
-            source.source_type === "External" || 
+
+          const externalSource = sources.find(source =>
+            source.source_type === "External" ||
             source.source_type.toLowerCase().includes("external")
           );
-          
+
           if (internalSource) {
             setInternalData({
               count: internalSource.count,
               percentage: Math.round(Number(internalSource.percentage))
             });
           }
-          
+
           if (externalSource) {
             setExternalData({
               count: externalSource.count,
@@ -71,7 +71,7 @@ const InternalVsExternalHires = () => {
           )}
         </div>
       </div>
-      
+
       {isLoading ? (
         <div className="py-8 text-center text-gray-500">Loading data...</div>
       ) : error ? (
@@ -84,16 +84,10 @@ const InternalVsExternalHires = () => {
             <span className="text-4xl font-semibold">{externalData.percentage}%</span>
           </div>
 
-          <div className="mt-2 flex justify-between">
-            <div className="text-center">
-              <span className="text-gray-600">Internal</span>
-              <div className="text-xs text-gray-500">({internalData.count} applicants)</div>
-            </div>
-            <div className="text-center">
-              <span className="text-gray-600">External</span>
-              <div className="text-xs text-gray-500">({externalData.count} applicants)</div>
-            </div>
-          </div>
+
+
+
+
         </div>
       )}
     </>

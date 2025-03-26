@@ -65,7 +65,6 @@ const TopJobPositions = () => {
             <div key={index} className="flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <span className="font-medium">{position.title}</span>
-                <span className="text-xs text-gray-500">({position.count} applicants)</span>
               </div>
               <span className="font-semibold display">{position.percentage}%</span>
             </div>
