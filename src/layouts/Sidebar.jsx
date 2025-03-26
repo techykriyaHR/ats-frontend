@@ -95,17 +95,17 @@ export default function Sidebar({ isOpen, onToggleSidebar, onSelectView }) {
               onClick={() => handleSelectView("analytics")}
               active={currentView === "analytics"}
             />
+            <SidebarLink
+              text="Configurations"
+              icon={<FaGear />}
+              onClick={() => handleSelectView("config")}
+              active={currentView === "config"}
+            />
           </nav>
         </div>
 
         {/* Logout Button */}
         <div className="space-y-3">
-          <SidebarLink
-            text="Configurations"
-            icon={<FaGear />}
-            onClick={() => handleSelectView("config")}
-            active={currentView === "config"}
-          />
           <button
             className="border-teal text-teal hover:bg-teal-soft flex w-full items-center justify-center gap-2 rounded-md border bg-white px-4 py-2"
             aria-label="Log out"
