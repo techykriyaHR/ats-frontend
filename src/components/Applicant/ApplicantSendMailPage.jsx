@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
+import useUserStore from '../../context/userStore';
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
@@ -24,7 +25,7 @@ import {
 } from "@heroicons/react/24/outline";
 import api from "../../api/axios";
 
-function ApplicantSendMailPage() {
+function ApplicantSendMailPage({ applicant }) {
   const [subject, setSubject] = useState(
     "Welcome to FullSuite – Preparing for Your Interviews and Assessment",
   );
@@ -34,6 +35,7 @@ function ApplicantSendMailPage() {
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [showTemplateModal, setShowTemplateModal] = useState(false); // State for modal visibility
   const [templateTitle, setTemplateTitle] = useState(""); // State for template title input
+  const { user } = useUserStore();
 
   const editor = useEditor({
     extensions: [
@@ -118,9 +120,13 @@ function ApplicantSendMailPage() {
   };
 
   const handleSendEmail = async () => {
+
+    console.log('user_id......', user.user_id);
+    
+
     const formData = new FormData();
-    formData.append("applicant_id", "37f14f12-c113-4c21-9f8a-ccf0f5b39f35");
-    formData.append("user_id", "fcd3eee1-9a10-40d6-8444-b0f5b8632af1");
+    formData.append("applicant_id", applicant.applicant_id);
+    formData.append("user_id", user.user_id);
     formData.append("email_subject", subject);
     formData.append("email_body", emailContent);
     if (attachments) {
@@ -132,6 +138,11 @@ function ApplicantSendMailPage() {
         .post("/email/applicant", formData)
         .then((response) => {
           console.log(response);
+          alert("email sent.");
+          setEmailContent("");
+          setSubject("");
+          setAttachments([]);
+          editor?.commands.clearContent();
         })
         .catch((error) => console.error("Error sending email:", error.message));
     } catch (error) {

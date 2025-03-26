@@ -13,7 +13,7 @@ function ApplicantDetailsPage({ applicant }) {
           applicant={applicant}
         />;
       case "sendMail":
-        return <ApplicantSendMailPage />;
+        return <ApplicantSendMailPage applicant={applicant} />;
       default:
         return null;
     }
