@@ -16,7 +16,7 @@ const ApplicantTable = ({ onSelectApplicant }) => {
   const { applicantData, setApplicantData, statuses } = useApplicantData();
   const { positionFilter, setPositionFilter } = positionStore();
   const { setStages } = useStages();
-  const { status, setSearch } = applicantFilterStore();
+  const { status, setSearch, search } = applicantFilterStore();
   const { user } = useUserStore();
   // console.log('user id .....', user.user_id);
   
@@ -69,34 +69,29 @@ const ApplicantTable = ({ onSelectApplicant }) => {
     },
   ];
 
-  const LoadingComponent = () => (
-    <div className="flex flex-col space-y-2">
-      <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
-      <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
-      <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
-      <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
-      <div className="w-full h-10 animate-pulse rounded-sm bg-gray-light"></div>
-    </div>
-  );
-
   return (
     <>
-      <DataTable
-        pointerOnHover
-        highlightOnHover
-        //fixedHeader
-        striped
-        fixedHeaderScrollHeight="60vh"
-        responsive
-        columns={columns}
-        data={applicantData}
-        defaultSortAsc={false}
-        defaultSortFieldId={1}
-        onRowClicked={handleApplicantRowClick}
-        pagination
-        progressPending={!applicantData.length || !statuses.length}
-        progressComponent={<LoadingComponent />}
-      />
+      {applicantData.length === 0 && search != "" ? (
+        <div className="text-center text-lg font-semibold text-gray-600 mt-8">
+          No applicants found.
+        </div>
+      ) : (
+        <DataTable
+          pointerOnHover
+          highlightOnHover
+          striped
+          fixedHeaderScrollHeight="60vh"
+          responsive
+          columns={columns}
+          data={applicantData}
+          defaultSortAsc={false}
+          defaultSortFieldId={1}
+          onRowClicked={handleApplicantRowClick}
+          pagination
+          progressPending={applicantData.length === 0}
+          progressComponent={<LoadingComponent />}
+        />
+      )}
       <div className="fixed top-4 right-4 space-y-2">
         {toasts.map(toast => (
           <Toast
@@ -108,6 +103,18 @@ const ApplicantTable = ({ onSelectApplicant }) => {
         ))}
       </div>
     </>
+  );
+};
+
+function LoadingComponent () {
+  return (
+    <div className="flex flex-col w-full space-y-2">
+      <div className=" h-10 animate-pulse rounded-sm bg-gray-light"></div>
+      <div className=" h-10 animate-pulse rounded-sm bg-gray-light"></div>
+      <div className=" h-10 animate-pulse rounded-sm bg-gray-light"></div>
+      <div className=" h-10 animate-pulse rounded-sm bg-gray-light"></div>
+      <div className=" h-10 animate-pulse rounded-sm bg-gray-light"></div>
+    </div>
   );
 };
 
