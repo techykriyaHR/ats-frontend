@@ -122,15 +122,18 @@ function ApplicantSendMailPage({ applicant }) {
   const handleSendEmail = async () => {
 
     console.log('user_id......', user.user_id);
-    
+
 
     const formData = new FormData();
     formData.append("applicant_id", applicant.applicant_id);
     formData.append("user_id", user.user_id);
     formData.append("email_subject", subject);
     formData.append("email_body", emailContent);
-    if (attachments) {
-      formData.append("files", attachments);
+    
+    if (attachments && attachments.length > 0) {
+      attachments.forEach((file) => {
+        formData.append("files", file);
+      });
     }
 
     try {
@@ -154,10 +157,13 @@ function ApplicantSendMailPage({ applicant }) {
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFiles = Array.from(e.target.files); // Convert FileList to array
-      setAttachments(selectedFiles); // Store multiple files
-      console.log("Selected Attachmentss:", selectedFiles); // Log the selected files
+      setAttachments(selectedFiles); // Store multiple file
     }
   };
+
+  useEffect(() => {
+    console.log('Updated attachments: ', attachments);
+  }, [attachments]);
 
   const handleRemoveFile = (fileName) => {
     setAttachments((prevAttachments) =>
