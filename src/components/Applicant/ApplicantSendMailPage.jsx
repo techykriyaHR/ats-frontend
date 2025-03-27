@@ -293,16 +293,33 @@ function ApplicantSendMailPage({ applicant }) {
 
 
       {/* Email Subject */}
-      <div className="mb-5 flex overflow-hidden rounded-lg border border-gray-light">
-        <span className="rounded-l-lg bg-teal px-4 py-2 text-white body-regular">
-          Subject
-        </span>
-        <input
-          type="text"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          className="flex-1 rounded-r-lg bg-white body-regular text-gray-dark p-2 focus-visible:ring-0 focus-visible:ring-offset-0"
-        />
+      <div className="mb-5 flex overflow-hidden gap-3">
+        <select
+          value={selectedTemplate}
+          onChange={handleTemplateSelect}
+          className="border border-teal text-teal body-regular bg-white p-2 rounded-lg  hover:bg-gray-light cursor-pointer"
+        >
+          <option value="" disabled>
+            Select a Template
+          </option>
+          {templates.map((template) => (
+            <option key={template.template_id} value={template.title}>
+              {template.title}
+            </option>
+          ))}
+        </select>
+        <div className="w-full flex rounded-lg border border-gray-light">
+          <span className="rounded-l-lg bg-teal px-4 py-2 text-white body-regular">
+            Subject
+          </span>
+          <input
+            type="text"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            className="flex-1 rounded-r-lg bg-white body-regular text-gray-dark p-2 focus-visible:ring-0 focus-visible:ring-offset-0"
+          />
+        </div>
+
       </div>
 
       {/* Email Content */}
@@ -396,7 +413,7 @@ function ApplicantSendMailPage({ applicant }) {
 
           <button
             onClick={() => setShowTemplateModal(true)} // Open the modal
-            className="border border-gray-light text-gray-dark bg-white p-1.5 rounded-lg hover:border-teal hover:bg-gray-light cursor-pointer"
+            className="border border-teal text-teal body-regular bg-white p-2 rounded-lg  hover:bg-gray-light cursor-pointer"
           >
             Save as Template
           </button>

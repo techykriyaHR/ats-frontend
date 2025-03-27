@@ -15,6 +15,7 @@ const applicantFilterStore = create((set) => ({
       return { status: [...state.status, payload] };
     }
   }),
+  setStatusStage: (payload) => set({ status: [...payload]}),
   clearStatus: () => set({ status: []})
 }));
 
