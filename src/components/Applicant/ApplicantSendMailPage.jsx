@@ -24,6 +24,8 @@ import {
   Bars3BottomRightIcon,
 } from "@heroicons/react/24/outline";
 import api from "../../api/axios";
+import ConfirmationModal from "../Modals/ConfirmationModal";
+import SendMailToast from "../../assets/SendMailToast";
 
 function ApplicantSendMailPage({ applicant }) {
   const [subject, setSubject] = useState(
@@ -35,7 +37,9 @@ function ApplicantSendMailPage({ applicant }) {
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [showTemplateModal, setShowTemplateModal] = useState(false); // State for modal visibility
   const [templateTitle, setTemplateTitle] = useState(""); // State for template title input
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false); // State for confirmation modal
   const { user } = useUserStore();
+  const [toasts, setToasts] = useState([]);
 
   const editor = useEditor({
     extensions: [
@@ -65,6 +69,20 @@ function ApplicantSendMailPage({ applicant }) {
       })
       .catch((error) => console.error("Error fetching data:", error.message));
   };
+
+
+  useEffect(() => {
+    if (showTemplateModal) {
+      document.body.style.overflow = "hidden"; // Disable scroll
+    } else {
+      document.body.style.overflow = ""; // Re-enable scroll
+    }
+
+    return () => {
+      // Cleanup if component unmounts
+      document.body.style.overflow = "";
+    };
+  }, [showTemplateModal]);
 
   useEffect(() => {
     fetchTemplates();
@@ -119,17 +137,28 @@ function ApplicantSendMailPage({ applicant }) {
       });
   };
 
-  const handleSendEmail = async () => {
+  const addToast = (toast) => {
+    const id = Date.now();
+    setToasts((prevToasts) => [...prevToasts, { ...toast, id }]);
+  };
 
-    console.log('user_id......', user.user_id);
+  const removeToast = (id) => {
+    setToasts((prevToasts) => prevToasts.filter(toast => toast.id !== id));
+  };
 
+  const handleSendEmail = () => {
+    setShowConfirmationModal(true); // Show confirmation modal before sending
+  };
+
+  const confirmSendEmail = async () => {
+    setShowConfirmationModal(false); // Close confirmation modal
 
     const formData = new FormData();
     formData.append("applicant_id", applicant.applicant_id);
     formData.append("user_id", user.user_id);
     formData.append("email_subject", subject);
     formData.append("email_body", emailContent);
-    
+
     if (attachments && attachments.length > 0) {
       attachments.forEach((file) => {
         formData.append("files", file);
@@ -141,16 +170,37 @@ function ApplicantSendMailPage({ applicant }) {
         .post("/email/applicant", formData)
         .then((response) => {
           console.log(response);
-          alert("email sent.");
+
+          // Add success toast notification
+          addToast({
+            message: "Email has been sent successfully",
+            recipient: applicant?.email
+          });
+
           setEmailContent("");
           setSubject("");
           setAttachments([]);
           editor?.commands.clearContent();
         })
-        .catch((error) => console.error("Error sending email:", error.message));
+        .catch((error) => {
+          console.error("Error sending email:", error.message);
+
+          // Add error toast notification
+          addToast({
+            message: "Failed to send email",
+            recipient: applicant?.email,
+            error: true
+          });
+        });
     } catch (error) {
       console.error("Error sending email:", error);
-      alert("Failed to send email");
+
+      // Add error toast notification
+      addToast({
+        message: "Failed to send email",
+        recipient: applicant?.email,
+        error: true
+      });
     }
   };
 
@@ -178,39 +228,69 @@ function ApplicantSendMailPage({ applicant }) {
 
   return (
     <div className="h-full mb-5">
+      {/* Toast notifications */}
+      <div className="fixed top-4 right-4 z-50 space-y-2">
+        {toasts.map((toast) => (
+          <SendMailToast
+            key={toast.id}
+            toast={toast}
+            removeToast={removeToast}
+          />
+        ))}
+      </div>
+
+
+      {/* Confirmation Modal */}
+      {showConfirmationModal && (
+        <ConfirmationModal
+          title="Send Email"
+          message={`Are you sure you want to send this email to ${applicant?.first_name || 'the applicant'}?`}
+          confirmText="Send"
+          cancelText="Cancel"
+          onConfirm={confirmSendEmail}
+          onCancel={() => setShowConfirmationModal(false)}
+        />
+      )}
+
       {/* Modal for Adding New Template Title */}
       {showTemplateModal && (
-        <div className="fixed z-10 inset-0 flex items-center justify-center bg-black/30">
-          <div
-            className="rounded-2xl bg-white p-6 shadow-xl w-full max-w-md"
-            onClick={(e) => e.stopPropagation()} // Prevent clicks from propagating
-          >
-            <h2 className="mb-3 text-lg font-medium text-gray-800">Save as Template</h2>
-            <p className="text-sm text-gray-600 mb-4">Provide a title for the template.</p>
-            <input
-              type="text"
-              placeholder="Enter template title"
-              value={templateTitle}
-              onChange={(e) => setTemplateTitle(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 p-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500"
-            />
-            <div className="flex justify-end mt-6 space-x-2">
-              <button
-                onClick={() => setShowTemplateModal(false)}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveTemplate}
-                className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700"
-              >
-                Save
-              </button>
+        <div className="bg-black/50 fixed inset-0 z-50 flex items-center justify-center">
+          <div className="w-full h-full flex items-center justify-center">
+            <div
+              role="dialog"
+              aria-modal="true"
+              className="rounded-lg bg-white p-6 shadow-lg max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="mb-4 text-lg font-semibold text-gray-800">Save as Template</h2>
+              <p className="mb-4 text-sm text-gray-600">Provide a title for the template.</p>
+              <input
+                type="text"
+                placeholder="Enter template title"
+                value={templateTitle}
+                onChange={(e) => setTemplateTitle(e.target.value)}
+                className="w-full rounded-md border border-gray-300 p-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+              <div className="flex justify-end gap-4 mt-6">
+                <button
+                  onClick={() => setShowTemplateModal(false)}
+                  className="rounded-md bg-teal-600/10 px-4 py-2 text-teal-600 hover:bg-teal-600/20 hover:text-teal-700 text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveTemplate}
+                  className="rounded-md bg-[#008080] px-4 py-2 text-white hover:bg-teal-700 text-sm"
+                >
+                  Save
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+
 
       {/* Email Subject */}
       <div className="mb-5 flex overflow-hidden gap-3">
@@ -314,8 +394,23 @@ function ApplicantSendMailPage({ applicant }) {
       </div>
 
       {/* Send Email Button */}
-      <div div className="flex items-center justify-between body-regular" >
+      <div className="flex items-center justify-between body-regular">
         <div className="flex items-center space-x-4">
+          <select
+            value={selectedTemplate}
+            onChange={handleTemplateSelect}
+            className="border border-teal text-teal bg-white p-2 rounded-lg hover:bg-gray-light cursor-pointer"
+          >
+            <option value="" disabled>
+              Select a Template
+            </option>
+            {templates.map((template) => (
+              <option key={template.template_id} value={template.title}>
+                {template.title}
+              </option>
+            ))}
+          </select>
+
           <button
             onClick={() => setShowTemplateModal(true)} // Open the modal
             className="border border-teal text-teal body-regular bg-white p-2 rounded-lg  hover:bg-gray-light cursor-pointer"
@@ -330,7 +425,7 @@ function ApplicantSendMailPage({ applicant }) {
           Send
         </button>
       </div>
-    </div >
+    </div>
   );
 }
 

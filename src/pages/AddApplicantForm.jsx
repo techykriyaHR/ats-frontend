@@ -748,7 +748,20 @@ function AddApplicantForm({ onClose, initialData, onEditSuccess }) {
           )}
 
         </div>
-
+        {showConfirmationModal && (
+  <ConfirmationModal
+  title={modalType === 'submit' ? "Confirm Submission" : "Cancel Form"}
+  message={
+    modalType === 'submit' 
+      ? "Are you sure you want to submit this form?" 
+      : "Are you sure you want to cancel? All unsaved changes will be lost."
+  }
+  confirmText={modalType === 'submit' ? "Submit" : "Confirm"}
+  cancelText={modalType === 'submit' ? "Back" : "Back"}
+  onConfirm={modalType === 'submit' ? confirmSubmit : confirmCancel}
+  onCancel={closeModal}
+/>
+)}
       </div>
     </>
   )
