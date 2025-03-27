@@ -20,7 +20,7 @@ export default function ApplicantList({
   onSelectApplicant,
   onAddApplicantClick,
 }) {
-  const {search, setSearch, status, dateFilter, setDateFilter, dateFilterType, setDateFilterType } = applicantFilterStore();
+  const { search, setSearch, status, dateFilter, setDateFilter, dateFilterType, setDateFilterType } = applicantFilterStore();
   const [selectedDate, setSelectedDate] = useState(null);
   //const [dateFilterType, setDateFilterType] = useState("month");
   const [sortOrder, setSortOrder] = useState("desc");
@@ -99,7 +99,7 @@ export default function ApplicantList({
         <h1 className="headline text-gray-dark font-semibold md:mb-0">Applicant List</h1>
         <div className="center flex gap-2">
           <div className="relative inline-block text-left" ref={dropdownRef}>
-            <button className="flex items-center rounded-md bg-white border border-teal px-2 py-1 text-sm text-teal hover:bg-teal-700 cursor-pointer"
+            <button className="flex items-center rounded-md bg-white border border-teal px-2 py-1 text-sm text-teal hover:bg-gray-light cursor-pointer"
               onClick={() => setIsOpen(!isOpen)}>
               <FaFileExport className="mr-2 h-4 w-4 " /> Export
             </button>
@@ -107,7 +107,7 @@ export default function ApplicantList({
             {isOpen && (
               <div className="absolute w-20 sm:w-full mt-1 bg-white border border-gray-200 rounded-lg z-10">
                 <button
-                  className="block text-center text-sm px-2 py-2 text-gray-dark hover:bg-gray-100"
+                  className="block text-center w-full body-regular px-2 py-2 text-gray-dark hover:bg-gray-100"
                   onClick={() => {
                     handleExportClick();
                     exportToExcel(dateFilterType, exportValue, 'Business Operations Associate', ["NONE", "TEST_SENT"]);
@@ -117,7 +117,7 @@ export default function ApplicantList({
                 </button>
 
                 <button
-                  className="block text-center text-sm px-2 py-2 text-gray-dark hover:bg-gray-100"
+                  className="block text-center w-full body-regular px-2 py-2 text-gray-dark hover:bg-gray-100"
                   onClick={handleExportClick} // Ensure exportValue is updated
                 >
                   <PDFDownloadLink
@@ -131,7 +131,7 @@ export default function ApplicantList({
                     }
                     fileName="table.pdf"
                   >
-                    {({ loading }) => (loading ? "Loading..." : "Download PDF")}
+                    {({ loading }) => (loading ? "Loading..." : "PDF")}
                   </PDFDownloadLink>
                 </button>
 
@@ -150,15 +150,15 @@ export default function ApplicantList({
             type="text"
             placeholder="Search"
             value={search}
-            onChange={(e) => {setSearch(e.target.value); searchApplicant(e.target.value, setApplicantData, positionFilter, status, dateFilterType, dateFilter); console.log(status);
-            }}
+            onChange={(e) => { setSearch(e.target.value); searchApplicant(e.target.value, setApplicantData, positionFilter, status, dateFilterType, dateFilter) }}
             className="w-full body-regular rounded-md border border-gray-300 p-2"
           />
         </div>
         <div className="flex w-full items-center gap-2 md:w-auto md:flex-row justify-end">
           <select
             value={dateFilterType}
-            onChange={(e) => {setDateFilterType(e.target.value);
+            onChange={(e) => {
+              setDateFilterType(e.target.value);
             }}
             className="flex body-regular rounded-md border border-gray-300 p-2 w-auto"
           >
@@ -167,7 +167,7 @@ export default function ApplicantList({
           </select>
           <DatePicker
             selected={selectedDate}
-            onChange={(date) => {setSelectedDate(date); setDateFilter(date); searchApplicant(search, setApplicantData, positionFilter, status, dateFilterType, date)}}
+            onChange={(date) => { setSelectedDate(date); setDateFilter(date); searchApplicant(search, setApplicantData, positionFilter, status, dateFilterType, date) }}
             showMonthYearPicker={dateFilterType === "month"}
             showYearPicker={dateFilterType === "year"}
             dateFormat={dateFilterType === "month" ? "MM/yyyy" : "yyyy"}
