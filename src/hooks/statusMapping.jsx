@@ -1,0 +1,16 @@
+export const statusMapping = { 
+    "NONE": "White Listed",
+    "TEST_SENT": "Test Sent",
+    "INTERVIEW_SCHEDULE_SENT": "Interview Schedule Sent",
+    "FIRST_INTERVIEW": "First Interview",
+    "SECOND_INTERVIEW": "Second Interview",
+    "THIRD_INTERVIEW": "Third Interview",
+    "FOURTH_INTERVIEW": "Fourth Interview",
+    "FOLLOW_UP_INTERVIEW": "Follow Up Interview",
+    "FOR_JOB_OFFER": "For Job Offer",
+    "JOB_OFFER_REJECTED": "Job Offer Rejected",
+    "JOB_OFFER_ACCEPTED": "Job Offer Accepted",
+    "WITHDREW_APPLICATION": "Withdrew Application",
+    "BLACKLISTED": "Blacklisted",
+    "NOT_FIT": "Not Fit",
+}

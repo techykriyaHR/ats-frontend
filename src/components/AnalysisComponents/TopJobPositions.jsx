@@ -1,26 +1,76 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { FaInfoCircle } from "react-icons/fa";
+import api from "../../api/axios";
 
-const TopJobPositions = ({
-  jobPositions = [
-    { title: "Accountant", percentage: 50 },
-    { title: "SA Engineer", percentage: 20 },
-    { title: "SA Engineer", percentage: 10 },
-    { title: "SA Engineer", percentage: 20 },
-  ],
-}) => {
+const TopJobPositions = () => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [jobPositions, setJobPositions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchTopJobs = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get("/analytic/graphs/top-applied-jobs");
+        
+        if (response.data && response.data.data && response.data.data.jobs) {
+          // Transform the data to match our component's expected format
+          const formattedJobs = response.data.data.jobs.map(job => ({
+            title: job.job_title,
+            percentage: Math.round(job.percentage), // Round to whole number for cleaner UI
+            count: job.application_count
+          }));
+          
+          setJobPositions(formattedJobs);
+        }
+      } catch (err) {
+        console.error("Error fetching top job positions:", err);
+        setError("Failed to load top job positions");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTopJobs();
+  }, []);
+
   return (
     <>
-      <h3 className="mb-4 text-center text-sm text-gray-600">
-        Top Job Positions Applied For
-      </h3>
-      <div className="space-y-2">
-        {jobPositions.map((position, index) => (
-          <div key={index} className="flex justify-between">
-            <span className="font-medium">{position.title}</span>
-            <span className="font-medium">{position.percentage}%</span>
-          </div>
-        ))}
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="">Top Applied Jobs</h3>
+        <div className="relative flex-col flex items-end gap-1">
+          <FaInfoCircle
+            className="cursor-pointer"
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+          />
+          {showTooltip && (
+            <span className="absolute mt-5 w-48 p-2 body-tiny text-teal bg-teal-soft rounded shadow-lg text-justify z-10">
+              This is a breakdown of the most frequently applied job positions by candidates
+            </span>
+          )}
+        </div>
       </div>
+      
+      {isLoading ? (
+        <div className="py-8 text-center text-gray-500">Loading job data...</div>
+      ) : error ? (
+        <div className="py-8 text-center text-red-500">{error}</div>
+      ) : jobPositions.length === 0 ? (
+        <div className="py-8 text-center text-gray-500">No job position data available</div>
+      ) : (
+        <div className="space-y-4 py-2">
+          {jobPositions.map((position, index) => (
+            <div key={index} className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span className="font-medium">{position.title}</span>
+              </div>
+              <span className="font-semibold display">{position.percentage}%</span>
+            </div>
+          ))}
+        </div>
+      )}
     </>
   );
 };

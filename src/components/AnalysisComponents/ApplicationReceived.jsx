@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api/axios";
+import { FaInfoCircle } from "react-icons/fa";
 
 const ApplicationReceived = () => {
   const [totalApplications, setTotalApplications] = useState(0);
   const [months, setMonths] = useState([]);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     const fetchApplicationTrend = async () => {
@@ -23,9 +25,22 @@ const ApplicationReceived = () => {
 
   return (
     <>
-      <h3 className="mb-4 text-center text-sm text-gray-600">
-        Application Received
-      </h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="">Application Received</h3>
+        <div className="relative flex-col flex items-end gap-1">
+          <FaInfoCircle
+            className="cursor-pointer"
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+          />
+          {showTooltip && (
+            <span className="absolute mt-5 w-48 p-2 body-tiny text-teal bg-teal-soft rounded shadow-lg text-justify">
+              This card shows the number of applications received.
+            </span>
+          )}
+        </div>
+      </div>
+
       <p className="mb-6 text-center text-4xl font-semibold">
         {totalApplications}
       </p>

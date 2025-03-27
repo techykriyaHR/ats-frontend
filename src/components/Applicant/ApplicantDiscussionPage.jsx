@@ -1,118 +1,177 @@
-import React, { useState } from "react";
-import { FiCalendar, FiPlus, FiSend } from "react-icons/fi";
+import React, { useEffect, useState } from "react";
+import { FiPlus } from "react-icons/fi";
+import DiscussionBox from "../DiscussionBox.jsx";
+import InterviewNotes from "../InterviewNotes.jsx";
+import api from "../../api/axios.js";
 
-function ApplicantDiscussionPage() {
-  const [message, setMessage] = useState("");
+function ApplicantDiscussionPage({ applicant }) {
+  const [activeTab, setActiveTab] = useState("Discussion Box");
+  const [interviewers, setInterviewers] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedInterviewer, setSelectedInterviewer] = useState(null);
+  const [interviewDate, setInterviewDate] = useState("");
+  const [noteType, setNoteType] = useState("FIRST INTERVIEW");
+  const [discussion, setDiscussion] = useState(null);
+  const [interviewsArray, setInterviewsArray] = useState([]);
+
+  const fetchUsers = () => {
+    api.get("/user/user-accounts")
+      .then((response) => {
+        setInterviewers(response.data.userAccounts);
+      })
+      .catch((error) => {
+        console.error(error.message);
+      });
+  };
+
+  const fetchDiscussionInterview = () => {
+    return api.get(`/interview?tracking_id=${applicant.tracking_id}`).then((response) => {
+      console.log('fetched discussion and interview: ', response.data);
+
+      setDiscussion(response.data[0]);
+      setInterviewsArray(response.data.slice(1));
+
+    }).catch((error) => {
+      console.log(error.message);
+    });
+  }
+
+  const addInterview = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleAddInterview = () => {
+    if (selectedInterviewer && interviewDate && noteType) {
+
+      const data = {
+        tracking_id: applicant.tracking_id,
+        interviewer_id: selectedInterviewer.user_id,
+        date_of_interview: interviewDate,
+        note_type: noteType
+      }
+
+      api.post('/interview', data).then((response) => {
+        console.log(response.data);
+        fetchDiscussionInterview();
+        setIsModalOpen(false);
+      }).catch((error) => {
+        console.error(error.message);
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchDiscussionInterview().then(() => {
+      fetchUsers();
+    });
+  }, [applicant.applicant_id]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+    return () => document.body.classList.remove("overflow-hidden");
+  }, [isModalOpen]);
+
+
+  const renderActiveTab = () => {
+    if (activeTab === "Discussion Box") {
+      return discussion ? (
+        <DiscussionBox applicant={applicant} discussion={discussion} fetchDiscussionInterview={fetchDiscussionInterview} />
+      ) : (
+        <div>Loading...</div>
+      );
+    } else {
+      const interview = interviewsArray.find(interview => interview.interview_id === activeTab);
+      return <InterviewNotes interview={interview} applicant={applicant} fetchDiscussionInterview={fetchDiscussionInterview} />;
+    }
+  };
 
   return (
     <div className="rounded-lg">
       {/* Header tabs */}
-      <div className="mb-4 flex w-full overflow-hidden rounded-lg">
-        <div className="flex-1 bg-teal-700 px-6 py-3 font-medium text-white">
-          Interview 1
+      <div className="mb-4 p-1 flex w-full gap-1 bg-teal-soft rounded-lg text-center items-center body-bold">
+        {/* Discussion tab */}
+        <div
+          className={`flex-1 py-1 font-medium rounded-lg  
+          ${activeTab === "Discussion Box" ? "bg-teal text-white" : "text-teal hover:bg-teal-soft cursor-pointer"}`}
+          onClick={() => setActiveTab("Discussion Box")}
+        >
+          Discussion Box
         </div>
-        <div className="flex flex-1 items-center justify-center bg-teal-50 px-6 py-3 text-teal-700">
-          <FiPlus className="h-5 w-5" />
-        </div>
+
+        {/* Interview tabs */}
+        {interviewsArray.map((interview) => (
+          <div
+            key={interview.interview_id}
+            className={`flex-1 py-1 font-medium rounded-lg  
+            ${activeTab === interview.interview_id ? "bg-teal text-white" : "text-teal hover:bg-teal-soft cursor-pointer"}`}
+            onClick={() => setActiveTab(interview.interview_id)}
+          >
+            {`Interview ${interviewsArray.indexOf(interview) + 1}`}
+          </div>
+        ))}
+
+        {/* Plus Button (Hidden if limit is reached) */}
+        {interviewsArray.length < 5 && (
+          <div
+            className="flex flex-1 items-center justify-center rounded-lg py-1 text-teal cursor-pointer hover:bg-teal-soft"
+            onClick={addInterview}
+          >
+            <FiPlus className="h-5 w-5" />
+          </div>
+        )}
       </div>
 
-      {/* Main content card */}
-      <div className="rounded-lg border shadow-sm">
-        <div className="p-0">
-          <div className="grid border-b md:grid-cols-2">
-            <div className="border-r p-6">
-              <h2 className="mb-2 text-2xl font-semibold text-gray-800">
-                Interview Notes and Feedbacks
-              </h2>
-              <p className="text-gray-600">Interview 1</p>
-            </div>
-            <div className="grid gap-4 p-6">
-              <div>
-                <label htmlFor="date" className="mb-1 block text-gray-700">
-                  Date of Interview
-                </label>
-                <div className="relative">
-                  <input
-                    id="date"
-                    type="text"
-                    value="02/07/2025"
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10"
-                    readOnly
-                  />
-                  <FiCalendar className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 transform text-gray-500" />
-                </div>
-              </div>
-              <div>
-                <label
-                  htmlFor="interviewer"
-                  className="mb-1 block text-gray-700"
-                >
-                  Interviewer
-                </label>
-                <input
-                  id="interviewer"
-                  type="text"
-                  value="Marvin Bautista"
-                  className="w-full rounded-md border border-gray-300 px-3 py-2"
-                  readOnly
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="mb-6">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="relative h-10 w-10 overflow-hidden rounded-full bg-gray-200">
-                <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-02-26%20at%2010.54.33%E2%80%AFAM-hMPXFRlDcnQATpHT6IQN0f9dk3Nf6D.png"
-                  alt="Marvin Bautista"
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <h3 className="font-medium text-gray-800">Marvin Bautista</h3>
-            </div>
+      {/* Render Active Tab */}
+      {renderActiveTab()}
 
-            <div className="space-y-4 text-gray-700">
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-                dapibus fermentum vehicula. Maecenas eros felis, venenatis, nec
-                elit, eu, imperdiet vulputate, massa. Nulla mattis viverra ipsum
-                non volutpat. Cras vitae convallis augue. Donec iaculis enim sit
-                amet mi convallis, at tincidunt massa fringilla. Sed eleifend
-                quam ut mi mattis, in semper diam mollis. Nunc imperdiet
-                elementum dolor in mollis. Curabitur molestie facilisis
-                bibendum. Sed massa risus, tincidunt ut tellus vitae, cursus
-                commodo sem. Praesent imperdiet dolor sed blandit bibendum.
-              </p>
-              <p>
-                Proin placerat tellus vel pretium cursus. Suspendisse aliquet
-                commodo augue, nec aliquam enim fermentum non. Fusce et
-                vulputate orci. Nullam malesuada eu orci id pretium. Quisque ut
-                dictum ligula. Morbi at posuere magna, et laoreet felis.
-                Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
-                posuere cubilia curae; Morbi volutpat odio maximus dignissim
-                interdum. Ut pharetra mi a ligula convallis accumsan. Etiam
-                pharetra justo nec convallis finibus. Duis eu mauris hendrerit,
-                ornare risus a, imperdiet tellus.
-              </p>
-            </div>
-          </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="rounded-2xl bg-white p-6 shadow-xl w-full max-w-md relative">
+            <h2 className="mb-3 text-lg font-medium text-gray-800">Add Interview Details</h2>
+            <p className="text-sm text-gray-600 mb-4">Select an interviewer, date, and note type.</p>
 
-          {/* Message input */}
-          <div className="relative">
+            {/* Form fields */}
+            <label className="block text-sm font-medium text-gray-700 mb-1">Interviewer</label>
+            <select
+              className="w-full rounded-lg border border-gray-300 p-2 mb-4"
+              onChange={(e) => setSelectedInterviewer(interviewers.find(user => user.user_id === e.target.value))}
+            >
+              <option value="">Choose an interviewer</option>
+              {interviewers.map((interviewer) => (
+                <option key={interviewer.user_id} value={interviewer.user_id}>{interviewer.first_name}</option>
+              ))}
+            </select>
+
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date of Interview</label>
             <input
-              placeholder="Type your message..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 pr-12"
+              type="date"
+              className="w-full rounded-lg border border-gray-300 p-2 mb-4"
+              onChange={(e) => setInterviewDate(e.target.value)}
             />
-            <button className="absolute top-1/2 right-1 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full bg-teal-700 hover:bg-teal-800">
-              <FiSend className="h-4 w-4 text-white" />
-            </button>
+
+            {/* <label className="block text-sm font-medium text-gray-700 mb-1">Note Type</label>
+            <select
+              className="w-full rounded-lg border border-gray-300 p-2 mb-4"
+              value={noteType}
+              onChange={(e) => setNoteType(e.target.value)}
+            >
+              <option value="FIRST INTERVIEW">First Interview</option>
+              <option value="SECOND INTERVIEW">Second Interview</option>
+              <option value="THIRD INTERVIEW">Third Interview</option>
+            </select> */}
+
+            <div className="flex justify-end mt-6 space-x-2">
+              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Cancel</button>
+              <button onClick={handleAddInterview} className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700">Add</button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
     </div>
   );
 }

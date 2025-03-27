@@ -6,9 +6,7 @@ import Loader from '../../assets/Loader';
 import Toast from '../../assets/Toast';
 import { FaCakeCandles, FaFileLines } from 'react-icons/fa6';
 import AddApplicantForm from '../../pages/AddApplicantForm';
-
-
-
+import { statusMapping } from '../../hooks/statusMapping';
 
 const statuses = [
   "Test Sent",
@@ -23,24 +21,6 @@ const statuses = [
   "Blacklisted",
   "Not Fit",
 ];
-
-const statusMapping = {
-  "NONE": "",
-  "TEST_SENT": "Test Sent",
-  "INTERVIEW_SCHEDULE_SENT": "Interview Schedule Sent",
-  "FIRST_INTERVIEW": "First Interview",
-  "SECOND_INTERVIEW": "Second Interview",
-  "THIRD_INTERVIEW": "Third Interview",
-  "FOURTH_INTERVIEW": "Fourth Interview",
-  "FOLLOW_UP_INTERVIEW": "Follow Up Interview",
-  "FOR_JOB_OFFER": "Job Offer Accepted",
-  "JOB_OFFER_REJECTED": "Job Offer Rejected",
-  "JOB_OFFER_ACCEPTED": "Job Offer Accepted",
-  "WITHDREW_APPLICATION": "Withdrew Application",
-  "BLACKLISTED": "Blacklisted",
-  "NOT_FIT": "Not Fit",
-};
-
 
 function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   const [applicantInfo, setApplicantInfo] = useState({});
@@ -90,7 +70,8 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
       const backendStatus = Object.keys(statusMapping).find(key => statusMapping[key] === newStatus);
       let data = {
         "progress_id": applicantInfo.progress_id,
-        "status": backendStatus
+        "status": backendStatus,
+        "user_id": user.user_id,
       };
       try {
         await api.put(`/applicant/update/status`, data);
@@ -119,7 +100,8 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
 
     let data = {
       "progress_id": applicantInfo.progress_id,
-      "status": backendStatus
+      "status": backendStatus,
+      "user_id": user.user_id,
     };
 
     try {
@@ -137,7 +119,6 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
     setToasts(toasts.filter(t => t.id !== id));
   };
 
-
   const handleEditClick = () => {
     setIsEditFormOpen(true);
   };
@@ -145,9 +126,6 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
   const handleCloseEditForm = () => {
     setIsEditFormOpen(false);
   };
-
-
-
 
   if (loading) {
     return <Loader />;
@@ -234,6 +212,7 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
                 className="border body-regular border-gray-light h-8 rounded-md cursor-pointer"
                 value={status}
                 onChange={handleStatusChange}
+                disabled={toasts.length > 0} // Disable when there are active toasts
               >
                 <option value="" disabled>Select status</option>
                 {statuses.map((statusOption) => (
@@ -244,7 +223,7 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
               </select>
               <button
                 onClick={handleEditClick}
-                className="ml-2 p-2.5 rounded-full bg-teal hover:bg-teal/70 cursor-pointer "
+                className="ml-2 p-2.5 rounded-full bg-teal hover:bg-teal/70 cursor-pointer"
               >
                 <FaPen className="w-4 h-4 text-white" />
               </button>
@@ -266,7 +245,7 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
             <div className="col-span-2">{applicantInfo.applied_source || 'Not specified'}</div>
           </div>
 
-          {/* Pushes everything above and keeps tabs at the bottom */}
+          {/* Tabs */}
           <div className="mt-auto pt-5 flex justify-end">
             <div className="flex gap-2 bg-teal-soft p-1 rounded-md">
               {user.feature_names["60c8341f-fa4b-11ef-a725-0af0d960a833"] === "Interview Notes" && (
@@ -300,11 +279,8 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
         )}
       </div>
 
-
-
-
       {/* Toast Messages */}
-      <div className="fixed bottom-4 right-4 space-y-2">
+      <div className="fixed top-4 right-4 space-y-2">
         {toasts.map(toast => (
           <Toast
             key={toast.id}
@@ -315,18 +291,17 @@ function ApplicantDetails({ applicant, onTabChange, activeTab }) {
         ))}
       </div>
       {isEditFormOpen && (
-  <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
-    <div className="bg-white w-full h-full overflow-auto lg:ml-72 pointer-events-auto">
-      <AddApplicantForm
-        onClose={handleCloseEditForm}
-        initialData={applicantInfo}
-        onEditSuccess={() => setEditCounter(prev => prev + 1)}
-      />
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="bg-white w-full h-full overflow-auto lg:ml-72 pointer-events-auto">
+            <AddApplicantForm
+              onClose={handleCloseEditForm}
+              initialData={applicantInfo}
+              onEditSuccess={() => setEditCounter(prev => prev + 1)}
+            />
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-)}
-    </div>
-
   );
 }
 

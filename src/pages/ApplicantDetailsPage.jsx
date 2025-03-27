@@ -9,9 +9,11 @@ function ApplicantDetailsPage({ applicant }) {
   const renderActiveTab = () => {
     switch (activeTab) {
       case "discussion":
-        return <ApplicantDiscussionPage />;
+        return <ApplicantDiscussionPage
+          applicant={applicant}
+        />;
       case "sendMail":
-        return <ApplicantSendMailPage />;
+        return <ApplicantSendMailPage applicant={applicant} />;
       default:
         return null;
     }
@@ -24,7 +26,7 @@ function ApplicantDetailsPage({ applicant }) {
         onTabChange={setActiveTab}
         activeTab={activeTab}
       />
-      <div className="mt-4">{renderActiveTab()}</div>
+      <div className="mt-4 mb-10">{renderActiveTab()}</div>
     </div>
   );
 }

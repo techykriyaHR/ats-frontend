@@ -1,10 +1,16 @@
 // /src/hooks/useStages.js
 import { useEffect, useState } from "react";
 import { initialStages } from "../utils/StagesData";
-import { fetchCounts, filterCounter } from "../utils/statusCounterFunctions";
+import { fetchCounts } from "../utils/statusCounterFunctions";
+import statusCounterStore from "../context/statusCounterStore";
+import { filterApplicants } from "../utils/applicantDataUtils";
+import { searchApplicant } from "../utils/applicantDataUtils";
+import moment from "moment";
 
 export const useStages = () => {
-  const [stages, setStages] = useState(initialStages);
+  //const [stages, setStages] = useState(initialStages);
+  const { stages, setStages } = statusCounterStore();
+  const okay = ["sd", "ds"];
 
   useEffect(() => {
     const fetchInitialCounts = async () => {
@@ -15,8 +21,8 @@ export const useStages = () => {
   }, []);
 
   const toggleStage = (stageName) => {
-    setStages((prevStages) =>
-      prevStages.map((stage) =>
+    setStages(
+      stages.map((stage) =>
         stage.name === stageName
           ? {
               ...stage,
@@ -31,25 +37,74 @@ export const useStages = () => {
     );
   };
 
-  const toggleStatus = (stageName, statusName) => {
-    setStages((prevStages) =>
-      prevStages.map((stage) =>
-        stage.name === stageName
-          ? {
-              ...stage,
-              statuses: stage.statuses.map((status) =>
-                status.name === statusName
-                  ? { ...status, selected: !status.selected }
-                  : status,
-              ),
-              selected: stage.statuses.every((status) =>
-                status.name === statusName ? !status.selected : status.selected,
-              ),
+  const toggleStatus = async (stageName, statusName) => {
+    setStages((stages.map((stage) => {
+      if (stage.name === stageName) {
+        return {
+          ...stage,
+          statuses: stage.statuses.map((status) => {
+            if (status.name === statusName) {
+              return { ...status, selected: !status.selected };
             }
-          : stage,
-      ),
-    );
+            return status;
+          }),
+          selected: stage.statuses.every((status) => {
+            if (status.name === statusName) {
+              return !status.selected;
+            }
+            return status.selected;
+          }),
+        };
+      }
+      return stage;
+    }
+    )));
   };
-
   return { stages, setStages, toggleStage, toggleStatus };
+};
+
+export const handleStageClick = (stage, setSelectedStatuses, search, toggleStage, dateFilterType, dateFilter, positionFilter, setApplicantData, setStatusStage) => {
+  const stageStatuses = stage.statuses.map((status) => status.value);
+
+  setSelectedStatuses((prevStatuses) => {
+    // Check if all statuses in the stage are already selected
+    const allSelected = stageStatuses.every((status) =>
+      prevStatuses.includes(status),
+    );
+
+    let updatedStatuses;
+    if (allSelected) {
+      // If all statuses are selected, remove them
+      updatedStatuses = prevStatuses.filter(
+        (status) => !stageStatuses.includes(status),
+      );
+    } else {
+      // Otherwise, add the statuses that are not already selected
+      updatedStatuses = [
+        ...prevStatuses,
+        ...stageStatuses.filter((status) => !prevStatuses.includes(status)),
+      ]; 
+      //setStatusStage(stageStatuses.filter((status) => !prevStatuses.includes(status)));
+    }
+
+
+    setStatusStage(updatedStatuses);
+    console.log(updatedStatuses);
+    
+    
+    // Call filterApplicants with the updated statuses
+    if (search === "") {
+      dateFilterType === 'month' ?
+      filterApplicants(positionFilter, setApplicantData, updatedStatuses, moment(dateFilter).format("MMMM"), dateFilterType) :
+      filterApplicants(positionFilter, setApplicantData, updatedStatuses, moment(dateFilter).format("YYYY"), dateFilterType)
+    }
+    else {
+      searchApplicant(search, setApplicantData, positionFilter, updatedStatuses, dateFilterType, dateFilter);
+    }
+
+    return updatedStatuses; // Return the updated state
+  });
+
+  // Toggle the stage's selected state
+  toggleStage(stage.name);
 };

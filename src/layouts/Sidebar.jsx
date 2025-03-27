@@ -1,9 +1,12 @@
 import {
   FaSignOutAlt,
   FaTimesCircle,
+  FaTable,
+  FaUsers,
   FaChartBar,
-  FaListAlt,
 } from "react-icons/fa";
+
+import { FaGear } from "react-icons/fa6";
 import useUserStore from "../context/userStore";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +16,7 @@ export default function Sidebar({ isOpen, onToggleSidebar, onSelectView }) {
   const user = useUserStore((state) => state.user);
   const setUser = useUserStore((state) => state.setUser);
   const navigate = useNavigate();
-  const [currentView, setCurrentView] = useState("listings");
+  const [currentView, setCurrentView] = useState("dashboard");
 
   const handleSelectView = (view) => {
     setCurrentView(view);
@@ -74,10 +77,15 @@ export default function Sidebar({ isOpen, onToggleSidebar, onSelectView }) {
           {/* Navigation */}
           <nav className="space-y-2">
             <hr className="border-gray-light" />
-
+            <SidebarLink
+              text="Dashboard"
+              icon={<FaTable />}
+              onClick={() => handleSelectView("dashboard")}
+              active={currentView === "dashboard"}
+            />
             <SidebarLink
               text="Listings"
-              icon={<FaListAlt />}
+              icon={<FaUsers />}
               onClick={() => handleSelectView("listings")}
               active={currentView === "listings"}
             />
@@ -87,13 +95,19 @@ export default function Sidebar({ isOpen, onToggleSidebar, onSelectView }) {
               onClick={() => handleSelectView("analytics")}
               active={currentView === "analytics"}
             />
+            <SidebarLink
+              text="Configurations"
+              icon={<FaGear />}
+              onClick={() => handleSelectView("config")}
+              active={currentView === "config"}
+            />
           </nav>
         </div>
 
         {/* Logout Button */}
-        <div>
+        <div className="space-y-3">
           <button
-            className="border-teal text-teal hover:bg-teal-soft mt-6 flex w-full items-center justify-center gap-2 rounded-md border bg-white px-4 py-2"
+            className="border-teal text-teal hover:bg-teal-soft flex w-full items-center justify-center gap-2 rounded-md border bg-white px-4 py-2"
             aria-label="Log out"
             onClick={handleLogout}
           >
@@ -111,7 +125,7 @@ function SidebarLink({ text, icon, onClick, active }) {
   return (
     <a
       href="#"
-      className={`flex items-center gap-3 rounded-md px-4 py-2 font-medium text-gray-700 transition ${active ? "bg-teal-600 text-white" : "hover:bg-gray-100"}`}
+      className={`flex items-center gap-3 rounded-md px-4 py-2 font-medium text-gray-dark transition ${active ? "bg-teal-600 text-white" : "hover:bg-gray-100"}`}
       onClick={onClick}
     >
       {icon}
