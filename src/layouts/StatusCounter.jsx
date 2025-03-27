@@ -35,6 +35,21 @@ export default function StatusCounter() {
         <h2 className="headline text-gray-dark md:mb-0">Status Counter</h2>
 
         <div className="items-center flex gap-2">
+          {/* Show Clear Button if any status is selected */}
+          {hasSelectedStatus && (
+            <div
+              className="text-end body-tiny text-gray-dark border border-gray-light hover:bg-gray-light rounded-md cursor-pointer p-0.5"
+              data-tooltip-target="clear"
+              onClick={() => clearSelections(stages, setStages, setSelectedStatuses, clearStatus, setStatus, setPositionFilter, search, dateFilterType, dateFilter, setApplicantData)}
+            >
+              <MdDeselect
+                // onClick={() => clearSelections(stages, setStages, setSelectedStatuses, clearStatus, setStatus, setPositionFilter, search, dateFilterType, dateFilter, setApplicantData)}
+                className="w-5 h-5 text-gray-dark hover:bg-gray-light rounded-2xl cursor-pointer"
+              />
+              {/* Clear */}
+            </div>
+          )}
+
 
           <select
             className="border-gray-light max-w-[120px] rounded-md border p-1 text-sm"
@@ -64,15 +79,7 @@ export default function StatusCounter() {
               </option>
             ))}
           </select>
-          {/* Show Clear Button if any status is selected */}
-          {hasSelectedStatus && (
-            <div className="text-end">
-              <MdDeselect
-                onClick={() => clearSelections(stages, setStages, setSelectedStatuses, clearStatus, setStatus, setPositionFilter, search, dateFilterType, dateFilter, setApplicantData)}
-                className="w-5 h-5 text-gray-dark hover:bg-gray-light rounded-2xl cursor-pointer"
-              />
-            </div>
-          )}
+
         </div>
       </div>
 
