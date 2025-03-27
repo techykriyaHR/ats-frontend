@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { FiUpload, FiPlus } from "react-icons/fi";
 import Upload from "../layouts/Upload";
+import downloadTemplate from "../utils/downloadUploadTemplate";
 
 export default function AddApplicantDropdown({ onAddManually }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -61,6 +62,14 @@ export default function AddApplicantDropdown({ onAddManually }) {
                     >
                         Upload File
                     </button>
+
+                    <button
+                         className="block text-center text-sm px-2 py-2 text-gray-dark hover:bg-gray-100"
+                         onClick={downloadTemplate}
+                     >
+                         
+                         Download Template
+                     </button>
                 </div>
             )}
 
