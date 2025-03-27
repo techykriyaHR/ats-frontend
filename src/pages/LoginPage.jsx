@@ -192,7 +192,7 @@ export default function LoginPage() {
             <div className="space-y-4">
               {[
                 { email: "testuser@example.com", password: "password", label: "Test User" },
-                { email: "ats_hr@example.com", password: "password", label: "HR User" },
+                { email: "jun.zaragosa@fullsuite.ph", password: "password", label: "HR User" },
                 { email: "ats_interviewer@example.com", password: "password", label: "Interviewer" },
               ].map((cred, index) => (
                 <div key={index} className="bg-gray-50 rounded-lg p-3">

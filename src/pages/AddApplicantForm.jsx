@@ -739,17 +739,17 @@ const handleSubmit = async (e) => {
 
         {showConfirmationModal && (
   <ConfirmationModal
-    title={modalType === 'submit' ? "Confirm Submission" : "Cancel Form"}
-    message={
-      modalType === 'submit' 
-        ? "Are you sure you want to submit this form?" 
-        : "Are you sure you want to cancel? All unsaved changes will be lost."
-    }
-    confirmText={modalType === 'submit' ? "Submit" : "Yes, Cancel"}
-    cancelText={modalType === 'submit' ? "Cancel" : "No, Continue Editing"}
-    onConfirm={modalType === 'submit' ? confirmSubmit : confirmCancel}
-    onCancel={closeModal}
-  />
+  title={modalType === 'submit' ? "Confirm Submission" : "Cancel Form"}
+  message={
+    modalType === 'submit' 
+      ? "Are you sure you want to submit this form?" 
+      : "Are you sure you want to cancel? All unsaved changes will be lost."
+  }
+  confirmText={modalType === 'submit' ? "Submit" : "Confirm"}
+  cancelText={modalType === 'submit' ? "Back" : "Back"}
+  onConfirm={modalType === 'submit' ? confirmSubmit : confirmCancel}
+  onCancel={closeModal}
+/>
 )}
  
       </div>
