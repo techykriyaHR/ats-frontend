@@ -13,18 +13,22 @@ const CandidateDropOffRate = () => {
     const fetchDropOffData = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get("/analytic/graphs/drop-off-rate");
+        const response = await api.get("/analytic/metrics");
         
-        if (response.data && response.data.data) {
-          const { overall, monthlyData } = response.data.data;
+        if (response.data && response.data.dropOffRate) {
+          const { overallDropOffRate, monthlyDropOffs } = response.data.dropOffRate;
           
-          // Set overall rate - round to nearest whole number for display
-          setOverallRate(Math.round(parseFloat(overall.dropoff_rate)));
+          // Set overall rate
+          setOverallRate(parseFloat(overallDropOffRate));
           
           // Transform monthly data into expected format
           const formattedMonthlyRates = {};
-          monthlyData.forEach(month => {
-            formattedMonthlyRates[month.month] = Math.round(parseFloat(month.dropoff_rate));
+          monthlyDropOffs.forEach(item => {
+            const [year, month] = item.month.split('-');
+            const date = new Date(year, month - 1);
+            const monthName = date.toLocaleString('default', { month: 'long' });
+            
+            formattedMonthlyRates[monthName] = parseFloat(item.dropOffRate);
           });
           
           setMonthlyRates(formattedMonthlyRates);
@@ -64,7 +68,7 @@ const CandidateDropOffRate = () => {
       ) : (
         <>
           <div className="mb-6 text-center text-4xl font-semibold">
-            {overallRate}%
+            {overallRate}
           </div>
           {Object.keys(monthlyRates).length > 0 ? (
             <div className="space-y-2">
@@ -90,7 +94,7 @@ const CandidateDropOffRate = () => {
                 .map(([month, rate]) => (
                   <div key={month} className="flex justify-between">
                     <span className="font-medium">{month}</span>
-                    <span className="font-medium">{rate}%</span>
+                    <span className="font-medium">{rate}</span>
                   </div>
                 ))}
             </div>

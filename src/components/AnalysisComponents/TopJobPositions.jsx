@@ -12,14 +12,14 @@ const TopJobPositions = () => {
     const fetchTopJobs = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get("/analytic/graphs/top-applied-jobs");
+        const response = await api.get("/analytic/metrics");
         
-        if (response.data && response.data.data && response.data.data.jobs) {
+        if (response.data && response.data.topJobs && response.data.topJobs.formattedTopJobs) {
           // Transform the data to match our component's expected format
-          const formattedJobs = response.data.data.jobs.map(job => ({
-            title: job.job_title,
-            percentage: Math.round(job.percentage), // Round to whole number for cleaner UI
-            count: job.application_count
+          const formattedJobs = response.data.topJobs.formattedTopJobs.map(job => ({
+            title: job.title,
+            percentage: parseFloat(job.percentage.replace('%', '')), // Remove % sign and convert to number
+            count: job.hires
           }));
           
           setJobPositions(formattedJobs);
