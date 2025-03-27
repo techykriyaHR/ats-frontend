@@ -231,14 +231,14 @@ export default function Listings() {
 
       {/* ATS Healthcheck Modal */}
       {showATSHealthcheck && (
-        <div className="fixed inset-0 flex items-start justify-end z-50 pointer-events-none">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-md mt-4 relative pointer-events-auto">
-            <button
-              className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
+        <div className="fixed inset-0 flex items-start justify-end z-10 mx-10 mt-15">
+          <div className="bg-white rounded-3xl py-5 border border-gray-light shadow-xl w-full max-w-lg relative pointer-events-auto">
+            {/* <button
+              className="absolute top-2 right-2 text-gray-600 hover:text-gray-800 cursor-pointer"
               onClick={toggleATSHealthcheck}
             >
               <FaTimes className="h-5 w-5" />
-            </button>
+            </button> */}
             <ATSHealthcheck onSelectApplicant={selectApplicant} />
           </div>
         </div>

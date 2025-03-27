@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
-import { FaHeartbeat, FaBars } from "react-icons/fa"
+import { FaBars } from "react-icons/fa"
+import { FaBell } from "react-icons/fa6";
 import api from "../api/axios"
 
 export default function Header({ onSelectView, onToggleSidebar, onToggleATSHealthcheck }) {
@@ -68,13 +69,13 @@ export default function Header({ onSelectView, onToggleSidebar, onToggleATSHealt
         <p className="display text-gray-dark block md:hidden">ATS</p>
         <p className="display text-gray-dark hidden md:block">Application Tracking System</p>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 ">
         <button
-          className="rounded-full p-2 text-teal-600 hover:bg-teal-600/10 hover:text-teal-700 relative"
+          className="rounded-full p-2 text-teal-600 hover:bg-teal-600/10 hover:text-teal-700 relative cursor-pointer"
           onClick={handleNotificationClick}
           aria-label={`Health check - ${notificationCount} notifications`}
         >
-          <FaHeartbeat className="h-6 w-6 md:h-10 md:w-10" />
+          <FaBell className="h-6 w-6 md:h-8 md:w-8" />
 
           {notificationCount > 0 && !isNotificationRead && (
             <span className="notification-badge absolute -top-1 -right-1 flex items-center justify-center">

@@ -45,10 +45,10 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
             // Parse dates for comparison
             const createdDate = new Date(applicant.date_created);
             const updatedDate = new Date(applicant.updated_at);
-            
+
             // Check if this is a new applicant (created in the last 24 hours)
             const isNewApplicant = (now - createdDate) < (24 * 60 * 60 * 1000);
-            
+
             // Check if this applicant hasn't been updated in 3 days
             const needsAttention = updatedDate < threeDaysAgo;
 
@@ -112,26 +112,26 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
     if (status === "THIRD_INTERVIEW") return "Third Interview Stage";
     if (status === "FOURTH_INTERVIEW") return "Fourth Interview Stage";
     if (status === "FOLLOW_UP_INTERVIEW") return "Follow-up Interview Stage";
-    if (status === "FOR_JOB_OFFER" || status === "JOB_OFFER_ACCEPTED" || 
-        status === "JOB_OFFER_REJECTED") return "Job Offer";
+    if (status === "FOR_JOB_OFFER" || status === "JOB_OFFER_ACCEPTED" ||
+      status === "JOB_OFFER_REJECTED") return "Job Offer";
     if (status === "TEST_SENT") return "Test Sent";
-    
+
     // Fallback to stage if status not recognized
     if (stage === "JOB_OFFER") return "Job Offer";
     if (stage === "INTERVIEW_SCHEDULE") return "Interview Scheduled";
-    
+
     return status.replace(/_/g, " ");
   };
 
-  const getStatusColor = (status) => {
-    return "text-black";
-  };
+  // const getStatusColor = (status) => {
+  //   return "text-black";
+  // };
 
-  const getTimeAgoColor = (timeAgo) => {
-    if (timeAgo.includes("Applied")) return "text-[#008080]";
-    if (timeAgo.includes("Last updated")) return "text-[#008080]";
-    return "text-gray-500";
-  };
+  // const getTimeAgoColor = (timeAgo) => {
+  //   if (timeAgo.includes("Applied")) return "text-teal";
+  //   if (timeAgo.includes("Last updated")) return "text-teal";
+  //   return "text-gray-500";
+  // };
 
   const handleApplicantClick = (applicant) => {
     onSelectApplicant(applicant);
@@ -144,25 +144,23 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
   }
 
   return (
-    <div className="flex items-center justify-center p-4">
-      <div className="rounded-lg shadow-lg w-full max-w-md overflow-hidden relative">
-        <div className="p-4">
-          <h2 className="text-xl font-bold mb-4">Notification</h2>
-          <div className="flex border-b border-gray-200">
+    <div className="flex items-center justify-center body-regular text-gray-dark">
+      <div className="rounded-lg w-full max-w-md overflow-hidden relative">
+        <div className="">
+          <h2 className="headline">Notification</h2>
+          <div className="flex border-b border-gray-200 mt-3">
             <button
-              className={`pb-2 px-4 ${
-                activeTab === "general" ? "text-[#008080] border-b-2 border-[#008080] font-medium" : "text-gray-500"
-              }`}
+              className={`p-1 px-4 hover:bg-gray-light/50 cursor-pointer ${activeTab === "general" ? "text-teal border-b border-tealfont-medium" : "text-gray-500"
+                }`}
               onClick={() => setActiveTab("general")}
             >
               General
             </button>
             <button
-              className={`pb-2 px-4 ${
-                activeTab === "needsAttention"
-                  ? "text-[#008080] border-b-2 border-[#008080] font-medium"
-                  : "text-gray-500"
-              }`}
+              className={`p-1 px-4 hover:bg-gray-light/50 cursor-pointer ${activeTab === "needsAttention"
+                ? "text-teal border-b border-teal font-medium"
+                : "text-gray-500"
+                }`}
               onClick={() => setActiveTab("needsAttention")}
             >
               Needs Attention
@@ -170,7 +168,9 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
           </div>
         </div>
 
+
         <div className="max-h-[500px] overflow-y-auto p-2">
+
           {loading ? (
             <div className="p-4 text-center text-gray-500">Loading notifications...</div>
           ) : error ? (
@@ -178,49 +178,49 @@ export default function ATSHealthcheck({ onSelectApplicant }) {
           ) : (
             <>
               {activeTab === "general" && notifications.general.length === 0 && (
-                <div className="p-4 text-center text-gray-500">No general notifications</div>  
+                <div className="p-4 text-center text-gray-500">No general notifications</div>
               )}
-              
+
               {activeTab === "general" &&
                 notifications.general.map((notification, index) => (
                   <div
                     key={notification.id || index}
-                    className="flex items-center justify-between p-3 border border-gray-200 rounded-lg mb-2 cursor-pointer"
+                    className="flex items-center justify-between p-2 border border-gray-200 rounded-xl mb-3 cursor-pointer hover:bg-gray-light/50"
                     onClick={() => handleApplicantClick(notification.applicantData)}
                   >
                     <div className="flex items-center">
                       <div>
-                        <div className="font-medium">{notification.name}</div>
-                        <div className="text-sm text-gray-500">{notification.position}</div>
+                        <div className="body-bold">{notification.name}</div>
+                        <div className="text-gray-dark/50 body-tiny">{notification.position}</div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className={`font-medium ${getStatusColor(notification.status)}`}>{notification.status}</div>
-                      <div className={`text-sm ${getTimeAgoColor(notification.timeAgo)}`}>Applied {notification.timeAgo}</div>
+                      <div className={`body-bold`}>{notification.status}</div>
+                      <div className={`text-teal body-tiny`}>Applied {notification.timeAgo}</div>
                     </div>
                   </div>
                 ))}
 
               {activeTab === "needsAttention" && notifications.needsAttention.length === 0 && (
-                <div className="p-4 text-center text-gray-500">No items need attention</div>  
+                <div className="p-4 text-center text-gray-500">No items need attention</div>
               )}
-                
+
               {activeTab === "needsAttention" &&
                 notifications.needsAttention.map((notification, index) => (
                   <div
                     key={notification.id || index}
-                    className="flex items-center justify-between p-3 border border-gray-200 rounded-lg mb-2 cursor-pointer"
+                    className="flex items-center justify-between p-2 border border-gray-200 rounded-xl mb-3 cursor-pointer hover:bg-gray-light/50"
                     onClick={() => handleApplicantClick(notification.applicantData)}
                   >
                     <div className="flex items-center">
                       <div>
-                        <div className="font-medium">{notification.name}</div>
-                        <div className="text-sm text-gray-500">{notification.position}</div>
+                        <div className="body-bold">{notification.name}</div>
+                        <div className="text-gray-dark/50 body-tiny">{notification.position}</div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className={`font-medium ${getStatusColor(notification.status)}`}>{notification.status}</div>
-                      <div className={`text-sm ${getTimeAgoColor(notification.timeAgo)}`}>{notification.timeAgo}</div>
+                      <div className={`body-bold`}>{notification.status}</div>
+                      <div className={`text-teal body-tiny`}>{notification.timeAgo}</div>
                     </div>
                   </div>
                 ))}
