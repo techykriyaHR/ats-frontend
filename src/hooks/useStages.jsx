@@ -10,6 +10,7 @@ import moment from "moment";
 export const useStages = () => {
   //const [stages, setStages] = useState(initialStages);
   const { stages, setStages } = statusCounterStore();
+  const okay = ["sd", "ds"];
 
   useEffect(() => {
     const fetchInitialCounts = async () => {
@@ -36,7 +37,7 @@ export const useStages = () => {
     );
   };
 
-  const toggleStatus = async (stageName, statusName, statusValue, positionFilter, setApplicantData) => {
+  const toggleStatus = async (stageName, statusName) => {
     setStages((stages.map((stage) => {
       if (stage.name === stageName) {
         return {
@@ -62,7 +63,7 @@ export const useStages = () => {
   return { stages, setStages, toggleStage, toggleStatus };
 };
 
-export const handleStageClick = (stage, setSelectedStatuses, search, toggleStage, dateFilterType, dateFilter, positionFilter, setApplicantData, setStatus) => {
+export const handleStageClick = (stage, setSelectedStatuses, search, toggleStage, dateFilterType, dateFilter, positionFilter, setApplicantData, setStatusStage) => {
   const stageStatuses = stage.statuses.map((status) => status.value);
 
   setSelectedStatuses((prevStatuses) => {
@@ -82,9 +83,15 @@ export const handleStageClick = (stage, setSelectedStatuses, search, toggleStage
       updatedStatuses = [
         ...prevStatuses,
         ...stageStatuses.filter((status) => !prevStatuses.includes(status)),
-      ];
+      ]; 
+      //setStatusStage(stageStatuses.filter((status) => !prevStatuses.includes(status)));
     }
 
+
+    setStatusStage(updatedStatuses);
+    console.log(updatedStatuses);
+    
+    
     // Call filterApplicants with the updated statuses
     if (search === "") {
       dateFilterType === 'month' ?
