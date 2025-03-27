@@ -18,7 +18,7 @@ export default function StatusCounter() {
   const { stages, setStages, toggleStage, toggleStatus } = useStages();
   const { collapsedStages, toggleCollapse } = useCollapse();
   const { positionFilter, setPositionFilter } = positionStore();
-  const { status, setStatus, clearStatus, search, dateFilter, dateFilterType } = applicantFilterStore();
+  const { status, setStatus, setStatusStage, clearStatus, search, dateFilter, dateFilterType } = applicantFilterStore();
   const { setApplicantData } = applicantDataStore();
   const [selectedStatuses, setSelectedStatuses] = useState([]);
 
@@ -81,11 +81,12 @@ export default function StatusCounter() {
           <div key={stage.name}>
             {/* Stage Button */}
             <div
-              className={`flex cursor-pointer items-center justify-between ${stage.selected
-                ? "bg-teal text-white"
-                : "bg-gray-light text-gray-dark"
-                } hover:bg-teal-soft mb-2 rounded-md px-2`}
-              onClick={() => handleStageClick(stage, setSelectedStatuses, search, toggleStage, dateFilterType, dateFilter, positionFilter, setApplicantData, setStatus)}
+              className={`flex cursor-pointer items-center justify-between ${
+                stage.selected
+                  ? "bg-teal text-white"
+                  : "bg-gray-light text-gray-dark"
+              } hover:bg-teal-soft mb-2 rounded-md px-2`}
+              onClick={() => handleStageClick(stage, setSelectedStatuses, search, toggleStage, dateFilterType, dateFilter, positionFilter, setApplicantData, setStatusStage)}
             >
               <div className="flex flex-1 items-center justify-between">
                 <span className="body-bold">{stage.name}</span>
