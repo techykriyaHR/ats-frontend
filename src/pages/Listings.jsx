@@ -215,7 +215,7 @@ export default function Listings() {
                       <button className="truncate max-w-[100px] lg:max-w-none cursor-pointer" onClick={() => setActiveTab(tab.id)} title={tab.name}>
                         {tab.name.length > 10 ? `${tab.name.slice(0, 10)}...` : tab.name}
                       </button>
-                      <button className="ml-1 text-gray-600 hover:text-gray-800" onClick={() => closeTab(tab.id)}>
+                      <button className="ml-1 text-gray-600 hover:text-white cursor-pointer rounded-2xl" onClick={() => closeTab(tab.id)}>
                         <FaTimes className="h-3 w-3" />
                         <span className="sr-only">Remove {tab.name}</span>
                       </button>
