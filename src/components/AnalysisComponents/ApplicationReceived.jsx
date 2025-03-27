@@ -8,19 +8,29 @@ const ApplicationReceived = () => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
-    const fetchApplicationTrend = async () => {
+    const fetchApplicationData = async () => {
       try {
-        const response = await api.get("/analytic/graphs/application-trend");
-        const data = response.data.data;
+        const response = await api.get("/analytic/metrics");
+        const data = response.data.applicationsReceived;
 
         setTotalApplications(data.total);
-        setMonths(data.trend.map((item) => ({ name: item.month, count: item.count })));
+        setMonths(data.breakdown.map((item) => {
+          // Convert YYYY-MM format to month name
+          const [year, month] = item.month.split('-');
+          const date = new Date(year, month - 1);
+          const monthName = date.toLocaleString('default', { month: 'long' });
+          
+          return { 
+            name: monthName, 
+            count: item.count 
+          };
+        }));
       } catch (error) {
-        console.error("Error fetching application trend data:", error);
+        console.error("Error fetching application metrics:", error);
       }
     };
 
-    fetchApplicationTrend();
+    fetchApplicationData();
   }, []);
 
   return (

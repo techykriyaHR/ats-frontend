@@ -11,8 +11,17 @@ const SourceOfApplication = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.get("/analytic/graphs/source");
-        setData(response.data.source);
+        const response = await api.get("/analytic/metrics");
+        
+        // Extract the breakdown of sources
+        const sourceData = response.data.internalExternalHires.breakdown
+          .filter(item => item.applied_source) // Filter out null sources
+          .map(item => ({
+            source: item.applied_source,
+            value: parseFloat(item.rate.toFixed(2))
+          }));
+        
+        setData(sourceData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -26,8 +35,8 @@ const SourceOfApplication = () => {
     datasets: [
       {
         data: data.map((entry) => entry.value),
-        backgroundColor: ["#008080", "#66b2b2", "#d9ebeb", "#ffcccb", "#c0c0c0"],
-        hoverBackgroundColor: ["#007777", "#5daaaa", "#cce5e5", "#ff9999", "#a9a9a9"],
+        backgroundColor: ["#008080", "#33A3A3", "#66C5C5", "#99E6E6", "#CCF2F2"],
+        hoverBackgroundColor: ["#006666", "#2A8888", "#55A8A8", "#77BCBC", "#AACBCB"],
       },
     ],
   };

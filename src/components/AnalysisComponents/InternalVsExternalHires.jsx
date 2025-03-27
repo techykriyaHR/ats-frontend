@@ -13,35 +13,20 @@ const InternalVsExternalHires = () => {
     const fetchSourceData = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get("/analytic/graphs/applicant-sources");
+        const response = await api.get("/analytic/metrics");
 
-        if (response.data && response.data.data && response.data.data.sources) {
-          const sources = response.data.data.sources;
+        if (response.data && response.data.internalExternalHires) {
+          const { internal, external, internalRate, externalRate } = response.data.internalExternalHires;
+          
+          setInternalData({
+            count: internal,
+            percentage: Math.round(internalRate)
+          });
 
-          // Find internal and external data
-          const internalSource = sources.find(source =>
-            source.source_type === "Internal Referral" ||
-            source.source_type.toLowerCase().includes("internal")
-          );
-
-          const externalSource = sources.find(source =>
-            source.source_type === "External" ||
-            source.source_type.toLowerCase().includes("external")
-          );
-
-          if (internalSource) {
-            setInternalData({
-              count: internalSource.count,
-              percentage: Math.round(Number(internalSource.percentage))
-            });
-          }
-
-          if (externalSource) {
-            setExternalData({
-              count: externalSource.count,
-              percentage: Math.round(Number(externalSource.percentage))
-            });
-          }
+          setExternalData({
+            count: external,
+            percentage: Math.round(externalRate)
+          });
         }
       } catch (err) {
         console.error("Error fetching source data:", err);
@@ -83,11 +68,6 @@ const InternalVsExternalHires = () => {
             <span className="text-xl text-gray-600">-</span>
             <span className="text-4xl font-semibold">{externalData.percentage}%</span>
           </div>
-
-
-
-
-
         </div>
       )}
     </>
