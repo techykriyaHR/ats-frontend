@@ -1,40 +1,61 @@
-# Application Tracking System for FullSuite
+# **Application Tracking System (ATS) for FullSuite**
 
-This is a website that is integrated with the FullSuite's SuiteLifer's website
+This website integrates with FullSuite's **SuiteLifer** platform to streamline applicant tracking and management.
 
-### how to communicate with the backend
+---
 
-on a jsx file
+## **📌 Overview**
+
+The **Application Tracking System (ATS)** is a web-based tool designed to efficiently manage and track job applicants. It provides features for easy data handling, filtering, and automated notifications.
+
+---
+
+## **🚀 Features**
+
+✔ View and manage applicant details  
+✔ Export applicant data to **XLSX**  
+✔ **Auto-email notifications** for new and blacklisted applicants  
+✔ **Overlapping filters** for refined applicant searches  
+✔ **Clickable table rows** for quick access to applicant details  
+✔ **Duplicate entry warnings** to prevent redundancy
+
+---
+
+## **📂 Project Structure**
 
 ```
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
- useEffect(() => {
-        axios.get(`${API_BASE_URL}/test-api`)
-            .then(response => setMessage(response.data.message))
-            .catch(error => console.error("Error fetching data:", error));
-    }, []);
+/src
+│── /components
+│   ├── TopJobPositions.jsx
+│   ├── InfoTooltip.jsx
+│── /pages
+│   ├── Dashboard.jsx
+│   ├── Applicants.jsx
+│── /hooks
+│   ├── useApplicants.js
+│── /context
+│   ├── AuthContext.jsx
+│── /services
+│   ├── applicantService.js
+│── /utils
+│   ├── dateUtils.js
+│── App.jsx
+│── main.jsx
+│── .env
 ```
 
-## Overview
+---
 
-The **Application Tracking System (ATS)** is a web-based system integrated with FullSuite's **SuiteLifer** website. It helps manage and track job applicants efficiently.
-
-## Features
-
-- View and manage applicant details.
-- Export applicant data to XLSX.
-- Auto-email notifications for new applicants and blacklisted applicants.
-- Overlapping filters for better applicant search.
-- Clickable table rows for quick access to applicant details.
-- Warning of duplicate entries.
-
-## Communication with the Backend
+## **📡 Backend Communication**
 
 To interact with the backend API in a JSX file, use the following approach:
 
 ```jsx
+import { useState, useEffect } from "react";
+import axios from "axios";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const [message, setMessage] = useState("");
 
 useEffect(() => {
   axios
@@ -44,30 +65,18 @@ useEffect(() => {
 }, []);
 ```
 
-## 📂 Project Structure
+---
 
-```
-/src
-│── /components   # Reusable UI components
-│── /pages        # Page components
-│── /hooks        # Custom hooks
-│── /context      # Global state management
-│── /services     # API calls
-│── /utils        # Helper functions
-│── App.jsx       # Main App component
-│── main.jsx      # Entry point
-```
+## **📌 Where to Put Functions?**
 
-## 📌 Where to Put Functions?
-
-✅ **Utility Functions** → `/src/utils/` (e.g., format dates, validation)
+✅ **Utility Functions** → `/src/utils/` _(e.g., format dates, validation)_
 
 ```js
 // /src/utils/dateUtils.js
 export const formatDate = (date) => new Date(date).toLocaleDateString();
 ```
 
-✅ **API Functions** → `/src/services/` (e.g., fetch applicants)
+✅ **API Functions** → `/src/services/` _(e.g., fetch applicants)_
 
 ```js
 // /src/services/applicantService.js
@@ -75,7 +84,7 @@ import axios from "axios";
 export const getApplicants = async () => axios.get("/api/applicants");
 ```
 
-✅ **Custom Hooks** → `/src/hooks/` (e.g., handle state & effects)
+✅ **Custom Hooks** → `/src/hooks/` _(e.g., handle state & effects)_
 
 ```js
 // /src/hooks/useApplicants.js
@@ -90,7 +99,7 @@ export const useApplicants = () => {
 };
 ```
 
-✅ **Context Functions** → `/src/context/` (e.g., authentication, filters)
+✅ **Context Functions** → `/src/context/` _(e.g., authentication, filters)_
 
 ```js
 // /src/context/AuthContext.jsx
@@ -107,7 +116,9 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => useContext(AuthContext);
 ```
 
-## Environment Variables
+---
+
+## **🛠 Environment Variables**
 
 Ensure the **VITE_API_BASE_URL** is set correctly in the `.env` file:
 
@@ -115,13 +126,42 @@ Ensure the **VITE_API_BASE_URL** is set correctly in the `.env` file:
 VITE_API_BASE_URL=https://your-backend-url.com
 ```
 
-## 🚀 Setup
+---
+
+## **📦 Installation & Setup**
 
 ```sh
-npm install  # Install dependencies
-npm run dev  # Run the project
-npm run build  # Build for production
-npm test  # Run tests
+# Install dependencies
+npm install
+
+# Run the project in development mode
+npm run dev
+
+# Build for production
+npm run build
+
+# Run tests
+npm test
 ```
 
-That's it! 🎯
+---
+
+## **🖥️ Running the Project**
+
+1. Clone the repository
+
+   ```sh
+   git clone https://github.com/your-repo-name.git
+   cd your-repo-name
+   ```
+
+2. Install dependencies
+
+   ```sh
+   npm install
+   ```
+
+3. Start the development server
+   ```sh
+   npm run dev
+   ```
