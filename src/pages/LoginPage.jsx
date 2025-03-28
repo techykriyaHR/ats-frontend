@@ -27,7 +27,7 @@ export default function LoginPage() {
 
       if (response.status === 200) {
         Cookies.set("token", response.data.token, { expires: rememberMe ? 7 : 1 });
-        navigate("/hr_ats");
+        navigate("/ats");
       } else {
         setError("Invalid email or password");
       }
@@ -138,7 +138,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-         
+
 
               {error && (
                 <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm flex items-center">
@@ -148,9 +148,8 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition ${
-                  isLoading ? "opacity-75 cursor-not-allowed" : ""
-                }`}
+                className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition ${isLoading ? "opacity-75 cursor-not-allowed" : ""
+                  }`}
                 disabled={isLoading}
               >
                 {isLoading ? (
